@@ -6,12 +6,6 @@ An end-to-end conversational AI agent for restaurant reservations, built from sc
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-## Demo
-
-[![GoodFoods AI Demo](https://img.youtube.com/vi/VXciDUX4-ys/0.jpg)](https://youtu.be/VXciDUX4-ys)
-
-Watch the demo video to see the AI concierge in action.
-
 ## Overview
 
 GoodFoods AI Concierge is an intelligent virtual assistant that helps customers discover restaurants, get personalized recommendations, and manage reservations across 75 restaurant locations. The system uses a local LLM (via Ollama) with a two-stage architecture: intent classification followed by intent-specific response generation with filtered tools.
