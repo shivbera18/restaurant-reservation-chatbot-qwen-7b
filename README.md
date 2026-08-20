@@ -52,18 +52,24 @@ goodfoods_reservation/
    cd goodfoods_reservation
    ```
 
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+2. **Create virtual environment & install dependencies**
 
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+   - **Using standard `venv` & `pip`:**
+     ```bash
+     python -m venv venv
+     source venv/bin/activate  # On Windows: venv\Scripts\activate
+     pip install -r requirements.txt
+     ```
 
-4. **Pick a backend** (copy `.env.example` to `.env` and edit it)
+   - **Using `uv` (fast Python package installer):**
+     ```bash
+     uv venv
+     source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+     uv pip install -r requirements.txt
+     # or run directly: uv run streamlit run app.py
+     ```
+
+3. **Pick a backend** (copy `.env.example` to `.env` and edit it)
 
    <details open>
    <summary><b>Option A — Ollama (local, free, no API key)</b></summary>
@@ -123,12 +129,14 @@ goodfoods_reservation/
    ```
    </details>
 
-5. **Run the application**
+4. **Run the application**
    ```bash
    streamlit run app.py
+   # Or with uv:
+   uv run streamlit run app.py
    ```
 
-6. **Open in browser**
+5. **Open in browser**
    Navigate to `http://localhost:8501`
 
 ### Switching Models
