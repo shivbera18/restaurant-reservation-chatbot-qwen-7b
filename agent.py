@@ -152,14 +152,25 @@ class ReservationAgent:
         
         if "tool_calls" in message:
             for tc in message["tool_calls"]:
-                tool_calls.append({
+                func = tc.get("function", {})
+                parsed_func = {
+                    "name": func.get("name", ""),
+                    "arguments": func.get("arguments", {})
+                }
+                for k, v in func.items():
+                    if k not in ("name", "arguments"):
+                        parsed_func[k] = v
+
+                parsed_tc = {
                     "id": tc.get("id", f"call_{len(tool_calls)}"),
                     "type": "function",
-                    "function": {
-                        "name": tc["function"]["name"],
-                        "arguments": tc["function"]["arguments"]
-                    }
-                })
+                    "function": parsed_func
+                }
+                for k, v in tc.items():
+                    if k not in ("id", "type", "function"):
+                        parsed_tc[k] = v
+
+                tool_calls.append(parsed_tc)
         
         return tool_calls
     

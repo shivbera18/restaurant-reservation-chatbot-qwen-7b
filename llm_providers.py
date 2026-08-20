@@ -426,14 +426,24 @@ class GeminiProvider(LLMProvider):
                     parts.append({"text": content})
                 for call in message.get("tool_calls") or []:
                     function = call.get("function") or {}
-                    parts.append(
-                        {
-                            "functionCall": {
-                                "name": function.get("name", ""),
-                                "args": _as_dict(function.get("arguments")),
-                            }
-                        }
+                    fc: Dict[str, Any] = {
+                        "name": function.get("name", ""),
+                        "args": _as_dict(function.get("arguments")),
+                    }
+                    thought_sig = (
+                        function.get("thought_signature")
+                        or function.get("thoughtSignature")
+                        or call.get("thought_signature")
+                        or call.get("thoughtSignature")
                     )
+                    if thought_sig:
+                        fc["thought_signature"] = thought_sig
+                    for k in ("thought", "thoughtSignature"):
+                        if k in function and k not in fc:
+                            fc[k] = function[k]
+                        elif k in call and k not in fc:
+                            fc[k] = call[k]
+                    parts.append({"functionCall": fc})
                 self._append(contents, "model", parts)
 
             elif role in ("tool", "function"):
@@ -542,16 +552,29 @@ class GeminiProvider(LLMProvider):
 
             function_call = part.get("functionCall")
             if function_call:
-                tool_calls.append(
-                    {
-                        "id": "call_{0}".format(len(tool_calls)),
-                        "type": "function",
-                        "function": {
-                            "name": function_call.get("name", ""),
-                            "arguments": function_call.get("args") or {},
-                        },
-                    }
+                fc_obj: Dict[str, Any] = {
+                    "name": function_call.get("name", ""),
+                    "arguments": function_call.get("args") or {},
+                }
+                for key in ("thought_signature", "thoughtSignature", "thought"):
+                    val = function_call.get(key) or part.get(key)
+                    if val:
+                        fc_obj[key] = val
+
+                tool_call: Dict[str, Any] = {
+                    "id": "call_{0}".format(len(tool_calls)),
+                    "type": "function",
+                    "function": fc_obj,
+                }
+                sig = (
+                    function_call.get("thought_signature")
+                    or function_call.get("thoughtSignature")
+                    or part.get("thought_signature")
+                    or part.get("thoughtSignature")
                 )
+                if sig:
+                    tool_call["thought_signature"] = sig
+                tool_calls.append(tool_call)
 
         message: Dict[str, Any] = {"role": "assistant", "content": "".join(text_chunks)}
         if tool_calls:

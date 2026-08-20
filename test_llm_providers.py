@@ -85,6 +85,48 @@ class ProviderSmokeTests(unittest.TestCase):
         response = contents[-1]["parts"][0]["functionResponse"]["response"]
         self.assertEqual(response, result)
 
+    def test_gemini_preserves_thought_signature(self):
+        provider = GeminiProvider(api_key="test")
+        raw_gemini_response = {
+            "candidates": [
+                {
+                    "content": {
+                        "parts": [
+                            {
+                                "functionCall": {
+                                    "name": "get_recommendations",
+                                    "args": {"cuisine": "italian"},
+                                    "thought_signature": "sig_abc123",
+                                }
+                            }
+                        ]
+                    },
+                    "finishReason": "STOP",
+                }
+            ]
+        }
+        normalized = provider._normalize(raw_gemini_response)
+        assistant_msg = normalized["choices"][0]["message"]
+        self.assertEqual(
+            assistant_msg["tool_calls"][0]["function"]["thought_signature"],
+            "sig_abc123",
+        )
+
+        # Verify history reconstruction includes thought_signature in functionCall
+        messages = [
+            {"role": "user", "content": "Recommend a place"},
+            assistant_msg,
+            {
+                "role": "tool",
+                "name": "get_recommendations",
+                "content": '{"result": "ok"}',
+            },
+        ]
+        contents, _ = provider._build_contents(messages)
+        model_turn = contents[1]
+        fc = model_turn["parts"][0]["functionCall"]
+        self.assertEqual(fc["name"], "get_recommendations")
+        self.assertEqual(fc["thought_signature"], "sig_abc123")
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
