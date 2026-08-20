@@ -9,6 +9,10 @@ st.set_page_config(
 )
 
 from agent import create_agent, ReservationAgent, MockReservationAgent
+from config import (
+    APP_VERSION, AVAILABLE_MODELS, DEFAULT_MODELS,
+    LLM_PROVIDER, PROVIDER_LABELS, SUPPORTED_PROVIDERS
+)
 from database import db
 
 
@@ -64,15 +68,137 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+def refresh_agent_status():
+    """Probe the backend once and cache the verdict.
+
+    Kept out of the render path on purpose: Streamlit re-runs the whole script
+    on every interaction, and the Ollama probe is a network call. Caching keeps
+    an unreachable backend from adding latency to each message.
+    """
+    agent = st.session_state.agent
+    llm = getattr(agent, "llm", None)
+    st.session_state.agent_status = llm.is_configured() if llm else None
+
+
+def build_agent():
+    """(Re)build the agent from the provider/model currently selected."""
+    if st.session_state.use_mock:
+        st.session_state.agent = create_agent(use_mock=True)
+        st.session_state.agent_error = None
+        refresh_agent_status()
+        return
+
+    try:
+        st.session_state.agent = create_agent(
+            provider=st.session_state.provider,
+            model=st.session_state.model,
+        )
+        st.session_state.agent_error = None
+    except Exception as e:
+        st.session_state.agent = create_agent(use_mock=True)
+        st.session_state.agent_error = str(e)
+
+    refresh_agent_status()
+
+
 def initialize_session_state():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
+    if "provider" not in st.session_state:
+        st.session_state.provider = LLM_PROVIDER
+    if "model" not in st.session_state:
+        st.session_state.model = DEFAULT_MODELS.get(LLM_PROVIDER, "")
+    if "use_mock" not in st.session_state:
+        st.session_state.use_mock = False
+    if "switched" not in st.session_state:
+        st.session_state.switched = False
+
     if "agent" not in st.session_state:
-        try:
-            st.session_state.agent = create_agent()
-        except Exception as e:
-            st.session_state.agent = create_agent(use_mock=True)
+        build_agent()
+
+
+def render_model_picker():
+    """Provider + model selection. Changing either rebuilds the agent."""
+    st.markdown("### 🧠 Model")
+
+    providers = list(SUPPORTED_PROVIDERS)
+    current_provider = st.session_state.provider
+    provider = st.selectbox(
+        "Provider",
+        providers,
+        index=providers.index(current_provider) if current_provider in providers else 0,
+        format_func=lambda p: PROVIDER_LABELS.get(p, p),
+        help="Ollama runs locally; Gemini and OpenAI-compatible APIs need a key in .env",
+    )
+
+    suggestions = AVAILABLE_MODELS.get(provider, [])
+    current = st.session_state.model if provider == st.session_state.provider else ""
+    options = list(suggestions)
+    if current and current not in options:
+        options.insert(0, current)
+    options.append("Custom...")
+
+    default_model = DEFAULT_MODELS.get(provider, "")
+    preselect = current or default_model
+    index = options.index(preselect) if preselect in options else 0
+
+    choice = st.selectbox("Model", options, index=index)
+    if choice == "Custom...":
+        model = st.text_input(
+            "Model id",
+            value=preselect,
+            placeholder="e.g. gemini-2.5-flash",
+        ).strip()
+    else:
+        model = choice
+
+    use_mock = st.checkbox(
+        "Offline demo mode",
+        value=st.session_state.use_mock,
+        help="Answer with pattern matching only - no LLM calls",
+    )
+
+    changed = (provider, model, use_mock) != (
+        st.session_state.provider,
+        st.session_state.model,
+        st.session_state.use_mock,
+    )
+
+    if changed and model:
+        st.session_state.provider = provider
+        st.session_state.model = model
+        st.session_state.use_mock = use_mock
+        st.session_state.switched = True
+        build_agent()
+        st.rerun()
+
+    render_model_status()
+
+
+def render_model_status():
+    """Show the cached verdict for the selected backend."""
+    error = st.session_state.get("agent_error")
+    if error:
+        st.error(f"Falling back to demo mode: {error}")
+        return
+
+    status = st.session_state.get("agent_status")
+    if status is None:
+        st.info("Offline demo mode - no LLM calls")
+        return
+
+    ready, reason = status
+    if ready:
+        st.success(reason)
+    else:
+        st.warning(reason)
+        if st.button("Recheck connection", use_container_width=True):
+            refresh_agent_status()
+            st.rerun()
+
+    if st.session_state.switched:
+        st.caption("Model switched - the assistant's memory starts fresh.")
 
 
 def render_sidebar():
@@ -88,19 +214,30 @@ def render_sidebar():
 
         st.markdown("---")
 
+        render_model_picker()
+
+        st.markdown("---")
+
         if st.button("🔄 New Conversation", use_container_width=True):
             st.session_state.messages = []
+            st.session_state.switched = False
             st.session_state.agent.reset_conversation()
             st.rerun()
 
         st.markdown("---")
-        st.markdown("""
+
+        agent = st.session_state.agent
+        backend = agent.llm.describe() if getattr(agent, "llm", None) else "Demo mode"
+        st.markdown(
+            f"""
         <small>
-        **GoodFoods AI Concierge** v1.0<br>
-        Built with Streamlit + Llama 3.3<br>
+        <b>GoodFoods AI Concierge</b> v{APP_VERSION}<br>
+        {backend}<br>
         Tool-calling architecture (MCP-style)
         </small>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 
 def render_chat_message(role: str, content: str):
