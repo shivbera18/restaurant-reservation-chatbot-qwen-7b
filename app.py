@@ -75,7 +75,7 @@ def refresh_agent_status():
     on every interaction, and the Ollama probe is a network call. Caching keeps
     an unreachable backend from adding latency to each message.
     """
-    agent = st.session_state.agent
+    agent = st.session_state.get("agent")
     llm = getattr(agent, "llm", None)
     st.session_state.agent_status = llm.is_configured() if llm else None
 
@@ -95,7 +95,7 @@ def build_agent():
         )
         st.session_state.agent_error = None
     except Exception as e:
-        st.session_state.agent = create_agent(use_mock=True)
+        st.session_state.agent = None
         st.session_state.agent_error = str(e)
 
     refresh_agent_status()
@@ -129,7 +129,7 @@ def render_model_picker():
         providers,
         index=providers.index(current_provider) if current_provider in providers else 0,
         format_func=lambda p: PROVIDER_LABELS.get(p, p),
-        help="Ollama runs locally; Gemini and OpenAI-compatible APIs need a key in .env",
+        help="Cloud providers need an API key in .env; local providers do not.",
     )
 
     suggestions = AVAILABLE_MODELS.get(provider, [])
@@ -180,7 +180,7 @@ def render_model_status():
     """Show the cached verdict for the selected backend."""
     error = st.session_state.get("agent_error")
     if error:
-        st.error(f"Falling back to demo mode: {error}")
+        st.error(f"Provider setup failed: {error}")
         return
 
     status = st.session_state.get("agent_status")
@@ -218,16 +218,22 @@ def render_sidebar():
 
         st.markdown("---")
 
-        if st.button("🔄 New Conversation", use_container_width=True):
+        agent = st.session_state.get("agent")
+        if st.button(
+            "🔄 New Conversation", use_container_width=True, disabled=agent is None
+        ):
             st.session_state.messages = []
             st.session_state.switched = False
-            st.session_state.agent.reset_conversation()
+            agent.reset_conversation()
             st.rerun()
 
         st.markdown("---")
 
-        agent = st.session_state.agent
-        backend = agent.llm.describe() if getattr(agent, "llm", None) else "Demo mode"
+        backend = (
+            agent.llm.describe()
+            if getattr(agent, "llm", None)
+            else "Demo mode" if agent else "Provider unavailable"
+        )
         st.markdown(
             f"""
         <small>
@@ -295,6 +301,11 @@ def main():
         else:
             for message in st.session_state.messages:
                 render_chat_message(message["role"], message["content"])
+
+    status = st.session_state.get("agent_status")
+    if st.session_state.get("agent") is None or (status and not status[0]):
+        st.info("Configure the selected backend or use Offline demo mode before chatting.")
+        return
 
     if prompt := st.chat_input("Type your message here..."):
         st.session_state.messages.append({

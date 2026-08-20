@@ -16,7 +16,9 @@ to know which backend is in use.
 Built from scratch on `requests` - no vendor SDKs required.
 """
 import json
+from ipaddress import ip_address
 from typing import Any, Dict, List, Optional, Tuple
+from urllib.parse import urlparse
 
 import requests
 
@@ -34,14 +36,15 @@ from config import (
     OLLAMA_KEEP_ALIVE,
     OLLAMA_MODEL,
     OPENAI,
-    OPENAI_API_BASE,
-    OPENAI_API_KEY,
+    OPENAI_COMPATIBLE_PROVIDERS,
     OPENAI_MODEL,
+    PROVIDER_LABELS,
     REPEAT_PENALTY,
     REQUEST_TIMEOUT,
     TEMPERATURE,
     TOP_P,
     LLM_PROVIDER,
+    get_openai_compatible_config,
     normalize_provider,
 )
 
@@ -71,6 +74,36 @@ def _as_json_str(value: Any) -> str:
         return json.dumps(value or {})
     except (TypeError, ValueError):
         return "{}"
+
+
+def _tool_response(value: Any) -> Dict[str, Any]:
+    """Return Gemini's required object-shaped function response."""
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+            if isinstance(parsed, dict):
+                return parsed
+        except json.JSONDecodeError:
+            pass
+    return {"result": value if isinstance(value, str) else str(value or "")}
+
+
+def _is_local_endpoint(url: str) -> bool:
+    """Whether an endpoint is a loopback URL that may omit authentication."""
+    try:
+        host = urlparse(url).hostname
+    except ValueError:
+        return False
+    if not host:
+        return False
+    if host.lower() == "localhost":
+        return True
+    try:
+        return ip_address(host).is_loopback
+    except ValueError:
+        return False
 
 
 def _describe_http_error(provider: str, response: requests.Response) -> str:
@@ -149,7 +182,7 @@ class LLMProvider:
             )
 
         if DEBUG:
-            print("[DEBUG] {0} raw response: {1}".format(self.name, data))
+            print("[DEBUG] {0} response received".format(self.name))
 
         return data
 
@@ -413,7 +446,7 @@ class GeminiProvider(LLMProvider):
                         {
                             "functionResponse": {
                                 "name": message.get("name") or "tool",
-                                "response": {"result": content},
+                                "response": _tool_response(content),
                             }
                         }
                     ],
@@ -554,10 +587,20 @@ class OpenAICompatibleProvider(LLMProvider):
         model: Optional[str] = None,
         api_key: Optional[str] = None,
         api_base: Optional[str] = None,
+        provider: Optional[str] = None,
     ):
-        super().__init__(model)
-        self.api_key = (api_key or OPENAI_API_KEY or "").strip()
-        self.endpoint = self._resolve_endpoint(api_base or OPENAI_API_BASE)
+        service = provider or (
+            LLM_PROVIDER if LLM_PROVIDER in OPENAI_COMPATIBLE_PROVIDERS else OPENAI
+        )
+        service = normalize_provider(service)
+        settings = get_openai_compatible_config(service)
+        self.name = service
+        self.label = PROVIDER_LABELS[service]
+        super().__init__(model or settings["model"])
+        self.api_key = (settings["api_key"] if api_key is None else api_key).strip()
+        self.endpoint = self._resolve_endpoint(
+            settings["api_base"] if api_base is None else api_base
+        )
 
     @staticmethod
     def default_model() -> str:
@@ -572,9 +615,12 @@ class OpenAICompatibleProvider(LLMProvider):
             return base
         return base + "/chat/completions"
 
+    def _api_key_hint(self) -> str:
+        return "{}_API_KEY".format(self.name.upper())
+
     def is_configured(self) -> Tuple[bool, str]:
-        if not self.api_key and "localhost" not in self.endpoint:
-            return False, "OPENAI_API_KEY is not set"
+        if not self.api_key and not _is_local_endpoint(self.endpoint):
+            return False, "{} is not set".format(self._api_key_hint())
         return True, "Endpoint configured"
 
     @staticmethod
@@ -623,10 +669,10 @@ class OpenAICompatibleProvider(LLMProvider):
         return prepared
 
     def chat(self, messages: List[Dict], tools: Optional[List[Dict]] = None) -> Dict:
-        if not self.api_key and "localhost" not in self.endpoint:
+        if not self.api_key and not _is_local_endpoint(self.endpoint):
             raise LLMError(
-                "OPENAI_API_KEY is not set. Add it to your .env file or export it, "
-                "then restart the app."
+                "{} is not set. Add it to your .env file or export it, then restart "
+                "the app.".format(self._api_key_hint())
             )
 
         payload: Dict[str, Any] = {
@@ -692,13 +738,19 @@ class OpenAICompatibleProvider(LLMProvider):
 PROVIDER_REGISTRY = {
     OLLAMA: OllamaProvider,
     GEMINI: GeminiProvider,
-    OPENAI: OpenAICompatibleProvider,
+    **{
+        provider: OpenAICompatibleProvider
+        for provider in OPENAI_COMPATIBLE_PROVIDERS
+    },
 }
 
 
 def create_provider(
     provider: Optional[str] = None, model: Optional[str] = None
 ) -> LLMProvider:
-    """Instantiate the requested backend, falling back to the configured one."""
+    """Instantiate the configured provider."""
     key = normalize_provider(provider or LLM_PROVIDER)
-    return PROVIDER_REGISTRY[key](model=model)
+    provider_class = PROVIDER_REGISTRY[key]
+    if key in OPENAI_COMPATIBLE_PROVIDERS:
+        return provider_class(model=model, provider=key)
+    return provider_class(model=model)
