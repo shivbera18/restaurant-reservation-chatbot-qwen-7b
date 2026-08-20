@@ -92,23 +92,35 @@ goodfoods_reservation/
    </details>
 
    <details>
-   <summary><b>Option C — OpenAI-compatible API (OpenAI, Groq, OpenRouter, LM Studio…)</b></summary>
+   <summary><b>Option C — OpenAI-compatible API (OpenAI, Groq, OpenRouter, and more)</b></summary>
 
+   Named services select their endpoint and API-key variable automatically:
    ```ini
-   # .env — OpenAI
+   # .env — Groq
+   LLM_PROVIDER=groq
+   GROQ_API_KEY=your-key-here
+   GROQ_MODEL=llama-3.3-70b-versatile  # optional
+   ```
+
+   | Vendor | `LLM_PROVIDER` | Key variable |
+   |--------|----------------|--------------|
+   | OpenAI | `openai` | `OPENAI_API_KEY` |
+   | Groq | `groq` | `GROQ_API_KEY` |
+   | OpenRouter | `openrouter` | `OPENROUTER_API_KEY` |
+   | Together | `together` | `TOGETHER_API_KEY` |
+   | DeepSeek | `deepseek` | `DEEPSEEK_API_KEY` |
+   | Fireworks | `fireworks` | `FIREWORKS_API_KEY` |
+   | LM Studio | `lmstudio` | *(none for localhost)* |
+   | vLLM | `vllm` | *(none for localhost)* |
+
+   For any other API exposing OpenAI's `/chat/completions` protocol, use the
+   generic provider and set its endpoint:
+   ```ini
    LLM_PROVIDER=openai
    OPENAI_API_KEY=your-key-here
-   OPENAI_MODEL=gpt-4o-mini
-   OPENAI_API_BASE=https://api.openai.com/v1
+   OPENAI_MODEL=your-model-id
+   OPENAI_API_BASE=https://your-api.example/v1
    ```
-   Point `OPENAI_API_BASE` elsewhere to use another vendor:
-
-   | Vendor | `OPENAI_API_BASE` | Example `OPENAI_MODEL` |
-   |--------|-------------------|------------------------|
-   | OpenAI | `https://api.openai.com/v1` | `gpt-4o-mini` |
-   | Groq | `https://api.groq.com/openai/v1` | `llama-3.3-70b-versatile` |
-   | OpenRouter | `https://openrouter.ai/api/v1` | `google/gemini-2.5-flash` |
-   | LM Studio | `http://localhost:1234/v1` | *(whatever is loaded)* |
    </details>
 
 5. **Run the application**
@@ -124,8 +136,8 @@ goodfoods_reservation/
 Three ways, in increasing order of convenience:
 
 1. **Sidebar (no restart)** — pick a provider and model under **🧠 Model**. The
-   status line tells you whether the backend is reachable and whether the key is
-   set. Switching gives the assistant a fresh memory.
+   status line checks configuration (and verifies local Ollama reachability).
+   Switching gives the assistant a fresh memory.
 2. **`.env` file** — set `LLM_PROVIDER` plus that provider's model variable.
 3. **Environment variable** — wins over `.env`:
    ```bash
@@ -137,9 +149,10 @@ Three ways, in increasing order of convenience:
    $env:LLM_PROVIDER="gemini"; $env:GEMINI_API_KEY="..."; streamlit run app.py
    ```
 
-`LLM_PROVIDER` also accepts aliases: `google` → gemini, and `groq` /
-`openrouter` / `together` / `lmstudio` / `vllm` → openai. Unknown values fall
-back to Ollama.
+`LLM_PROVIDER` accepts `ollama`, `gemini`, `openai`, `groq`, `openrouter`,
+`together`, `deepseek`, `fireworks`, `lmstudio`, and `vllm`; `google` and
+`lm-studio` are accepted aliases. Unknown values fail fast rather than silently
+switching providers.
 
 No key at all? Tick **Offline demo mode** in the sidebar to run the
 pattern-matching agent with no LLM calls.
@@ -205,8 +218,9 @@ Two Gemini-specific traps are handled in `llm_providers.py`:
   so `get_neighborhoods` and `get_cuisine_types` omit `parameters` entirely
   rather than sending `{"properties": {}}`.
 
-Adding a backend means subclassing `LLMProvider`, implementing `chat()`, and
-registering it in `PROVIDER_REGISTRY` — no changes to the agent or tools.
+For another OpenAI-compatible service, set `LLM_PROVIDER=openai` and
+`OPENAI_API_BASE`; a genuinely different protocol needs a small `LLMProvider`
+subclass, with no changes to the agent or tools.
 
 ### Intent-Based Tool Filtering
 
@@ -310,10 +324,10 @@ Agent: [Detects intents: SEARCH, RESERVE]
 
 | Parameter | Value | Env var |
 |-----------|-------|---------|
-| Provider | `ollama` \| `gemini` \| `openai` | `LLM_PROVIDER` |
+| Provider | `ollama`, `gemini`, or an OpenAI-compatible service | `LLM_PROVIDER` |
 | Default local model | qwen2.5:7b | `OLLAMA_MODEL` |
 | Default Gemini model | gemini-2.5-flash | `GEMINI_MODEL` |
-| Default OpenAI model | gpt-4o-mini | `OPENAI_MODEL` |
+| OpenAI-compatible model | provider default or custom | `OPENAI_MODEL` / `GROQ_MODEL`, etc. |
 | Temperature | 0.3 | `LLM_TEMPERATURE` |
 | Top-p | 0.9 | `LLM_TOP_P` |
 | Context window (Ollama) | 2048 | `LLM_NUM_CTX` |
@@ -321,7 +335,7 @@ Agent: [Detects intents: SEARCH, RESERVE]
 | Request timeout | 120s | `LLM_REQUEST_TIMEOUT` |
 | History limit | 20 messages | — |
 
-All three backends support native tool calling, which the agent requires.
+The agent requires a selected model that supports native tool calling.
 
 ### Anti-Hallucination Measures
 
@@ -352,6 +366,9 @@ print(response)
 ### Running Tests
 
 ```bash
+# Offline provider smoke tests (no API key or network required)
+python -m unittest -v test_llm_providers.py
+
 # Test interactively
 python -c "
 from agent import create_agent
@@ -368,18 +385,19 @@ variable or a `.env` file (see `.env.example`). Real environment variables take
 precedence over `.env`.
 
 ```python
-LLM_PROVIDER = "ollama"          # ollama | gemini | openai
+LLM_PROVIDER = "ollama"  # ollama | gemini | openai | groq | openrouter | ...
 
-OLLAMA_MODEL = "qwen2.5:7b"      # OLLAMA_HOST defaults to localhost:11434
+OLLAMA_MODEL = "qwen2.5:7b"        # OLLAMA_HOST defaults to localhost:11434
 GEMINI_MODEL = "gemini-2.5-flash"  # needs GEMINI_API_KEY
-OPENAI_MODEL = "gpt-4o-mini"       # needs OPENAI_API_KEY + OPENAI_API_BASE
+GROQ_MODEL = "llama-3.3-70b-versatile"  # needs GROQ_API_KEY
+# For any custom OpenAI-compatible endpoint: OPENAI_MODEL + OPENAI_API_BASE
 
 TEMPERATURE = 0.3
 TOP_P = 0.9
 MAX_OUTPUT_TOKENS = 0            # 0 = use the provider's own default
 REQUEST_TIMEOUT = 120
 
-DEBUG = True                     # Set to False to hide debug output
+DEBUG = False                    # Metadata only; prompts and responses are never logged
 MAX_HISTORY_MESSAGES = 20        # Conversation history limit
 ```
 
@@ -392,6 +410,7 @@ agent = create_agent()                                        # uses LLM_PROVIDE
 agent = create_agent(provider="gemini")                       # default Gemini model
 agent = create_agent(provider="gemini", model="gemini-2.0-flash")
 agent = create_agent(provider="ollama", model="llama3.1:8b")
+agent = create_agent(provider="groq")                         # uses GROQ_API_KEY
 agent = create_agent(use_mock=True)                           # no LLM at all
 ```
 
@@ -406,7 +425,7 @@ agent = create_agent(use_mock=True)                           # no LLM at all
 | `Gemini API error 404` | Model name not available to your key — try `gemini-2.0-flash` |
 | Sidebar shows a stale status | Click **Recheck connection** |
 
-Set `DEBUG=true` to print every request and raw response to the terminal.
+Set `DEBUG=true` for request metadata only; prompts, tool arguments, and responses are not logged.
 
 ## Future Enhancements
 
