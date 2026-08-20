@@ -110,23 +110,13 @@ class ReservationAgent:
                     if msg.content:
                         formatted.append({"role": "assistant", "content": msg.content})
 
-            elif msg.role == "tool":
-                if is_current_turn:
-                    try:
-                        tool_data = json.loads(msg.content)
-                        if tool_data.get("display_text"):
-                            content = tool_data["display_text"]
-                        else:
-                            content = msg.content
-                    except (json.JSONDecodeError, TypeError):
-                        content = msg.content
-
-                    formatted.append({
-                        "role": "tool",
-                        "tool_call_id": msg.tool_call_id,
-                        "name": msg.name,
-                        "content": content
-                    })
+            elif msg.role == "tool" and is_current_turn:
+                formatted.append({
+                    "role": "tool",
+                    "tool_call_id": msg.tool_call_id,
+                    "name": msg.name,
+                    "content": msg.content,
+                })
 
         return formatted
     
@@ -138,7 +128,7 @@ class ReservationAgent:
         """
 
         if DEBUG:
-            print(f"\n[DEBUG] {self.llm.label} request to {self.llm.endpoint}")
+            print(f"\n[DEBUG] {self.llm.label} request")
             print(f"[DEBUG] Model: {self.llm.model}")
             print(f"[DEBUG] Messages: {len(messages)} | Tools: {len(tools) if tools else 0}")
 
@@ -191,7 +181,6 @@ class ReservationAgent:
             
             if DEBUG:
                 print(f"\n[DEBUG] Executing tool: {tool_name}")
-                print(f"[DEBUG] Arguments: {arguments}")
             
             result = execute_tool(tool_name, arguments)
             result.tool_call_id = tc["id"]
@@ -199,7 +188,6 @@ class ReservationAgent:
             
             if DEBUG:
                 print(f"[DEBUG] Result success: {result.success}")
-                print(f"RESULT ERROR: {result.error}")
         
         return results
     
@@ -258,9 +246,9 @@ class ReservationAgent:
                 print("[DEBUG] Could not classify, defaulting to GENERAL")
             return ["GENERAL"]
 
-        except Exception as e:
+        except Exception:
             if DEBUG:
-                print(f"[DEBUG] Classification error: {e}, defaulting to GENERAL")
+                print("[DEBUG] Classification failed, defaulting to GENERAL")
             return ["GENERAL"]
 
     def _update_system_prompt(self, intents: List[str]):
@@ -329,7 +317,6 @@ class ReservationAgent:
                         "success": result.success,
                         "data": result.data,
                         "error": result.error,
-                        "display_text": result.display_text
                     })
                     
                     self.conversation.messages.append(Message(
