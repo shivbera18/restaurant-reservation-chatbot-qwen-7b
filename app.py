@@ -80,19 +80,28 @@ def refresh_agent_status():
     st.session_state.agent_status = llm.is_configured() if llm else None
 
 
-def build_agent():
+def build_agent(preserve_conversation: bool = True):
     """(Re)build the agent from the provider/model currently selected."""
+    old_agent = st.session_state.get("agent")
+    old_conversation = getattr(old_agent, "conversation", None) if preserve_conversation else None
+
     if st.session_state.use_mock:
-        st.session_state.agent = create_agent(use_mock=True)
+        new_agent = create_agent(use_mock=True)
+        if old_conversation is not None:
+            new_agent.conversation = old_conversation
+        st.session_state.agent = new_agent
         st.session_state.agent_error = None
         refresh_agent_status()
         return
 
     try:
-        st.session_state.agent = create_agent(
+        new_agent = create_agent(
             provider=st.session_state.provider,
             model=st.session_state.model,
         )
+        if old_conversation is not None:
+            new_agent.conversation = old_conversation
+        st.session_state.agent = new_agent
         st.session_state.agent_error = None
     except Exception as e:
         st.session_state.agent = None
@@ -198,7 +207,7 @@ def render_model_status():
             st.rerun()
 
     if st.session_state.switched:
-        st.caption("Model switched - the assistant's memory starts fresh.")
+        st.caption("Model switched - conversation context preserved.")
 
 
 def render_sidebar():

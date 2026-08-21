@@ -112,7 +112,7 @@ class ProviderSmokeTests(unittest.TestCase):
             "sig_abc123",
         )
 
-        # Verify history reconstruction includes thought_signature in functionCall
+        # Verify history reconstruction creates valid Gemini functionCall with name and args
         messages = [
             {"role": "user", "content": "Recommend a place"},
             assistant_msg,
@@ -126,7 +126,6 @@ class ProviderSmokeTests(unittest.TestCase):
         model_turn = contents[1]
         fc = model_turn["parts"][0]["functionCall"]
         self.assertEqual(fc["name"], "get_recommendations")
-        self.assertEqual(fc["thought_signature"], "sig_abc123")
-
+        self.assertEqual(fc["args"], {"cuisine": "italian"})
 if __name__ == "__main__":
     unittest.main(verbosity=2)

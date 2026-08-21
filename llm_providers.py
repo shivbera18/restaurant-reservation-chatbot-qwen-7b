@@ -430,19 +430,6 @@ class GeminiProvider(LLMProvider):
                         "name": function.get("name", ""),
                         "args": _as_dict(function.get("arguments")),
                     }
-                    thought_sig = (
-                        function.get("thought_signature")
-                        or function.get("thoughtSignature")
-                        or call.get("thought_signature")
-                        or call.get("thoughtSignature")
-                    )
-                    if thought_sig:
-                        fc["thought_signature"] = thought_sig
-                    for k in ("thought", "thoughtSignature"):
-                        if k in function and k not in fc:
-                            fc[k] = function[k]
-                        elif k in call and k not in fc:
-                            fc[k] = call[k]
                     parts.append({"functionCall": fc})
                 self._append(contents, "model", parts)
 

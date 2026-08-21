@@ -65,8 +65,8 @@ OPENAI_COMPATIBLE_PROVIDERS = {
     "openrouter": {
         "label": "OpenRouter API",
         "api_base": "https://openrouter.ai/api/v1",
-        "model": "google/gemini-2.5-flash",
-        "models": ["google/gemini-2.5-flash", "openai/gpt-4o-mini"],
+        "model": "openai/gpt-4o-mini",
+        "models": ["openai/gpt-4o-mini", "anthropic/claude-3.5-sonnet"],
     },
     "together": {
         "label": "Together AI",
@@ -142,7 +142,7 @@ OLLAMA_MODEL = _env_str("OLLAMA_MODEL", _env_str("LLM_MODEL", "qwen2.5:7b"))
 OLLAMA_KEEP_ALIVE = _env_str("OLLAMA_KEEP_ALIVE", "10m")
 
 GEMINI_API_KEY = _env_str("GEMINI_API_KEY", _env_str("GOOGLE_API_KEY"))
-GEMINI_MODEL = _env_str("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = _env_str("GEMINI_MODEL", "gemini-3.6-flash")
 GEMINI_API_BASE = _env_str(
     "GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta"
 ).rstrip("/")
@@ -210,10 +210,8 @@ PROVIDER_LABELS = {
 AVAILABLE_MODELS = {
     OLLAMA: ["qwen2.5:7b", "qwen2.5:14b", "llama3.1:8b", "mistral-nemo:12b"],
     GEMINI: [
-        "gemini-2.5-flash",
-        "gemini-2.5-flash-lite",
-        "gemini-2.5-pro",
-        "gemini-2.0-flash",
+        "gemini-3.6-flash",
+        "gemini-3.5-flash",
     ],
     **{
         provider: settings["models"]

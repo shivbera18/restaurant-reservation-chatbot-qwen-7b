@@ -93,7 +93,7 @@ goodfoods_reservation/
    # .env
    LLM_PROVIDER=gemini
    GEMINI_API_KEY=your-key-here
-   GEMINI_MODEL=gemini-2.5-flash
+   GEMINI_MODEL=gemini-3.6-flash
    ```
    </details>
 
@@ -334,7 +334,7 @@ Agent: [Detects intents: SEARCH, RESERVE]
 |-----------|-------|---------|
 | Provider | `ollama`, `gemini`, or an OpenAI-compatible service | `LLM_PROVIDER` |
 | Default local model | qwen2.5:7b | `OLLAMA_MODEL` |
-| Default Gemini model | gemini-2.5-flash | `GEMINI_MODEL` |
+| Default Gemini model | gemini-3.6-flash | `GEMINI_MODEL` |
 | OpenAI-compatible model | provider default or custom | `OPENAI_MODEL` / `GROQ_MODEL`, etc. |
 | Temperature | 0.3 | `LLM_TEMPERATURE` |
 | Top-p | 0.9 | `LLM_TOP_P` |
@@ -396,7 +396,7 @@ precedence over `.env`.
 LLM_PROVIDER = "ollama"  # ollama | gemini | openai | groq | openrouter | ...
 
 OLLAMA_MODEL = "qwen2.5:7b"        # OLLAMA_HOST defaults to localhost:11434
-GEMINI_MODEL = "gemini-2.5-flash"  # needs GEMINI_API_KEY
+GEMINI_MODEL = "gemini-3.6-flash"  # needs GEMINI_API_KEY
 GROQ_MODEL = "openai/gpt-oss-120b"  # needs GROQ_API_KEY
 # For any custom OpenAI-compatible endpoint: OPENAI_MODEL + OPENAI_API_BASE
 
