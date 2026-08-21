@@ -3,6 +3,7 @@ Database layer for GoodFoods Reservation System
 Contains 75 diverse restaurant locations and reservation management
 """
 import random
+import secrets
 import string
 from collections import defaultdict
 from datetime import date, datetime, timedelta
@@ -463,12 +464,20 @@ class RestaurantDatabase:
         if not time_available:
             return None
         
-        # Generate confirmation code
-        conf_code = "GF" + "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
-        
+        # Generate cryptographically random, unique confirmation code and ID
+        while True:
+            conf_code = "GF" + "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+            if conf_code not in [r.confirmation_code for r in self.reservations.values()]:
+                if neon_db.enabled:
+                    existing = neon_db.get_reservation_by_code(conf_code)
+                    if existing:
+                        continue
+                break
+
+        res_id = f"RES_{secrets.token_hex(6)}"
         # Create reservation
         reservation = Reservation(
-            id=f"RES{len(self.reservations) + 1:05d}",
+            id=res_id,
             restaurant_id=restaurant_id,
             restaurant_name=restaurant.name,
             customer_name=customer_name,
