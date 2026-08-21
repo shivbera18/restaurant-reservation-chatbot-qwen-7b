@@ -39,7 +39,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
   };
 
   return (
-    <div className="bg-[#FFFDF7] border-2 border-black shadow-neo-sm p-2 mb-2 text-left text-xs font-sans transition-all">
+    <div className="bg-[#FFFDF7] border-2 border-black rounded-neo-sm shadow-neo-sm p-2 mb-2 text-left text-xs font-sans transition-all">
       {/* Top Selector Strip */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none text-[11px] font-mono font-bold">

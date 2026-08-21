@@ -61,7 +61,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="bg-[#FAF8F5] border-3 border-black shadow-neo-xl w-full max-w-xl my-auto overflow-hidden">
+      <div className="bg-[#FAF8F5] border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-xl my-auto overflow-hidden">
         {/* Header */}
         <div className="bg-neo-purple border-b-3 border-black p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -80,7 +80,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
 
           <button
             onClick={onClose}
-            className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black flex items-center justify-center font-black shadow-neo-sm"
+            className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center font-black shadow-neo-sm"
           >
             <X className="w-5 h-5 text-black" />
           </button>

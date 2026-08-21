@@ -15,7 +15,7 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
     <div className="my-2 text-left">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-2 px-2.5 py-1 bg-neo-purple/15 border-2 border-black shadow-neo-sm hover:shadow-neo transition-all text-xs font-mono font-bold text-black"
+        className="flex items-center gap-2 px-2.5 py-1 bg-neo-purple/15 border-2 border-black rounded-neo-sm shadow-neo-sm hover:shadow-neo transition-all text-xs font-mono font-bold text-black"
       >
         <Wrench className="w-3.5 h-3.5 text-black" />
         <span>
@@ -41,7 +41,7 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
       </button>
 
       {expanded && (
-        <div className="mt-1.5 p-2.5 bg-white border-2 border-black shadow-neo font-mono text-xs space-y-2 max-w-full overflow-x-auto">
+        <div className="mt-1.5 p-2.5 bg-white border-2 border-black rounded-neo-sm shadow-neo font-mono text-xs space-y-2 max-w-full overflow-x-auto">
           {toolResults.map((tr, idx) => (
             <div key={idx} className="border-b border-dashed border-gray-300 pb-2 last:border-b-0 last:pb-0">
               <div className="flex items-center gap-1.5 font-bold">

@@ -33,7 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Brand & Tagline */}
         <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 bg-neo-yellow border-2 border-black shadow-neo-sm flex items-center justify-center font-black text-xl select-none">
+            <div className="w-10 h-10 bg-neo-yellow border-2 border-black rounded-neo-sm shadow-neo-sm flex items-center justify-center font-black text-xl select-none">
               🍽️
             </div>
             <div>
@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Model Status Pill Badge for Mobile */}
           <button
             onClick={onOpenModelModal}
-            className="md:hidden flex items-center gap-1.5 px-2.5 py-1 bg-white border-2 border-black shadow-neo-sm text-xs font-mono font-bold"
+            className="md:hidden flex items-center gap-1.5 px-2.5 py-1 bg-white border-2 border-black rounded-neo-sm shadow-neo-sm text-xs font-mono font-bold"
           >
             <span
               className={`w-2.5 h-2.5 rounded-full border border-black ${
@@ -70,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Active Model / Engine Pill Button */}
           <button
             onClick={onOpenModelModal}
-            className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white border-2 border-black shadow-neo-sm hover:shadow-neo hover:-translate-y-0.5 transition-all text-xs font-mono font-bold"
+            className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white border-2 border-black rounded-neo-sm shadow-neo-sm hover:shadow-neo hover:-translate-y-0.5 transition-all text-xs font-mono font-bold"
             title="Click to switch LLM Provider or Model"
           >
             <span

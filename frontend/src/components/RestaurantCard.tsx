@@ -24,7 +24,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   const neighborhoodVal = restaurant.neighborhood || restaurant.city || 'GoodFoods Location';
 
   return (
-    <div className="bg-white border-2 border-black shadow-neo hover:shadow-neo-lg transition-all p-3.5 flex flex-col justify-between my-2 text-left">
+    <div className="bg-white border-2 border-black rounded-neo-sm shadow-neo hover:shadow-neo-lg transition-all p-3.5 flex flex-col justify-between my-2 text-left">
       <div>
         {/* Top bar: Name & Price */}
         <div className="flex items-start justify-between gap-2">

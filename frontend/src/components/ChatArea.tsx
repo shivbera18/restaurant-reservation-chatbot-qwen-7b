@@ -66,10 +66,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
           /* Welcome State */
           <div className="py-4 text-center max-w-2xl mx-auto space-y-4">
             {/* Hero Card */}
-            <div className="bg-white border-3 border-black p-6 shadow-neo-lg text-left relative overflow-hidden">
+            <div className="bg-white border-3 border-black rounded-neo p-6 shadow-neo-lg text-left relative overflow-hidden">
               <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-neo-yellow/30 rounded-full border-2 border-black/10 select-none pointer-events-none" />
 
-              <div className="inline-block bg-neo-yellow border-2 border-black px-2.5 py-0.5 text-xs font-mono font-black uppercase mb-3 shadow-neo-sm">
+              <div className="inline-block bg-neo-yellow border-2 border-black rounded-neo-sm px-2.5 py-0.5 text-xs font-mono font-black uppercase mb-3 shadow-neo-sm">
                 ⭐ Autonomous Concierge
               </div>
 
@@ -145,7 +145,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
               {/* Message Bubble Card */}
               <div
-                className={`max-w-[92%] sm:max-w-[85%] p-4 text-left border-3 border-black shadow-neo relative group ${
+                className={`max-w-[92%] sm:max-w-[85%] p-4 text-left border-3 border-black rounded-neo shadow-neo relative group ${
                   msg.role === 'user'
                     ? 'bg-neo-yellow text-black'
                     : 'bg-white text-gray-900'
@@ -213,7 +213,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               </div>
               <span>GOODFOODS AI</span>
             </div>
-            <div className="bg-white border-3 border-black p-3 shadow-neo flex items-center gap-2.5 font-mono text-xs font-bold">
+            <div className="bg-white border-3 border-black rounded-neo p-3 shadow-neo flex items-center gap-2.5 font-mono text-xs font-bold">
               <Loader2 className="w-4 h-4 animate-spin text-neo-orange" />
               <span>Checking tables & generating response...</span>
             </div>
@@ -239,7 +239,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 bg-white border-3 border-black shadow-neo font-bold text-xs sm:text-sm text-black placeholder:text-gray-500 focus:outline-none focus:bg-[#FFFDE8] disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 bg-white border-3 border-black rounded-neo shadow-neo font-bold text-xs sm:text-sm text-black placeholder:text-gray-500 focus:outline-none focus:bg-[#FFFDE8] disabled:opacity-50"
           />
           <button
             type="submit"

@@ -43,7 +43,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
   const isConfirmed = reservation.status === 'confirmed' || reservation.status === 'modified';
 
   return (
-    <div className="relative bg-[#FFFDF8] border-3 border-black shadow-neo-lg my-3 max-w-md w-full mx-auto overflow-hidden">
+    <div className="relative bg-[#FFFDF8] border-3 border-black rounded-neo shadow-neo-lg my-3 max-w-md w-full mx-auto overflow-hidden">
       {/* Top Banner with Perforated Accent */}
       <div className="bg-neo-yellow border-b-2 border-black p-3 flex items-center justify-between">
         <div className="flex items-center gap-2">

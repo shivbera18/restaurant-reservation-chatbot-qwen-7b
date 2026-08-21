@@ -69,7 +69,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="bg-[#FAF8F5] border-3 border-black shadow-neo-xl w-full max-w-2xl max-h-[90vh] flex flex-col my-auto overflow-hidden">
+      <div className="bg-[#FAF8F5] border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-2xl max-h-[90vh] flex flex-col my-auto overflow-hidden">
         {/* Header */}
         <div className="bg-neo-green border-b-3 border-black p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -91,7 +91,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
               onClick={loadReservations}
               disabled={loading}
               aria-label="Refresh reservations"
-              className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black flex items-center justify-center font-black shadow-neo-sm"
+              className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center font-black shadow-neo-sm"
               title="Refresh"
             >
               <RefreshCw className={`w-4 h-4 text-black ${loading ? 'animate-spin' : ''}`} />
@@ -99,7 +99,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
             <button
               onClick={onClose}
               aria-label="Close"
-              className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black flex items-center justify-center font-black shadow-neo-sm"
+              className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center font-black shadow-neo-sm"
             >
               <X className="w-5 h-5 text-black" />
             </button>
@@ -133,13 +133,13 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
 
           {loading ? (
             <div className="py-16 text-center font-mono font-bold">
-              <div className="inline-block p-4 bg-white border-2 border-black shadow-neo">
+              <div className="inline-block p-4 bg-white border-2 border-black rounded-neo-sm shadow-neo">
                 ⏳ Loading reservations...
               </div>
             </div>
           ) : filteredReservations.length === 0 ? (
             <div className="py-16 text-center">
-              <div className="inline-block p-6 bg-white border-3 border-black shadow-neo max-w-sm">
+              <div className="inline-block p-6 bg-white border-3 border-black rounded-neo shadow-neo max-w-sm">
                 <Ticket className="w-10 h-10 mx-auto text-gray-400 mb-2" />
                 <p className="font-black text-base uppercase">No Bookings Found</p>
                 <p className="text-xs text-gray-600 mt-1">

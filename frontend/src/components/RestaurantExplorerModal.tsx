@@ -69,7 +69,7 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="bg-[#FAF8F5] border-3 border-black shadow-neo-xl w-full max-w-5xl max-h-[90vh] flex flex-col my-auto overflow-hidden">
+      <div className="bg-[#FAF8F5] border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-5xl max-h-[90vh] flex flex-col my-auto overflow-hidden">
         {/* Modal Header */}
         <div className="bg-neo-blue border-b-3 border-black p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -88,7 +88,7 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
 
           <button
             onClick={onClose}
-            className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black flex items-center justify-center font-black shadow-neo-sm"
+            className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center font-black shadow-neo-sm"
           >
             <X className="w-5 h-5 text-black" />
           </button>
@@ -161,13 +161,13 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
         <div className="flex-1 p-4 overflow-y-auto bg-neo-canvas">
           {loading ? (
             <div className="py-16 text-center font-mono font-bold">
-              <div className="inline-block p-4 bg-white border-2 border-black shadow-neo">
+              <div className="inline-block p-4 bg-white border-2 border-black rounded-neo-sm shadow-neo">
                 ⏳ Loading 75 restaurant locations...
               </div>
             </div>
           ) : filteredRestaurants.length === 0 ? (
             <div className="py-16 text-center">
-              <div className="inline-block p-6 bg-white border-2 border-black shadow-neo max-w-sm">
+              <div className="inline-block p-6 bg-white border-2 border-black rounded-neo-sm shadow-neo max-w-sm">
                 <p className="font-black text-base uppercase">No restaurants match your search</p>
                 <p className="text-xs text-gray-600 mt-1">Try clearing filters or searching for another keyword.</p>
                 <button
