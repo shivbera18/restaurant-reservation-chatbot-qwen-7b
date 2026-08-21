@@ -4,13 +4,16 @@ import { ChatArea } from './components/ChatArea';
 import { RestaurantExplorerModal } from './components/RestaurantExplorerModal';
 import { ReservationsDrawer } from './components/ReservationsDrawer';
 import { ModelPickerModal } from './components/ModelPickerModal';
-import type { ChatMessage, Restaurant, Reservation, SystemConfig } from './types';
+import { AuthModal } from './components/AuthModal';
+import type { ChatMessage, Restaurant, Reservation, SystemConfig, User } from './types';
 import {
   fetchConfig,
   sendChatMessage,
   fetchReservations,
   cancelReservation,
   resetConversation,
+  fetchCurrentUser,
+  logoutUser,
 } from './api';
 
 export function App() {
@@ -18,22 +21,28 @@ export function App() {
   const [config, setConfig] = useState<SystemConfig | null>(null);
   const [activeReservations, setActiveReservations] = useState<Reservation[]>([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-
 
   // Modals & Drawers
   const [isExplorerOpen, setIsExplorerOpen] = useState(false);
   const [isReservationsOpen, setIsReservationsOpen] = useState(false);
   const [isModelModalOpen, setIsModelModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
 
-  // Load initial configuration and active reservations
   const refreshAppData = async () => {
     try {
-      const [cfg, resList] = await Promise.all([fetchConfig(), fetchReservations()]);
+      const [cfg, resList, currentUser] = await Promise.all([
+        fetchConfig(),
+        fetchReservations(),
+        fetchCurrentUser(),
+      ]);
       setConfig(cfg);
       setActiveReservations(resList);
+      setUser(currentUser);
     } catch (err) {
       console.error('Failed to load initial app data:', err);
     }
@@ -104,6 +113,11 @@ export function App() {
   };
 
   const handleCancelBooking = async (code: string) => {
+    if (!user) {
+      setAuthModalMode('login');
+      setIsAuthModalOpen(true);
+      return;
+    }
     try {
       await cancelReservation(code);
       await refreshAppData();
@@ -152,6 +166,17 @@ export function App() {
         isResetting={isResetting}
         isCollapsed={isCollapsed}
         onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+        user={user}
+        onOpenAuth={(mode) => {
+          setAuthModalMode(mode || 'login');
+          setIsAuthModalOpen(true);
+        }}
+        onLogout={async () => {
+          await logoutUser();
+          setUser(null);
+          setActiveReservations([]);
+          refreshAppData();
+        }}
       />
 
       {/* Main Chat Canvas with Adaptive Floating Sidebar Padding */}
@@ -185,6 +210,11 @@ export function App() {
         onClose={() => setIsReservationsOpen(false)}
         onReservationUpdated={refreshAppData}
         initialReservations={activeReservations}
+        user={user}
+        onOpenAuth={() => {
+          setAuthModalMode('login');
+          setIsAuthModalOpen(true);
+        }}
       />
 
       <ModelPickerModal
@@ -192,6 +222,17 @@ export function App() {
         onClose={() => setIsModelModalOpen(false)}
         config={config}
         onConfigUpdated={refreshAppData}
+      />
+
+      {/* Auth Modal (Login / Sign Up) */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={(authenticatedUser) => {
+          setUser(authenticatedUser);
+          refreshAppData();
+        }}
+        initialMode={authModalMode}
       />
     </div>
   );

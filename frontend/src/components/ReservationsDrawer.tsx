@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, Ticket, RefreshCw, AlertCircle, Search } from 'lucide-react';
-import type { Reservation } from '../types';
+import { X, Ticket, RefreshCw, AlertCircle, Search, Lock, LogIn } from 'lucide-react';
+import type { Reservation, User } from '../types';
 import { fetchReservations, cancelReservation } from '../api';
 import { ReservationTicket } from './ReservationTicket';
 
@@ -9,13 +9,16 @@ interface ReservationsDrawerProps {
   onClose: () => void;
   onReservationUpdated?: () => void;
   initialReservations?: Reservation[];
+  user: User | null;
+  onOpenAuth: () => void;
 }
-
 export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
   isOpen,
   onClose,
   onReservationUpdated,
   initialReservations = [],
+  user,
+  onOpenAuth,
 }) => {
   const [reservations, setReservations] = useState<Reservation[]>(initialReservations);
   const [search, setSearch] = useState('');
@@ -48,11 +51,18 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
   }, [initialReservations]);
 
   const handleCancelBooking = async (code: string) => {
-    await cancelReservation(code);
-    await loadReservations();
-    if (onReservationUpdated) onReservationUpdated();
+    if (!user) {
+      onOpenAuth();
+      return;
+    }
+    try {
+      await cancelReservation(code);
+      await loadReservations();
+      if (onReservationUpdated) onReservationUpdated();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to cancel reservation');
+    }
   };
-
   const filteredReservations = useMemo(() => {
     if (!search.trim()) return reservations;
     const q = search.toLowerCase();
@@ -131,21 +141,41 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
             </div>
           )}
 
-          {loading ? (
+          {!user ? (
+            <div className="py-12 text-center">
+              <div className="inline-block p-6 bg-white border-3 border-black rounded-neo shadow-neo max-w-sm">
+                <div className="w-12 h-12 bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center mx-auto mb-3 shadow-neo-sm">
+                  <Lock className="w-6 h-6 text-black" />
+                </div>
+                <h3 className="font-black text-base uppercase text-black">Sign In to View & Manage Bookings</h3>
+                <p className="text-xs text-black mt-1.5 leading-relaxed font-bold">
+                  To protect your privacy and guarantee reservation security, only authenticated guests can view, modify, or cancel their bookings.
+                </p>
+                <button
+                  type="button"
+                  onClick={onOpenAuth}
+                  className="btn-neo bg-neo-yellow hover:bg-neo-orange hover:text-white text-black px-4 py-2 text-xs mt-4 font-black uppercase flex items-center justify-center gap-1.5 w-full shadow-neo"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>Sign In / Create Account</span>
+                </button>
+              </div>
+            </div>
+          ) : loading ? (
             <div className="py-16 text-center font-mono font-bold">
               <div className="inline-block p-4 bg-white border-2 border-black rounded-neo shadow-neo text-black">
-                ⏳ Loading reservations...
+                ⏳ Loading your reservations...
               </div>
             </div>
           ) : filteredReservations.length === 0 ? (
             <div className="py-16 text-center">
               <div className="inline-block p-6 bg-white border-3 border-black rounded-neo shadow-neo max-w-sm">
                 <Ticket className="w-10 h-10 mx-auto text-black mb-2" />
-                <p className="font-black text-base uppercase text-black">No Bookings Found</p>
-                <p className="text-xs text-black mt-1">
+                <p className="font-black text-base uppercase text-black">No Active Bookings</p>
+                <p className="text-xs text-black mt-1 font-bold">
                   {search
                     ? 'No reservation matches your search query.'
-                    : "You haven't made any reservations yet. Use the chat to book a table at any of our 75 locations!"}
+                    : `Welcome, ${user.name}! You haven't booked any tables yet. Use the chat to book at any of our 75 locations.`}
                 </p>
                 <button
                   onClick={onClose}

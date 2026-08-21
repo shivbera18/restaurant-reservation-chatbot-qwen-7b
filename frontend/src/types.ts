@@ -62,6 +62,19 @@ export interface ChatMessage {
   suggested_actions?: string[];
 }
 
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  phone?: string;
+  created_at?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
 export interface SystemConfig {
   app_version: string;
   providers: string[];

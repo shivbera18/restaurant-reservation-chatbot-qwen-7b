@@ -9,8 +9,11 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  User as UserIcon,
+  LogIn,
+  LogOut,
 } from 'lucide-react';
-import type { SystemConfig } from '../types';
+import type { SystemConfig, User } from '../types';
 
 interface SidebarProps {
   config: SystemConfig | null;
@@ -22,6 +25,9 @@ interface SidebarProps {
   isResetting?: boolean;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
+  user: User | null;
+  onOpenAuth: (mode?: 'login' | 'register') => void;
+  onLogout: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -34,6 +40,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isResetting,
   isCollapsed,
   onToggleCollapse,
+  user,
+  onOpenAuth,
+  onLogout,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -64,7 +73,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-
+          {/* Auth Status / Login (Mobile) */}
+          {user ? (
+            <button
+              onClick={onLogout}
+              aria-label="Log out"
+              title={`Logged in as ${user.name}. Click to log out`}
+              className="flex items-center gap-1 px-2 py-1 bg-neo-yellow border-2 border-black shadow-neo-sm text-[11px] font-mono font-black rounded-neo-sm text-black"
+            >
+              <UserIcon className="w-3.5 h-3.5" />
+              <span className="truncate max-w-[60px]">{user.name.split(' ')[0]}</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => onOpenAuth('login')}
+              aria-label="Log in"
+              className="flex items-center gap-1 px-2 py-1 bg-neo-yellow border-2 border-black shadow-neo-sm text-[11px] font-mono font-black rounded-neo-sm text-black hover:bg-neo-orange hover:text-white"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Sign In</span>
+            </button>
+          )}
           {/* Model Status Pill (Mobile) */}
           <button
             onClick={onOpenModelModal}
@@ -328,6 +357,63 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 )
               )}
             </button>
+
+            {/* Account / Login Action Button */}
+            {user ? (
+              <div
+                className={`p-2.5 bg-neo-yellow/20 border-2 border-black shadow-neo-sm rounded-neo text-left ${
+                  isCollapsed ? 'p-2 text-center' : ''
+                }`}
+              >
+                {!isCollapsed ? (
+                  <div className="flex items-center justify-between gap-1.5">
+                    <div className="flex items-center gap-2 truncate">
+                      <div className="w-7 h-7 bg-neo-yellow border border-black flex items-center justify-center rounded-neo-sm shrink-0 font-black text-xs">
+                        👤
+                      </div>
+                      <div className="truncate">
+                        <span className="font-black text-xs text-black block truncate leading-none">
+                          {user.name}
+                        </span>
+                        <span className="text-[10px] font-mono text-black truncate block mt-0.5">
+                          {user.email}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={onLogout}
+                      title="Sign out of your account"
+                      className="p-1 hover:bg-red-200 border border-black rounded-neo-sm shrink-0 text-black"
+                    >
+                      <LogOut className="w-3.5 h-3.5 text-red-700" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={onLogout}
+                    title={`Logged in as ${user.name}. Click to log out`}
+                    className="mx-auto"
+                  >
+                    <UserIcon className="w-4 h-4 text-black" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => onOpenAuth('login')}
+                title="Sign in to view and manage reservations"
+                className={`btn-neo bg-neo-yellow text-black hover:bg-neo-orange hover:text-white w-full flex items-center transition-all ${
+                  isCollapsed
+                    ? 'justify-center p-2.5'
+                    : 'justify-start gap-2.5 p-2.5 text-xs'
+                }`}
+              >
+                <LogIn className="w-4 h-4 shrink-0" />
+                {!isCollapsed && (
+                  <span className="font-black uppercase tracking-tight truncate">Sign In / Sign Up</span>
+                )}
+              </button>
+            )}
 
             {/* New Conversation Button */}
             <button

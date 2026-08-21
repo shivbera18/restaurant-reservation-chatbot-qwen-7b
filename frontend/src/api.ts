@@ -1,6 +1,92 @@
-import type { ChatApiResponse, Reservation, Restaurant, SystemConfig } from './types';
+import type { AuthResponse, ChatApiResponse, Reservation, Restaurant, SystemConfig, User } from './types';
 
 const API_BASE = '/api';
+const TOKEN_KEY = 'goodfoods_auth_token';
+
+export function getAuthToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function setAuthToken(token: string | null): void {
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
+  }
+}
+
+function getAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const token = getAuthToken();
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
+export async function registerUser(data: {
+  email: string;
+  password: string;
+  name: string;
+  phone?: string;
+}): Promise<AuthResponse> {
+  const res = await fetch(`${API_BASE}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(errorData.detail || 'Registration failed');
+  }
+  const result: AuthResponse = await res.json();
+  setAuthToken(result.token);
+  return result;
+}
+
+export async function loginUser(data: {
+  email: string;
+  password: string;
+}): Promise<AuthResponse> {
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(errorData.detail || 'Login failed');
+  }
+  const result: AuthResponse = await res.json();
+  setAuthToken(result.token);
+  return result;
+}
+
+export async function fetchCurrentUser(): Promise<User | null> {
+  const token = getAuthToken();
+  if (!token) return null;
+
+  const res = await fetch(`${API_BASE}/auth/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    setAuthToken(null);
+    return null;
+  }
+  const data = await res.json();
+  return data.user;
+}
+
+export async function logoutUser(): Promise<void> {
+  const token = getAuthToken();
+  if (token) {
+    await fetch(`${API_BASE}/auth/logout`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+  }
+  setAuthToken(null);
+}
 
 export async function fetchConfig(): Promise<SystemConfig> {
   const res = await fetch(`${API_BASE}/config`);
@@ -18,7 +104,7 @@ export async function sendChatMessage(
 ): Promise<ChatApiResponse> {
   const res = await fetch(`${API_BASE}/chat`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify({
       message,
       provider,
@@ -53,7 +139,9 @@ export async function fetchRestaurants(params?: {
 }
 
 export async function fetchReservations(): Promise<Reservation[]> {
-  const res = await fetch(`${API_BASE}/reservations`);
+  const res = await fetch(`${API_BASE}/reservations`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) {
     throw new Error(`Failed to fetch reservations: ${res.statusText}`);
   }
@@ -63,7 +151,7 @@ export async function fetchReservations(): Promise<Reservation[]> {
 export async function cancelReservation(confirmationCode: string): Promise<boolean> {
   const res = await fetch(`${API_BASE}/reservations/cancel`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify({ confirmation_code: confirmationCode }),
   });
   if (!res.ok) {
