@@ -44,11 +44,15 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
     }
   }, [isOpen]);
 
+  // U2: close on Escape
   useEffect(() => {
-    if (initialReservations.length > 0) {
-      setReservations(initialReservations);
-    }
-  }, [initialReservations]);
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   const handleCancelBooking = async (code: string) => {
     if (!user) {
@@ -105,8 +109,13 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="bg-white border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-2xl max-h-[90vh] flex flex-col my-auto overflow-hidden text-left">
+    <div
+      className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      <div className="bg-white border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-2xl max-h-[90vh] flex flex-col my-auto overflow-hidden text-left" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="bg-neo-green border-b-3 border-black p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">

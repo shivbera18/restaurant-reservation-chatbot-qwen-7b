@@ -31,6 +31,16 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
     }
   }, [config, isOpen]);
 
+  // U2: close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !config) return null;
 
   const availableModelsForProvider = config.available_models[selectedProvider] || [];
@@ -60,8 +70,13 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="bg-white border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-xl my-auto overflow-hidden text-left">
+    <div
+      className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      <div className="bg-white border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-xl my-auto overflow-hidden text-left" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="bg-neo-purple border-b-3 border-black p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
