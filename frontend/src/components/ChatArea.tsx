@@ -1,24 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import {
-  Send,
-  Loader2,
-  Copy,
-  Check,
-  UtensilsCrossed,
-  Ticket,
-  AlertTriangle,
-  Sun,
-  Moon,
-  Sparkles,
-} from 'lucide-react';
+import { Send, UtensilsCrossed, Ticket, AlertTriangle, Sun, Moon, Sparkles, Paperclip } from 'lucide-react';
 import type { ChatMessage, Restaurant, User } from '../types';
-import { RestaurantCard } from './RestaurantCard';
-import { ReservationTicket } from './ReservationTicket';
-import { ToolCallBadge } from './ToolCallBadge';
 import { QuickBookingBar } from './QuickBookingBar';
-
+import { ChatMessageBubble } from './ChatMessageBubble';
 interface ChatAreaProps {
   messages: ChatMessage[];
   loading: boolean;
@@ -145,72 +129,25 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         ) : (
           /* Message Stream */
           messages.map((msg) => (
-            <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              {msg.role === 'assistant' && <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-xs text-violet-700 dark:bg-violet-950 dark:text-violet-300"><Sparkles className="h-3.5 w-3.5" /></div>}
-              <div
-                className={`group relative max-w-[88%] rounded-xl px-4 py-3 text-left text-sm leading-6 sm:max-w-[80%] ${
-                  msg.role === 'user'
-                    ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950'
-                    : 'border border-neutral-200 bg-white text-neutral-800 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100'
-                }`}
-              >
-                {/* Copy message button */}
-                <button
-                  onClick={() => handleCopyMessage(msg.id, msg.content)}
-                  aria-label="Copy message text"
-                  className="absolute right-2 top-2 rounded-md p-1 text-neutral-400 opacity-0 transition hover:bg-neutral-100 group-hover:opacity-100 focus:opacity-100 dark:hover:bg-neutral-800"
-                  title="Copy text"
-                >
-                  {copiedId === msg.id ? (
-                    <Check className="w-3.5 h-3.5 text-green-700" />
-                  ) : (
-                    <Copy className="w-3.5 h-3.5 text-current" />
-                  )}
-                </button>
-
-                <div className="prose prose-sm max-w-none text-current prose-headings:text-inherit prose-p:text-inherit prose-strong:text-inherit prose-li:text-inherit font-sans text-xs sm:text-sm font-medium leading-relaxed">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {msg.content}
-                  </ReactMarkdown>
-                </div>
-
-                {/* Collapsible Tool Calls Badge */}
-                {msg.tool_results && msg.tool_results.length > 0 && (
-                  <ToolCallBadge toolResults={msg.tool_results} />
-                )}
-
-                {/* Selected Restaurant Card if present */}
-                {msg.selected_restaurant && (
-                  <div className="mt-3">
-                    <span className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
-                      Featured venue
-                    </span>
-                    <RestaurantCard
-                      restaurant={msg.selected_restaurant}
-                      onSelect={onSelectRestaurant}
-                    />
-                  </div>
-                )}
-
-                {/* Digital Reservation Pass Ticket if booking occurred */}
-                {msg.created_reservation && (
-                  <div className="mt-3">
-                    <ReservationTicket
-                      reservation={msg.created_reservation}
-                      onCancel={onCancelReservation}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
+            <ChatMessageBubble
+              key={msg.id}
+              message={msg}
+              copied={copiedId === msg.id}
+              onCopy={() => handleCopyMessage(msg.id, msg.content)}
+              onSelectRestaurant={onSelectRestaurant}
+              onCancelReservation={onCancelReservation}
+            />
           ))
         )}
 
         {loading && (
-          <div className="flex items-center gap-3">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300"><Sparkles className="h-3.5 w-3.5" /></div>
-            <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400">
-              <Loader2 className="h-4 w-4 animate-spin" /> Working on it…
+          <div className="animate-message-in flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-100 to-cyan-100 text-violet-700 dark:from-violet-950 dark:to-cyan-950 dark:text-violet-300"><Sparkles className="h-3.5 w-3.5" /></div>
+            <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-md border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900">
+              <span className="typing-dot h-1.5 w-1.5 rounded-full bg-neutral-400" />
+              <span className="typing-dot h-1.5 w-1.5 rounded-full bg-neutral-400" />
+              <span className="typing-dot h-1.5 w-1.5 rounded-full bg-neutral-400" />
+              <span className="ml-2 text-xs text-neutral-400">Checking availability</span>
             </div>
           </div>
         )}
@@ -226,23 +163,29 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       />
 
       <div className="border-t border-neutral-200 pt-3 dark:border-neutral-800">
-        <form onSubmit={handleSubmit} className="flex items-center gap-2 rounded-xl border border-neutral-300 bg-white p-1.5 shadow-sm transition focus-within:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900">
+        <form onSubmit={handleSubmit} className="rounded-2xl border border-neutral-300 bg-white p-2 shadow-[0_8px_30px_rgba(0,0,0,.06)] transition focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-500/10 dark:border-neutral-700 dark:bg-neutral-900">
           <input
             type="text"
             placeholder="Ask about restaurants or make a reservation…"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
-            className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 disabled:opacity-50 dark:text-white"
+            className="w-full border-0 bg-transparent px-2 py-2 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 disabled:opacity-50 dark:text-white"
           />
-          <button
-            type="submit"
-            disabled={loading || !input.trim()}
-            aria-label="Send message"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-950 text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-30 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
-          >
-            <Send className="h-4 w-4" />
-          </button>
+          <div className="mt-1 flex items-center justify-between border-t border-neutral-100 pt-2 dark:border-neutral-800">
+            <div className="flex items-center gap-1 text-xs text-neutral-400">
+              <button type="button" className="flex h-8 w-8 items-center justify-center rounded-lg transition hover:bg-neutral-100 dark:hover:bg-neutral-800" aria-label="Attachments are not available yet" title="Attachments coming soon"><Paperclip className="h-4 w-4" /></button>
+              <span className="hidden sm:inline">GoodFoods can search and book for you</span>
+            </div>
+            <button
+              type="submit"
+              disabled={loading || !input.trim()}
+              aria-label="Send message"
+              className="flex h-8 items-center gap-2 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-3 text-xs font-semibold text-white shadow-sm transition hover:from-violet-500 hover:to-indigo-500 disabled:cursor-not-allowed disabled:opacity-30"
+            >
+              Send <Send className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </form>
       </div>
     </div>
