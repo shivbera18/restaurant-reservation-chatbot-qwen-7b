@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, UtensilsCrossed, Ticket, AlertTriangle, Sun, Moon, Sparkles, Paperclip } from 'lucide-react';
+import { Send, UtensilsCrossed, Ticket, AlertTriangle, Sun, Moon, Paperclip } from 'lucide-react';
 import type { ChatMessage, Restaurant, User } from '../types';
 import { QuickBookingBar } from './QuickBookingBar';
 import { ChatMessageBubble } from './ChatMessageBubble';
@@ -114,8 +114,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         {messages.length === 0 ? (
           <div className="mx-auto max-w-2xl py-10 sm:py-16">
             <div className="text-center">
-              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300"><Sparkles className="h-5 w-5" /></span>
-              <h2 className="mt-5 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">What are you planning?</h2>
+              <h2 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">What are you planning?</h2>
               <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-neutral-500 dark:text-neutral-400">Describe the restaurant, occasion, area, or time you have in mind. I can take it from discovery through confirmation.</p>
             </div>
             <div className="mt-8 grid gap-2 sm:grid-cols-2">
@@ -142,8 +141,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
         {loading && (
           <div className="animate-message-in flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-100 to-cyan-100 text-violet-700 dark:from-violet-950 dark:to-cyan-950 dark:text-violet-300"><Sparkles className="h-3.5 w-3.5" /></div>
-            <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-md border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900">
+            <div className="flex items-center gap-1.5 rounded-2xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900">
               <span className="typing-dot h-1.5 w-1.5 rounded-full bg-neutral-400" />
               <span className="typing-dot h-1.5 w-1.5 rounded-full bg-neutral-400" />
               <span className="typing-dot h-1.5 w-1.5 rounded-full bg-neutral-400" />

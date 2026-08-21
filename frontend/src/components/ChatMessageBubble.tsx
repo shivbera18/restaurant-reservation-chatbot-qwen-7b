@@ -1,4 +1,4 @@
-import { Check, Copy, Sparkles } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { ChatMessage, Restaurant } from '../types';
@@ -20,11 +20,6 @@ export function ChatMessageBubble({ message, copied, onCopy, onSelectRestaurant,
 
   return (
     <article className={`animate-message-in flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
-      {!isUser && (
-        <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-100 to-cyan-100 text-violet-700 dark:from-violet-950 dark:to-cyan-950 dark:text-violet-300">
-          <Sparkles className="h-3.5 w-3.5" />
-        </div>
-      )}
 
       <div className={`group relative max-w-[88%] sm:max-w-[80%] ${isUser ? 'items-end' : 'items-start'}`}>
         <div

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, Clock, Utensils, MapPin, ChevronDown, ChevronUp, Sparkles, Zap } from 'lucide-react';
+import { Users, Clock, Utensils, MapPin, ChevronDown, ChevronUp, Zap } from 'lucide-react';
 import type { Restaurant } from '../types';
 
 interface QuickBookingBarProps {
@@ -44,7 +44,6 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none text-[11px] font-mono font-bold">
           <span className="text-neo-main uppercase flex items-center gap-1 shrink-0 mr-1">
-            <Sparkles className="w-3.5 h-3.5 text-neo-orange" />
             <span>Quick Answer:</span>
           </span>
 

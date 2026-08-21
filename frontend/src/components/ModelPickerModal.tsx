@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, CheckCircle2, Sparkles, ShieldAlert } from 'lucide-react';
+import { X, CheckCircle2, ShieldAlert } from 'lucide-react';
 import type { SystemConfig } from '../types';
 import { switchProviderModel } from '../api';
 
@@ -114,8 +114,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
           {/* Offline Demo Mode Toggle */}
           <div className="bg-neo-yellow/20 border border-neutral-200 dark:border-neutral-700 p-3 rounded-lg flex items-center justify-between">
             <div>
-              <div className="font-black text-xs uppercase text-neo-main flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-neo-orange" />
+              <div className="font-black text-xs uppercase text-neo-main">
                 <span>Offline Demo Mode</span>
               </div>
               <p className="text-[11px] text-neo-muted mt-0.5">

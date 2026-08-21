@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, MapPin, Clock, Users, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Star, MapPin, Clock, Users, CheckCircle2 } from 'lucide-react';
 import type { Restaurant } from '../types';
 
 interface RestaurantCardProps {
@@ -90,7 +90,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
         {popularDishes.length > 0 && !compact && (
           <div className="mt-2.5 pt-2 border-t border-dashed border-black">
             <div className="text-[10px] font-mono uppercase font-black text-neo-main flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5 text-neo-orange" />
               <span>Popular Dishes:</span>
             </div>
             <div className="flex flex-wrap gap-1 mt-1">
