@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, User, Mail, Phone, X, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
+import { Lock, User, Mail, Phone, X, ArrowRight, Loader2 } from 'lucide-react';
 import { loginUser, registerUser } from '../api';
 import type { User as UserType } from '../types';
 
@@ -216,13 +216,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           )}
 
-          {/* Security note */}
-          <div className="p-2 bg-[#FAF8F5] border border-black rounded-neo-sm text-[11px] font-mono text-black flex items-start gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-neo-green shrink-0 mt-0.5" />
-            <span>
-              <strong>Secure sign-in:</strong> Your password is encrypted. Only you can view or cancel your reservations.
-            </span>
-          </div>
 
           {/* Submit Button */}
           <button
