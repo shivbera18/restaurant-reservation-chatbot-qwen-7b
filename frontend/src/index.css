@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #121212;
+  background-color: #F4EFE6;
+}
+
+code, pre, .font-mono {
+  font-family: 'Space Mono', 'Courier New', monospace;
+}
+
+/* Subtle retro dot/grid canvas */
+.neo-grid-bg {
+  background-color: #F4EFE6;
+  background-image: radial-gradient(#000000 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Custom crisp scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #E8E2D5;
+  border-left: 2px solid #000;
+}
+::-webkit-scrollbar-thumb {
+  background: #FFE600;
+  border: 2px solid #000;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FFD000;
+}
+
+/* Neobrutalist tactile button interaction */
+.btn-neo {
+  @apply transition-all duration-100 ease-out border-2 border-black font-bold shadow-neo hover:-translate-y-0.5 hover:shadow-neo-lg active:translate-x-0.5 active:translate-y-0.5 active:shadow-neo-sm select-none;
+}
+
+.card-neo {
+  @apply bg-white border-3 border-black shadow-neo;
+}
