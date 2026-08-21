@@ -199,7 +199,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
           <button
             onClick={handleCopyCode}
             aria-label="Copy Confirmation Code"
-            className="btn-neo bg-white hover:bg-neo-yellow text-xs px-2.5 py-1 flex items-center gap-1.5 font-mono font-bold text-black"
+            className="btn-neo bg-neo-card hover:bg-neo-yellow text-xs px-2.5 py-1 flex items-center gap-1.5 font-mono font-bold text-neo-main"
             title="Copy Confirmation Code"
           >
             {copied ? (

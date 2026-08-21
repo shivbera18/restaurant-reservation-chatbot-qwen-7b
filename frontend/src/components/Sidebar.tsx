@@ -109,7 +109,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={onOpenModelModal}
             aria-label="AI engine settings"
-            className="flex items-center gap-1.5 px-2.5 py-1 bg-neo-canvas border-2 border-black shadow-neo-sm text-[11px] font-mono font-black text-black rounded-neo-sm"
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-neo-canvas border-2 border-black shadow-neo-sm text-[11px] font-mono font-black text-neo-main rounded-neo-sm"
           >
             <Settings className="w-3.5 h-3.5" />
             <span className="truncate max-w-[80px]">{config?.active_provider?.toUpperCase()}</span>
@@ -138,12 +138,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {mobileMenuOpen && (
         <div className="md:hidden fixed inset-x-3 top-16 z-50 bg-[#F4EFE6] border-3 border-black p-4 shadow-neo-xl rounded-neo-lg space-y-2.5">
           <div className="flex items-center justify-between pb-2 border-b-2 border-dashed border-black">
-            <span className="font-mono font-black text-xs uppercase tracking-wider text-black">
+            <span className="font-mono font-black text-xs uppercase tracking-wider text-neo-main">
               Quick Navigation
             </span>
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="p-1 hover:bg-black/10 rounded-neo-sm text-black"
+              className="p-1 hover:bg-black/10 rounded-neo-sm text-neo-main"
             >
               <X className="w-4 h-4" />
             </button>
@@ -160,7 +160,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <UtensilsCrossed className="w-4 h-4" />
               <span>Restaurant Directory</span>
             </span>
-            <span className="bg-white border border-black px-1.5 py-0.5 text-[10px] font-mono font-black rounded-neo-sm">
+            <span className="bg-neo-card border border-black px-1.5 py-0.5 text-[10px] font-mono font-black rounded-neo-sm">
               {config?.stats.restaurants_count || 75}
             </span>
           </button>
@@ -189,7 +189,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               setMobileMenuOpen(false);
             }}
             disabled={isResetting}
-            className="btn-neo bg-white text-black hover:bg-neo-orange hover:text-white w-full py-2.5 px-3 text-xs flex items-center gap-2 font-black uppercase"
+            className="btn-neo bg-neo-card text-neo-main hover:bg-neo-orange hover:text-white w-full py-2.5 px-3 text-xs flex items-center gap-2 font-black uppercase"
           >
             <RotateCcw className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
             <span>New Conversation</span>
@@ -237,11 +237,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={onToggleCollapse}
               aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              className={`w-8 h-8 bg-neo-canvas border-2 border-black shadow-neo-sm flex items-center justify-center rounded-neo-sm hover:bg-neo-yellow text-black transition-all ${
+              className={`w-8 h-8 bg-neo-canvas border-2 border-black shadow-neo-sm flex items-center justify-center rounded-neo-sm hover:bg-neo-yellow text-neo-main transition-all ${
                 isCollapsed ? 'hidden' : 'shrink-0'
               }`}
             >
-              <ChevronLeft className="w-4 h-4 text-black" />
+              <ChevronLeft className="w-4 h-4 text-current" />
             </button>
           </div>
 
@@ -251,9 +251,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={onToggleCollapse}
               aria-label="Expand sidebar"
               title="Expand sidebar"
-              className="w-full py-1 bg-neo-canvas border-2 border-black shadow-neo-sm flex items-center justify-center rounded-neo-sm hover:bg-neo-yellow text-black"
+              className="w-full py-1 bg-neo-canvas border-2 border-black shadow-neo-sm flex items-center justify-center rounded-neo-sm hover:bg-neo-yellow text-neo-main"
             >
-              <ChevronRight className="w-4 h-4 text-black" />
+              <ChevronRight className="w-4 h-4 text-current" />
             </button>
           )}
 
@@ -261,7 +261,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Primary Navigation Actions */}
           <div className="space-y-2">
             {!isCollapsed && (
-              <span className="text-[10px] font-mono font-black uppercase text-black pl-1 block">
+              <span className="text-[10px] font-mono font-black uppercase text-neo-muted pl-1 block">
                 Directory & Bookings
               </span>
             )}
@@ -283,7 +283,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 )}
               </div>
               {!isCollapsed && (
-                <span className="bg-white border border-black px-1.5 py-0.5 text-[10px] font-mono font-black rounded-neo-sm text-black">
+                <span className="bg-neo-card border border-black px-1.5 py-0.5 text-[10px] font-mono font-black rounded-neo-sm text-neo-main">
                   {config?.stats.restaurants_count || 75}
                 </span>
               )}
@@ -311,7 +311,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     {activeReservationsCount}
                   </span>
                 ) : (
-                  <span className="text-[10px] font-mono font-black text-black">0</span>
+                  <span className="text-[10px] font-mono font-black text-neo-main">0</span>
                 )
               ) : (
                 activeReservationsCount > 0 && (
@@ -328,7 +328,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={onResetChat}
               disabled={isResetting}
               title="Start a fresh conversation"
-              className={`btn-neo bg-white text-black hover:bg-neo-orange hover:text-white w-full flex items-center transition-all ${
+              className={`btn-neo bg-neo-card text-neo-main hover:bg-neo-orange hover:text-white w-full flex items-center transition-all ${
                 isCollapsed
                   ? 'justify-center p-2.5'
                   : 'justify-start gap-2.5 p-2.5 text-xs'
@@ -345,7 +345,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Account Section — pinned to lower half, separated from nav */}
         <div className="mt-auto space-y-2 pt-3 border-t-2 border-dashed border-black">
           {!isCollapsed && (
-            <span className="text-[10px] font-mono font-black uppercase text-black pl-1 block">
+            <span className="text-[10px] font-mono font-black uppercase text-neo-muted pl-1 block">
               Account
             </span>
           )}
@@ -363,10 +363,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       👤
                     </div>
                     <div className="truncate">
-                      <span className="font-black text-xs text-black block truncate leading-none">
+                      <span className="font-black text-xs text-neo-main block truncate leading-none">
                         {user.name}
                       </span>
-                      <span className="text-[10px] font-mono text-black truncate block mt-0.5">
+                      <span className="text-[10px] font-mono text-neo-muted truncate block mt-0.5">
                         {user.email}
                       </span>
                     </div>
@@ -375,7 +375,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={onLogout}
                     title="Sign out of your account"
                     aria-label="Log out"
-                    className="p-1 hover:bg-red-200 border border-black rounded-neo-sm shrink-0 text-black"
+                    className="p-1 hover:bg-red-200 border border-black rounded-neo-sm shrink-0 text-neo-main"
                   >
                     <LogOut className="w-3.5 h-3.5 text-red-700" />
                   </button>
@@ -412,7 +412,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={onOpenModelModal}
             title="AI engine settings: provider and model"
-            className={`btn-neo bg-white text-black w-full flex items-center transition-all ${
+            className={`btn-neo bg-neo-card text-neo-main w-full flex items-center transition-all ${
               isCollapsed
                 ? 'justify-center p-2.5'
                 : 'justify-start gap-2.5 p-2.5 text-xs'
@@ -442,7 +442,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </>
               ) : (
                 <>
-                  <Moon className="w-4 h-4 text-black shrink-0" />
+                  <Moon className="w-4 h-4 text-current shrink-0" />
                   {!isCollapsed && <span className="font-black uppercase tracking-tight truncate">Dark Theme</span>}
                 </>
               )}
@@ -452,15 +452,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="space-y-3 pt-3 border-t-2 border-dashed border-black">
 
           {!isCollapsed && (
-            <div className="p-2.5 bg-[#FAF8F5] border border-black rounded-neo text-[10px] font-mono text-black space-y-0.5 text-left">
-              <div className="flex items-center justify-between font-bold text-black">
+            <div className="p-2.5 bg-neo-surface border border-black rounded-neo text-[10px] font-mono text-neo-main space-y-0.5 text-left">
+              <div className="flex items-center justify-between font-bold text-neo-main">
                 <span className="flex items-center gap-1">
                   <Sparkles className="w-3 h-3 text-neo-orange" />
                   <span>GoodFoods Engine</span>
                 </span>
                 <span className="text-[9px] font-mono font-black">v1.1</span>
               </div>
-              <p className="text-[9px] font-medium leading-tight text-black">
+              <p className="text-[9px] font-medium leading-tight text-neo-main">
                 {config?.stats?.restaurants_count ?? 75} locations across {config?.stats?.neighborhoods?.length ?? 12} metro districts
               </p>
             </div>

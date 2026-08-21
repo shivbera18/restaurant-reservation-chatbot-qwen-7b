@@ -157,7 +157,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
           {/* Prominent User Sign In / Profile Pill */}
           {user ? (
             <div className="flex items-center gap-1.5 bg-neo-yellow border-2 border-black rounded-neo-sm shadow-neo-sm px-2.5 py-1">
-              <UserIcon className="w-3.5 h-3.5 text-black" />
+              <UserIcon className="w-3.5 h-3.5 text-current" />
               <span className="font-black text-xs uppercase text-black max-w-[100px] truncate">
                 {user.name.split(' ')[0]}
               </span>
@@ -185,19 +185,19 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
       {/* Backend Offline Warning Banner if connection failed */}
       {backendOffline && (
-        <div className="bg-neo-orange/20 border-3 border-black p-3 mb-3 rounded-neo shadow-neo flex items-center justify-between gap-2 text-xs font-bold text-black shrink-0">
+        <div className="bg-neo-orange/20 border-3 border-black p-3 mb-3 rounded-neo shadow-neo flex items-center justify-between gap-2 text-xs font-bold text-neo-main shrink-0">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-neo-orange shrink-0" />
             <span>
               <strong>Backend Offline:</strong> FastAPI is not running on port 8000. Start backend with{' '}
-              <code className="bg-white border border-black px-1.5 py-0.5 font-mono text-[11px]">uvicorn server:app --port 8000</code>.
+              <code className="bg-neo-card border border-black px-1.5 py-0.5 font-mono text-[11px]">uvicorn server:app --port 8000</code>.
             </span>
           </div>
           {onRetryConnection && (
             <button
               type="button"
               onClick={onRetryConnection}
-              className="btn-neo bg-white hover:bg-neo-yellow text-black text-xs px-2.5 py-1 font-mono uppercase font-black shrink-0 flex items-center gap-1"
+              className="btn-neo bg-neo-card hover:bg-neo-yellow text-neo-main text-xs px-2.5 py-1 font-mono uppercase font-black shrink-0 flex items-center gap-1"
             >
               <RotateCcw className="w-3 h-3" />
               <span>Retry</span>
@@ -299,7 +299,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 <button
                   onClick={() => handleCopyMessage(msg.id, msg.content)}
                   aria-label="Copy message text"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity bg-neo-canvas border border-black p-1.5 rounded-neo-sm shadow-neo-sm text-black"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity bg-neo-canvas border border-black p-1.5 rounded-neo-sm shadow-neo-sm text-current"
                   title="Copy text"
                 >
                   {copiedId === msg.id ? (
