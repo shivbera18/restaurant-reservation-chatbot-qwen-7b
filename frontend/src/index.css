@@ -68,20 +68,27 @@ code, pre, .font-mono {
   background: var(--neo-scrollbar-hover);
 }
 
-/* Neobrutalist tactile button interaction with smooth modern curvature */
-.btn-neo {
-  @apply transition-all duration-150 ease-out border-2 border-black font-bold shadow-neo rounded-neo hover:-translate-y-0.5 hover:shadow-neo-lg active:translate-x-0.5 active:translate-y-0.5 active:shadow-neo-sm;
-}
+@layer components {
+  /* Neobrutalist tactile button interaction with smooth modern curvature */
+  .btn-neo {
+    border-radius: 12px;
+    @apply transition-all duration-150 ease-out border-2 border-black font-bold shadow-neo hover:-translate-y-0.5 hover:shadow-neo-lg active:translate-x-0.5 active:translate-y-0.5 active:shadow-neo-sm;
+  }
 
-.card-neo {
-  @apply bg-white border-3 border-black shadow-neo rounded-neo;
-}
+  .card-neo {
+    border-radius: 12px;
+    @apply bg-white border-3 border-black shadow-neo;
+  }
 
-/* Dark mode overrides for base classes */
-.dark .btn-neo {
-  @apply border-[var(--neo-border)] shadow-neo-dark;
-}
+  /* Dark mode overrides for base classes */
+  .dark .btn-neo {
+    border-color: var(--neo-border);
+    box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.18);
+  }
 
-.dark .card-neo {
-  @apply bg-neo-surface border-[var(--neo-border)] shadow-neo-dark;
+  .dark .card-neo {
+    background-color: theme('colors.neo.surface');
+    border-color: var(--neo-border);
+    box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.18);
+  }
 }

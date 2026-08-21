@@ -20,6 +20,7 @@ export function App() {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Dark Mode State
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -165,8 +166,8 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row neo-grid-bg text-[#121212] dark:text-gray-100">
-      {/* Sidebar Navigation */}
+    <div className="min-h-screen neo-grid-bg text-[#121212] dark:text-gray-100 relative overflow-x-hidden">
+      {/* Floating Hovering Sidebar Navigation */}
       <Sidebar
         config={config}
         activeReservationsCount={activeReservations.length}
@@ -177,10 +178,16 @@ export function App() {
         isResetting={isResetting}
         isDarkMode={isDarkMode}
         onToggleDarkMode={toggleDarkMode}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
       />
 
-      {/* Main Chat Canvas */}
-      <main className="flex-1 flex flex-col h-[calc(100vh-53px)] md:h-screen overflow-hidden">
+      {/* Main Chat Canvas with Adaptive Floating Sidebar Padding */}
+      <main
+        className={`flex flex-col h-[calc(100vh-60px)] md:h-screen overflow-hidden transition-all duration-300 ease-in-out ${
+          isCollapsed ? 'md:pl-28' : 'md:pl-80 lg:pl-88'
+        }`}
+      >
         <ChatArea
           messages={messages}
           loading={loading}
