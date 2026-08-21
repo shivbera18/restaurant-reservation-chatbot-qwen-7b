@@ -105,7 +105,7 @@ goodfoods_reservation/
    # .env — Groq
    LLM_PROVIDER=groq
    GROQ_API_KEY=your-key-here
-   GROQ_MODEL=llama-3.3-70b-versatile  # optional
+   GROQ_MODEL=openai/gpt-oss-120b  # optional
    ```
 
    | Vendor | `LLM_PROVIDER` | Key variable |
@@ -397,7 +397,7 @@ LLM_PROVIDER = "ollama"  # ollama | gemini | openai | groq | openrouter | ...
 
 OLLAMA_MODEL = "qwen2.5:7b"        # OLLAMA_HOST defaults to localhost:11434
 GEMINI_MODEL = "gemini-2.5-flash"  # needs GEMINI_API_KEY
-GROQ_MODEL = "llama-3.3-70b-versatile"  # needs GROQ_API_KEY
+GROQ_MODEL = "openai/gpt-oss-120b"  # needs GROQ_API_KEY
 # For any custom OpenAI-compatible endpoint: OPENAI_MODEL + OPENAI_API_BASE
 
 TEMPERATURE = 0.3

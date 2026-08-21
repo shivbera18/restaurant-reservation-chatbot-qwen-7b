@@ -28,7 +28,7 @@ class ProviderSmokeTests(unittest.TestCase):
             provider = create_provider("groq")
         self.assertEqual(provider.name, "groq")
         self.assertEqual(provider.api_key, "test-key")
-        self.assertEqual(provider.model, "llama-3.3-70b-versatile")
+        self.assertEqual(provider.model, "openai/gpt-oss-120b")
         self.assertEqual(
             provider.endpoint, "https://api.groq.com/openai/v1/chat/completions"
         )
@@ -44,7 +44,7 @@ class ProviderSmokeTests(unittest.TestCase):
         self.assertTrue(_is_local_endpoint("http://127.0.0.1:8000/v1"))
         self.assertTrue(_is_local_endpoint("http://[::1]:8000/v1"))
         remote = OpenAICompatibleProvider(
-            api_key="", api_base="https://example.com/localhost/v1"
+            api_key="", api_base="https://example.com/localhost/v1", provider="openai"
         )
         self.assertFalse(_is_local_endpoint("https://example.com/localhost/v1"))
         self.assertEqual(remote.is_configured(), (False, "OPENAI_API_KEY is not set"))
