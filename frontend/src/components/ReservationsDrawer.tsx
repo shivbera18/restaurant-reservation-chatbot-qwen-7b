@@ -68,19 +68,19 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="bg-[#FAF8F5] dark:bg-neo-surface border-3 border-black dark:border-gray-600 shadow-neo-xl dark:shadow-neo-lg dark:shadow-neo-dark-dark rounded-neo-lg w-full max-w-2xl max-h-[90vh] flex flex-col my-auto overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+      <div className="bg-white dark:bg-neo-surface border-3 border-black dark:border-gray-600 shadow-neo-xl dark:shadow-neo-xl-dark rounded-neo-lg w-full max-w-2xl max-h-[90vh] flex flex-col my-auto overflow-hidden text-left">
         {/* Header */}
         <div className="bg-neo-green border-b-3 border-black dark:border-gray-600 p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-white dark:bg-neo-surface border-2 border-black dark:border-gray-600 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 bg-white border-2 border-black flex items-center justify-center rounded-neo-sm font-bold text-base">
               🎫
             </div>
             <div>
-              <h2 className="font-black text-lg sm:text-xl uppercase tracking-tight text-black dark:text-gray-100 leading-none">
+              <h2 className="font-black text-lg sm:text-xl uppercase tracking-tight text-black leading-none">
                 My Bookings & Reservations
               </h2>
-              <p className="text-xs font-bold text-gray-800 dark:text-gray-200 mt-0.5">
+              <p className="text-xs font-bold text-gray-900 mt-0.5">
                 {reservations.length} {reservations.length === 1 ? 'booking' : 'bookings'} on file
               </p>
             </div>
@@ -91,17 +91,17 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
               onClick={loadReservations}
               disabled={loading}
               aria-label="Refresh reservations"
-              className="w-8 h-8 bg-white dark:bg-neo-surface hover:bg-neo-yellow border-2 border-black dark:border-gray-600 rounded-neo-sm flex items-center justify-center font-black shadow-neo dark:shadow-neo-dark-sm dark:shadow-neo dark:shadow-neo-dark-sm-dark"
+              className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black flex items-center justify-center rounded-neo-sm text-black transition-colors"
               title="Refresh"
             >
-              <RefreshCw className={`w-4 h-4 text-black dark:text-gray-100 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={onClose}
               aria-label="Close"
-              className="w-8 h-8 bg-white dark:bg-neo-surface hover:bg-neo-yellow border-2 border-black dark:border-gray-600 rounded-neo-sm flex items-center justify-center font-black shadow-neo dark:shadow-neo-dark-sm dark:shadow-neo dark:shadow-neo-dark-sm-dark"
+              className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black flex items-center justify-center rounded-neo-sm text-black transition-colors"
             >
-              <X className="w-5 h-5 text-black dark:text-gray-100" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -116,16 +116,16 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
                 placeholder="Search by code (e.g. GF-RES-...), venue, name, or phone..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 font-mono text-xs font-bold text-black dark:text-gray-100 placeholder:text-gray-500 dark:text-gray-400 focus:outline-none focus:bg-white dark:bg-neo-surface"
+                className="w-full pl-8 pr-3 py-1.5 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 rounded-neo-sm font-mono text-xs font-bold text-black dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none"
               />
             </div>
           </div>
         )}
 
         {/* Content */}
-        <div className="flex-1 p-4 overflow-y-auto bg-neo-canvas dark:bg-neo-surface-alt space-y-4">
+        <div className="flex-1 p-4 overflow-y-auto bg-neo-canvas dark:bg-neo-dark space-y-4">
           {error && (
-            <div className="p-3 bg-red-100 border-2 border-red-500 text-red-800 text-xs font-bold flex items-center gap-2">
+            <div className="p-3 bg-red-100 dark:bg-red-950/40 border-2 border-red-500 text-red-800 dark:text-red-300 text-xs font-bold flex items-center gap-2 rounded-neo-sm">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
@@ -133,7 +133,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
 
           {loading ? (
             <div className="py-16 text-center font-mono font-bold">
-              <div className="inline-block p-4 bg-white dark:bg-neo-surface border-2 border-black dark:border-gray-600 rounded-neo-sm shadow-neo dark:shadow-neo-dark">
+              <div className="inline-block p-4 bg-white dark:bg-neo-surface border-2 border-black dark:border-gray-600 rounded-neo shadow-neo dark:shadow-neo-dark text-black dark:text-gray-100">
                 ⏳ Loading reservations...
               </div>
             </div>
@@ -141,7 +141,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
             <div className="py-16 text-center">
               <div className="inline-block p-6 bg-white dark:bg-neo-surface border-3 border-black dark:border-gray-600 rounded-neo shadow-neo dark:shadow-neo-dark max-w-sm">
                 <Ticket className="w-10 h-10 mx-auto text-gray-400 mb-2" />
-                <p className="font-black text-base uppercase">No Bookings Found</p>
+                <p className="font-black text-base uppercase text-black dark:text-gray-100">No Bookings Found</p>
                 <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                   {search
                     ? 'No reservation matches your search query.'
@@ -149,7 +149,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
                 </p>
                 <button
                   onClick={onClose}
-                  className="btn-neo bg-neo-yellow px-4 py-1.5 text-xs mt-4 font-black uppercase"
+                  className="btn-neo bg-neo-yellow text-black px-4 py-1.5 text-xs mt-4 font-black uppercase"
                 >
                   Start Booking
                 </button>
@@ -169,13 +169,13 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="bg-white dark:bg-neo-surface border-t-2 border-black dark:border-gray-600 p-3 flex items-center justify-between">
-          <span className="text-xs font-mono text-gray-600 dark:text-gray-400">
+        <div className="bg-white dark:bg-neo-surface border-t-2 border-black dark:border-gray-600 p-3 flex items-center justify-between text-xs font-mono text-gray-600 dark:text-gray-300">
+          <span>
             Showing {filteredReservations.length} of {reservations.length} bookings
           </span>
           <button
             onClick={onClose}
-            className="btn-neo bg-black text-white px-4 py-1 font-mono uppercase text-xs"
+            className="btn-neo bg-black dark:bg-neutral-800 text-white border-black dark:border-gray-600 px-4 py-1 font-mono uppercase text-xs"
           >
             Close
           </button>

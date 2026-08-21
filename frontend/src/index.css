@@ -11,32 +11,35 @@
   --neo-bg: #F4EFE6;
   --neo-card: #FFFFFF;
   --neo-text: #121212;
-  --neo-text-secondary: #4B5563;
   --neo-border: #000000;
   --neo-canvas: #F4EFE6;
-  --neo-cream: #FAF8F5;
   --neo-grid-dot: #000000;
   --neo-scrollbar-track: #E8E2D5;
   --neo-scrollbar-thumb: #FFE600;
   --neo-scrollbar-hover: #FFD000;
-  --neo-shadow: 0px 0px 0px 0px #000;
-  --neo-input-bg: #FFFFFF;
 }
 
 .dark {
   color-scheme: dark;
+  color: #F3F4F6;
+  background-color: #121212;
   --neo-bg: #121212;
   --neo-card: #1E1E1E;
-  --neo-text: #E5E5E5;
-  --neo-text-secondary: #9CA3AF;
-  --neo-border: #444444;
+  --neo-text: #F3F4F6;
+  --neo-border: #525252;
   --neo-canvas: #1A1A1A;
-  --neo-cream: #232323;
-  --neo-grid-dot: #2A2A2A;
+  --neo-grid-dot: #333333;
   --neo-scrollbar-track: #1E1E1E;
   --neo-scrollbar-thumb: #FFE600;
   --neo-scrollbar-hover: #FFD000;
-  --neo-input-bg: #2A2A2A;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--neo-bg);
+  color: var(--neo-text);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 code, pre, .font-mono {
@@ -84,6 +87,10 @@ code, pre, .font-mono {
   .dark .btn-neo {
     border-color: var(--neo-border);
     box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.18);
+  }
+
+  .dark .btn-neo:hover {
+    box-shadow: 6px 6px 0px 0px rgba(255, 255, 255, 0.25);
   }
 
   .dark .card-neo {
