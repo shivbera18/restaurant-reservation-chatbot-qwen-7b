@@ -7,6 +7,8 @@ from typing import Any, Dict, List, Optional
 import os
 from pathlib import Path
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -24,12 +26,21 @@ from config import (
 from database import db
 from agent import create_agent
 from llm_providers import LLMError
+from neon_db import neon_db
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    if neon_db.enabled:
+        neon_db.migrate()
+    yield
 
 
 app = FastAPI(
     title="GoodFoods AI Concierge API",
     version=APP_VERSION,
     description="Neobrutalist Dining Assistant Backend",
+    lifespan=lifespan,
 )
 
 # CORS middleware for Vite development server
@@ -83,6 +94,8 @@ class SessionStore:
                 model=self.default_model,
                 use_mock=False,
             )
+            if neon_db.enabled:
+                neon_db.save_session(sid, self.default_provider, self.default_model, False)
             self._sessions[sid] = {
                 "agent": agent,
                 "provider": self.default_provider,
@@ -222,6 +235,8 @@ def chat(payload: ChatRequest):
         s = store.get_or_create(sid)
 
     agent = s["agent"]
+    if neon_db.enabled:
+        neon_db.save_message(sid, "user", payload.message)
 
     try:
         response_text = agent.chat(payload.message)
@@ -229,6 +244,9 @@ def chat(payload: ChatRequest):
         raise HTTPException(status_code=502, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal agent error: {str(e)}")
+
+    if neon_db.enabled:
+        neon_db.save_message(sid, "assistant", response_text)
 
     # Extract tool results and state
     last_results = getattr(agent.conversation, "last_tool_results", [])
@@ -246,17 +264,15 @@ def chat(payload: ChatRequest):
             "error": getattr(tr, "error", None),
         })
 
-    # Enrich selected_restaurant with database fields
-    raw_restaurant = getattr(agent.conversation, "selected_restaurant", None)
+    # A featured venue belongs only to a detail lookup or a one-result search in this request.
     selected_restaurant = None
-    if isinstance(raw_restaurant, dict):
-        rest_id = raw_restaurant.get("id") or raw_restaurant.get("restaurant_id")
-        if rest_id and rest_id in db.restaurants:
-            selected_restaurant = _dump_model(db.restaurants[rest_id])
-        else:
-            selected_restaurant = raw_restaurant
-    elif raw_restaurant is not None:
-        selected_restaurant = _dump_model(raw_restaurant)
+    if any(getattr(tr, "tool_name", "") == "get_restaurant_details" and getattr(tr, "success", False) for tr in last_results):
+        raw_restaurant = getattr(agent.conversation, "selected_restaurant", None)
+        if isinstance(raw_restaurant, dict):
+            rest_id = raw_restaurant.get("id") or raw_restaurant.get("restaurant_id")
+            selected_restaurant = _dump_model(db.restaurants[rest_id]) if rest_id in db.restaurants else raw_restaurant
+        elif raw_restaurant is not None:
+            selected_restaurant = _dump_model(raw_restaurant)
     active_reservations = [_serialize_reservation(res) for res in db.reservations.values()]
 
     return {
@@ -326,7 +342,9 @@ def reset_conversation(x_session_id: Optional[str] = Header(default="default")):
 FRONTEND_DIST = Path(__file__).parent / "frontend" / "dist"
 
 if FRONTEND_DIST.exists():
-    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="assets")
+    assets_dir = FRONTEND_DIST / "assets"
+    if assets_dir.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
 
     @app.get("/{full_path:path}")
     def serve_spa(full_path: str):
