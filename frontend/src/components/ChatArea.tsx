@@ -8,12 +8,10 @@ import {
   Check,
   UtensilsCrossed,
   Ticket,
-  User as UserIcon,
-  LogIn,
   AlertTriangle,
-  RotateCcw,
   Sun,
   Moon,
+  Sparkles,
 } from 'lucide-react';
 import type { ChatMessage, Restaurant, User } from '../types';
 import { RestaurantCard } from './RestaurantCard';
@@ -94,212 +92,73 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full max-w-5xl mx-auto w-full px-3 sm:px-6 py-3 overflow-hidden text-left">
-      {/* Top Header Bar with Prominent Navigation & Sign In */}
-      <header className="bg-neo-card border-3 border-black shadow-neo rounded-neo px-3.5 py-2 mb-3 flex items-center justify-between gap-2 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center text-base font-black shadow-neo-sm">
-            🍽️
+    <div className="mx-auto flex h-full w-full max-w-5xl flex-1 flex-col overflow-hidden px-4 py-3 text-left sm:px-8 sm:py-5">
+      <header className="mb-4 flex shrink-0 items-center justify-between border-b border-neutral-200 pb-4 dark:border-neutral-800">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <p className="text-sm font-semibold">Dining concierge</p>
           </div>
-          <div>
-            <h1 className="font-black text-sm uppercase tracking-tight text-neo-main leading-none">
-              GoodFoods<span className="text-neo-orange">.AI</span>
-            </h1>
-            <span className="font-mono text-[10px] font-bold text-neo-muted block mt-0.5">
-              Autonomous Concierge
-            </span>
-          </div>
+          <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">Search, availability, and reservations in one conversation</p>
         </div>
-
         <div className="flex items-center gap-2">
-          {/* Restaurant Explorer Shortcut */}
-          <button
-            type="button"
-            onClick={onOpenExplorer}
-            className="btn-neo bg-neo-blue text-black px-2.5 py-1 text-xs font-black uppercase hidden sm:flex items-center gap-1.5"
-          >
-            <UtensilsCrossed className="w-3.5 h-3.5" />
-            <span>Directory ({restaurantCount ?? 75})</span>
+          <button onClick={onOpenExplorer} className="hidden items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-xs font-medium text-neutral-600 transition hover:bg-neutral-50 sm:flex dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800">
+            <UtensilsCrossed className="h-3.5 w-3.5" /> {restaurantCount ?? 72} restaurants
           </button>
-
-          {/* My Bookings Shortcut */}
-          <button
-            type="button"
-            onClick={onOpenReservations}
-            className="btn-neo bg-neo-green text-black px-2.5 py-1 text-xs font-black uppercase flex items-center gap-1.5"
-          >
-            <Ticket className="w-3.5 h-3.5" />
-            <span>My Bookings</span>
-            {activeReservationsCount > 0 && (
-              <span className="bg-black text-white px-1.5 py-0.5 text-[10px] font-mono font-black rounded-neo-sm">
-                {activeReservationsCount}
-              </span>
-            )}
+          <button onClick={onOpenReservations} className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-600 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800" aria-label="Open reservations">
+            <Ticket className="h-4 w-4" />
+            {activeReservationsCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-violet-600 px-1 text-[9px] font-semibold text-white">{activeReservationsCount}</span>}
           </button>
-
-          {/* Theme Toggle Button */}
           {onToggleTheme && (
-            <button
-              type="button"
-              onClick={onToggleTheme}
-              aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              className="btn-neo bg-neo-card text-neo-main p-1.5 text-xs font-black uppercase flex items-center justify-center"
-            >
-              {theme === 'dark' ? (
-                <Sun className="w-3.5 h-3.5 text-neo-yellow" />
-              ) : (
-                <Moon className="w-3.5 h-3.5 text-black" />
-              )}
+            <button onClick={onToggleTheme} className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-600 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800" aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
           )}
-
-          {/* Prominent User Sign In / Profile Pill */}
-          {user ? (
-            <div className="flex items-center gap-1.5 bg-neo-yellow border-2 border-black rounded-neo-sm shadow-neo-sm px-2.5 py-1">
-              <UserIcon className="w-3.5 h-3.5 text-current" />
-              <span className="font-black text-xs uppercase text-black max-w-[100px] truncate">
-                {user.name.split(' ')[0]}
-              </span>
-              <button
-                type="button"
-                onClick={onLogout}
-                title="Log out"
-                className="ml-1 text-[11px] font-mono font-black text-red-700 hover:text-black hover:underline"
-              >
-                Log Out
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => onOpenAuth('login')}
-              className="btn-neo bg-neo-yellow hover:bg-neo-orange hover:text-white text-black px-3 py-1 text-xs font-black uppercase flex items-center gap-1.5 shadow-neo-sm"
-            >
-              <LogIn className="w-3.5 h-3.5" />
-              <span>⚡ Sign In / Sign Up</span>
-            </button>
-          )}
+          {!user && <button onClick={() => onOpenAuth('login')} className="hidden rounded-lg bg-neutral-950 px-3 py-2 text-xs font-semibold text-white sm:block dark:bg-white dark:text-neutral-950">Sign in</button>}
+          {user && <button onClick={onLogout} className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 text-xs font-semibold text-violet-700 dark:bg-violet-950 dark:text-violet-300" title={`Signed in as ${user.name}. Click to log out`}>{user.name.charAt(0).toUpperCase()}</button>}
         </div>
       </header>
 
-      {/* Backend Offline Warning Banner if connection failed */}
       {backendOffline && (
-        <div className="bg-neo-orange/20 border-3 border-black p-3 mb-3 rounded-neo shadow-neo flex items-center justify-between gap-2 text-xs font-bold text-neo-main shrink-0">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-neo-orange shrink-0" />
-            <span>
-              <strong>Backend Offline:</strong> FastAPI is not running on port 8000. Start backend with{' '}
-              <code className="bg-neo-card border border-black px-1.5 py-0.5 font-mono text-[11px]">uvicorn server:app --port 8000</code>.
-            </span>
-          </div>
-          {onRetryConnection && (
-            <button
-              type="button"
-              onClick={onRetryConnection}
-              className="btn-neo bg-neo-card hover:bg-neo-yellow text-neo-main text-xs px-2.5 py-1 font-mono uppercase font-black shrink-0 flex items-center gap-1"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>Retry</span>
-            </button>
-          )}
+        <div className="mb-4 flex shrink-0 items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+          <span className="flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Backend offline. Start FastAPI on port 8000.</span>
+          {onRetryConnection && <button onClick={onRetryConnection} className="font-semibold underline underline-offset-2">Retry</button>}
         </div>
       )}
 
-      {/* Scrollable Message List Container */}
-      <div className="flex-1 overflow-y-auto pr-1 space-y-4 pb-2">
+      <div className="flex-1 space-y-5 overflow-y-auto pb-4 pr-1">
         {messages.length === 0 ? (
-          /* Welcome State */
-          <div className="py-4 text-center max-w-2xl mx-auto space-y-4">
-            {/* Hero Card */}
-            <div className="bg-neo-card border-3 border-black rounded-neo-lg p-6 shadow-neo-lg text-left relative overflow-hidden transition-colors">
-              <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-neo-yellow/30 rounded-full border-2 border-black select-none pointer-events-none" />
-
-              <div className="inline-block bg-neo-yellow text-black border-2 border-black rounded-neo-sm px-2.5 py-0.5 text-xs font-mono font-black uppercase mb-3 shadow-neo-sm">
-                ⭐ Autonomous Concierge
-              </div>
-
-              <h2 className="font-black text-2xl sm:text-3xl uppercase tracking-tight text-neo-main leading-tight">
-                GoodFoods Dining Concierge
-              </h2>
-              <p className="text-xs sm:text-sm font-bold text-neo-main mt-2 leading-relaxed">
-                Your AI concierge connected to <strong>{restaurantCount ?? 75} restaurant locations</strong> with real-time table availability, instant bookings, and reservation management.
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-4 font-mono text-xs">
-                <div className="bg-neo-surface border-2 border-black p-3 rounded-neo-sm">
-                  <span className="font-black block text-xs uppercase text-neo-main">🔍 Discover</span>
-                  <span className="text-neo-main text-[11px] font-bold mt-0.5 block">15 cuisines & 12 areas</span>
-                </div>
-                <div className="bg-neo-surface border-2 border-black p-3 rounded-neo-sm">
-                  <span className="font-black block text-xs uppercase text-neo-main">⚡ Instant Book</span>
-                  <span className="text-neo-main text-[11px] font-bold mt-0.5 block">Live table reservation</span>
-                </div>
-                <div className="bg-neo-surface border-2 border-black p-3 rounded-neo-sm">
-                  <span className="font-black block text-xs uppercase text-neo-main">🎫 Manage</span>
-                  <span className="text-neo-main text-[11px] font-bold mt-0.5 block">Instant modify & cancel</span>
-                </div>
-              </div>
+          <div className="mx-auto max-w-2xl py-10 sm:py-16">
+            <div className="text-center">
+              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300"><Sparkles className="h-5 w-5" /></span>
+              <h2 className="mt-5 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">What are you planning?</h2>
+              <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-neutral-500 dark:text-neutral-400">Describe the restaurant, occasion, area, or time you have in mind. I can take it from discovery through confirmation.</p>
             </div>
-
-            {/* Quick Prompt Starters */}
-            <div className="text-left space-y-1.5">
-              <span className="text-xs font-mono font-black uppercase text-neo-main block pl-1">
-                🚀 Quick Action Prompts:
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {QUICK_PROMPTS.map((item, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => onSendMessage(item.prompt)}
-                    className="btn-neo bg-neo-card hover:bg-neo-yellow text-neo-main hover:text-black text-xs px-3 py-1.5 font-bold flex items-center gap-1.5"
-                  >
-                    <span>{item.label}</span>
-                  </button>
-                ))}
-              </div>
+            <div className="mt-8 grid gap-2 sm:grid-cols-2">
+              {QUICK_PROMPTS.slice(0, 4).map((item) => (
+                <button key={item.label} onClick={() => onSendMessage(item.prompt)} className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-left text-sm font-medium text-neutral-700 transition hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:border-neutral-600 dark:hover:bg-neutral-800">
+                  {item.label}
+                </button>
+              ))}
             </div>
           </div>
         ) : (
           /* Message Stream */
           messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex flex-col ${
-                msg.role === 'user' ? 'items-end' : 'items-start'
-              }`}
-            >
-              {/* Role Header Avatar Pill */}
-              <div className="flex items-center gap-1.5 mb-1 px-1 text-[11px] font-mono font-black text-neo-main">
-                {msg.role === 'user' ? (
-                  <>
-                    <span>YOU</span>
-                    <div className="w-4 h-4 bg-neo-yellow text-black border border-black flex items-center justify-center rounded-neo-sm">
-                      👤
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-4 h-4 bg-neo-green text-black border border-black flex items-center justify-center rounded-neo-sm">
-                      🍽️
-                    </div>
-                    <span>GOODFOODS AI</span>
-                  </>
-                )}
-              </div>
-
-              {/* Message Bubble Card */}
+            <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              {msg.role === 'assistant' && <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-xs text-violet-700 dark:bg-violet-950 dark:text-violet-300"><Sparkles className="h-3.5 w-3.5" /></div>}
               <div
-                className={`max-w-[92%] sm:max-w-[85%] p-4 text-left border-3 border-black rounded-neo shadow-neo relative group transition-all ${
-                  msg.role === 'user' ? 'bg-neo-yellow text-black' : 'bg-neo-card text-neo-main'
+                className={`group relative max-w-[88%] rounded-xl px-4 py-3 text-left text-sm leading-6 sm:max-w-[80%] ${
+                  msg.role === 'user'
+                    ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950'
+                    : 'border border-neutral-200 bg-white text-neutral-800 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100'
                 }`}
               >
                 {/* Copy message button */}
                 <button
                   onClick={() => handleCopyMessage(msg.id, msg.content)}
                   aria-label="Copy message text"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity bg-neo-canvas border border-black p-1.5 rounded-neo-sm shadow-neo-sm text-current"
+                  className="absolute right-2 top-2 rounded-md p-1 text-neutral-400 opacity-0 transition hover:bg-neutral-100 group-hover:opacity-100 focus:opacity-100 dark:hover:bg-neutral-800"
                   title="Copy text"
                 >
                   {copiedId === msg.id ? (
@@ -323,8 +182,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 {/* Selected Restaurant Card if present */}
                 {msg.selected_restaurant && (
                   <div className="mt-3">
-                    <span className="text-[10px] font-mono font-black uppercase text-neo-main block mb-1">
-                      Featured Venue:
+                    <span className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+                      Featured venue
                     </span>
                     <RestaurantCard
                       restaurant={msg.selected_restaurant}
@@ -347,18 +206,11 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
           ))
         )}
 
-        {/* Thinking Indicator */}
         {loading && (
-          <div className="flex flex-col items-start">
-            <div className="flex items-center gap-1.5 mb-1 px-1 text-[11px] font-mono font-black text-neo-main">
-              <div className="w-4 h-4 bg-neo-green text-black border border-black flex items-center justify-center rounded-neo-sm">
-                🍽️
-              </div>
-              <span>GOODFOODS AI</span>
-            </div>
-            <div className="bg-neo-card border-3 border-black rounded-neo p-3 shadow-neo text-neo-main flex items-center gap-2 text-xs font-bold font-mono">
-              <Loader2 className="w-4 h-4 animate-spin text-neo-orange" />
-              <span>Checking tables & generating response...</span>
+          <div className="flex items-center gap-3">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300"><Sparkles className="h-3.5 w-3.5" /></div>
+            <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400">
+              <Loader2 className="h-4 w-4 animate-spin" /> Working on it…
             </div>
           </div>
         )}
@@ -373,25 +225,23 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         loading={loading}
       />
 
-      {/* Sticky Bottom Input Bar */}
-      <div className="pt-2 border-t-3 border-black bg-transparent">
-        <form onSubmit={handleSubmit} className="flex gap-2">
+      <div className="border-t border-neutral-200 pt-3 dark:border-neutral-800">
+        <form onSubmit={handleSubmit} className="flex items-center gap-2 rounded-xl border border-neutral-300 bg-white p-1.5 shadow-sm transition focus-within:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900">
           <input
             type="text"
-            placeholder="Type your message or use the Quick Answer bar above..."
+            placeholder="Ask about restaurants or make a reservation…"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
-            className="flex-1 bg-neo-card text-neo-main border-3 border-black rounded-neo px-4 py-2.5 text-xs sm:text-sm font-sans font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-surface shadow-neo transition-all disabled:opacity-50"
+            className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 disabled:opacity-50 dark:text-white"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
             aria-label="Send message"
-            className="btn-neo bg-neo-yellow hover:bg-neo-orange hover:text-white text-black px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-black uppercase flex items-center gap-1.5 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed shadow-neo"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-950 text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-30 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
           >
-            <Send className="w-4 h-4" />
-            <span className="hidden sm:inline">Send</span>
+            <Send className="h-4 w-4" />
           </button>
         </form>
       </div>

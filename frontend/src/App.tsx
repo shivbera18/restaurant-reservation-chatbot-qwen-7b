@@ -271,10 +271,9 @@ export function App() {
         }}
       />
 
-      {/* Main Chat Canvas with Adaptive Floating Sidebar Padding */}
       <main
-        className={`flex flex-col h-[calc(100vh-60px)] md:h-screen overflow-hidden transition-all duration-300 ease-in-out ${
-          isCollapsed ? 'md:pl-28' : 'md:pl-80 lg:pl-88'
+        className={`flex h-[calc(100vh-60px)] flex-col overflow-hidden bg-neo-canvas transition-[padding] duration-200 md:h-screen ${
+          isCollapsed ? 'md:pl-[72px]' : 'md:pl-64'
         }`}
       >
         <ChatArea
