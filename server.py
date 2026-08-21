@@ -4,9 +4,10 @@ Exposes REST APIs for chat, restaurant discovery, reservation management,
 and LLM provider configuration. Serves the React frontend when built.
 """
 from typing import Any, Dict, List, Optional
+import asyncio
+import json
 import os
 from pathlib import Path
-
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Header
@@ -415,12 +416,10 @@ def chat_stream_endpoint(payload: ChatRequest, authorization: Optional[str] = He
         neon_db.save_message(sid, "user", payload.message)
         neon_db.save_session(sid, s["provider"], s["model"], s["use_mock"], user_id)
 
-    async def event_generator():
-        loop = asyncio.get_event_loop()
+    def event_generator():
         full_response = ""
         try:
-            events = await loop.run_in_executor(None, lambda: list(agent.chat_stream(payload.message)))
-            for event in events:
+            for event in agent.chat_stream(payload.message):
                 if event.get("type") == "token":
                     full_response += event.get("token", "")
                 yield f"data: {json.dumps(event)}\n\n"
@@ -428,6 +427,10 @@ def chat_stream_endpoint(payload: ChatRequest, authorization: Optional[str] = He
             err_event = {"type": "error", "error": str(e)}
             yield f"data: {json.dumps(err_event)}\n\n"
             return
+
+        if neon_db.enabled and full_response:
+            neon_db.save_message(sid, "assistant", full_response)
+
         last_results = getattr(agent.conversation, "last_tool_results", [])
         serialized_tools = []
         for tr in last_results or []:
