@@ -210,6 +210,7 @@ export function App() {
             handleSendMessage(`I'd like to check table availability for ${r.name}`);
           }}
           selectedRestaurant={selectedRestaurant}
+          restaurantCount={config?.stats?.restaurants_count}
           user={user}
           onOpenAuth={(mode) => {
             setAuthModalMode(mode || 'login');

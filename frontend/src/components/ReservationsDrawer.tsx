@@ -228,7 +228,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
                 <p className="text-xs text-black mt-1 font-bold">
                   {search
                     ? 'No reservation matches your search query.'
-                    : `Welcome, ${user.name}! You haven't booked any tables yet. Use the chat to book at any of our 75 locations.`}
+                    : `Welcome, ${user.name}! You haven't booked any tables yet. Use the chat to book at any of our locations.`}
                 </p>
                 <button
                   onClick={onClose}

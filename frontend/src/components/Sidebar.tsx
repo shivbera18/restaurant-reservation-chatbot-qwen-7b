@@ -446,7 +446,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span className="text-[9px] font-mono font-black">v1.1</span>
               </div>
               <p className="text-[9px] font-medium leading-tight text-black">
-                75 locations across 12 metro districts
+                {config?.stats?.restaurants_count ?? 75} locations across {config?.stats?.neighborhoods?.length ?? 12} metro districts
               </p>
             </div>
           )}

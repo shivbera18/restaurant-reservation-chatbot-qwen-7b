@@ -27,6 +27,7 @@ interface ChatAreaProps {
   onSelectRestaurant?: (restaurant: Restaurant) => void;
   selectedRestaurant?: Restaurant | null;
   user: User | null;
+  restaurantCount?: number;
   onOpenAuth: (mode?: 'login' | 'register') => void;
   onLogout: () => void;
   onOpenExplorer: () => void;
@@ -51,6 +52,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   onCancelReservation,
   onSelectRestaurant,
   selectedRestaurant,
+  restaurantCount,
   user,
   onOpenAuth,
   onLogout,
@@ -111,7 +113,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             className="btn-neo bg-neo-blue text-black px-2.5 py-1 text-xs font-black uppercase hidden sm:flex items-center gap-1.5"
           >
             <UtensilsCrossed className="w-3.5 h-3.5" />
-            <span>Directory (75)</span>
+            <span>Directory ({restaurantCount ?? 75})</span>
           </button>
 
           {/* My Bookings Shortcut */}
@@ -198,7 +200,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 GoodFoods Dining Concierge
               </h2>
               <p className="text-xs sm:text-sm font-bold text-black mt-2 leading-relaxed">
-                Your AI concierge connected to <strong>75 restaurant locations</strong> with real-time table availability, instant bookings, and reservation management.
+                Your AI concierge connected to <strong>{restaurantCount ?? 75} restaurant locations</strong> with real-time table availability, instant bookings, and reservation management.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-4 font-mono text-xs">

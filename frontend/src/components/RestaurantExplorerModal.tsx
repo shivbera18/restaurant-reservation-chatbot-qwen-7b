@@ -151,7 +151,7 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
           {loading ? (
             <div className="py-16 text-center font-mono font-bold">
               <div className="inline-block p-4 bg-white border-2 border-black rounded-neo shadow-neo text-black">
-                ⏳ Loading 75 restaurant locations...
+                ⏳ Loading restaurant locations...
               </div>
             </div>
           ) : filteredRestaurants.length === 0 ? (
