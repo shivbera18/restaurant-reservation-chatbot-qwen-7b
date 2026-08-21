@@ -76,6 +76,16 @@ def _serialize_reservation(res: Any) -> Dict[str, Any]:
     return data
 
 
+
+def _get_current_user(authorization: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """Extract authenticated user from Authorization header if valid."""
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    token = authorization[7:].strip()
+    if not token or not neon_db.enabled:
+        return None
+    return neon_db.get_user_by_token(token)
+
 # ---------------------------------------------------------------------------
 # Session Manager (Multi-Client Isolated State)
 # ---------------------------------------------------------------------------
@@ -157,20 +167,90 @@ class ChatRequest(BaseModel):
     use_mock: Optional[bool] = None
 
 
+class RegisterRequest(BaseModel):
+    email: str
+    password: str
+    name: str
+    phone: Optional[str] = None
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
 class SwitchProviderRequest(BaseModel):
-    session_id: Optional[str] = "default"
     provider: str
     model: str
     use_mock: Optional[bool] = False
+    session_id: Optional[str] = "default"
 
 
 class CancelReservationRequest(BaseModel):
     confirmation_code: str
 
+# ---------------------------------------------------------------------------
+# Authentication Endpoints
+# ---------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------
-# API Routes
-# ---------------------------------------------------------------------------
+@app.post("/api/auth/register")
+def register(payload: RegisterRequest):
+    """Register a new customer account."""
+    if not neon_db.enabled:
+        raise HTTPException(status_code=503, detail="Database persistence not configured")
+    if not payload.email or "@" not in payload.email:
+        raise HTTPException(status_code=400, detail="Valid email address is required")
+    if not payload.password or len(payload.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    if not payload.name.strip():
+        raise HTTPException(status_code=400, detail="Name is required")
+
+    try:
+        user = neon_db.create_user(
+            email=payload.email,
+            password=payload.password,
+            name=payload.name,
+            phone=payload.phone
+        )
+        token = neon_db.create_auth_session(user["id"])
+        return {"token": token, "user": user}
+    except Exception as e:
+        err_str = str(e).lower()
+        if "unique" in err_str or "duplicate" in err_str or "users_email" in err_str:
+            raise HTTPException(status_code=409, detail="An account with this email already exists")
+        raise HTTPException(status_code=500, detail=f"Registration error: {str(e)}")
+
+
+@app.post("/api/auth/login")
+def login(payload: LoginRequest):
+    """Log in an existing customer and return an auth bearer token."""
+    if not neon_db.enabled:
+        raise HTTPException(status_code=503, detail="Database persistence not configured")
+    user = neon_db.authenticate_user(payload.email, payload.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    token = neon_db.create_auth_session(user["id"])
+    return {"token": token, "user": user}
+
+
+@app.get("/api/auth/me")
+def get_me(authorization: Optional[str] = Header(default=None)):
+    """Verify token and return current authenticated user profile."""
+    user = _get_current_user(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated or session expired")
+    return {"user": user}
+
+
+@app.post("/api/auth/logout")
+def logout(authorization: Optional[str] = Header(default=None)):
+    """Revoke session token on logout."""
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization[7:].strip()
+        if token and neon_db.enabled:
+            neon_db.delete_auth_session(token)
+    return {"status": "logged_out"}
+
 
 @app.get("/api/config")
 def get_config(x_session_id: Optional[str] = Header(default="default")):
@@ -219,10 +299,13 @@ def switch_provider(payload: SwitchProviderRequest):
 
 
 @app.post("/api/chat")
-def chat(payload: ChatRequest):
-    """Process a user message and return agent response with structured tool results."""
+def chat(payload: ChatRequest, authorization: Optional[str] = Header(default=None)):
+    """Process a user message and return agent response with structured tool results.
+    Open endpoint - works for both authenticated and guest users."""
     sid = payload.session_id or "default"
     s = store.get_or_create(sid)
+    current_user = _get_current_user(authorization)
+    user_id = current_user["id"] if current_user else None
 
     # Switch provider if requested explicitly in payload
     if payload.provider and (payload.provider != s["provider"] or payload.model != s["model"]):
@@ -237,6 +320,7 @@ def chat(payload: ChatRequest):
     agent = s["agent"]
     if neon_db.enabled:
         neon_db.save_message(sid, "user", payload.message)
+        neon_db.save_session(sid, s["provider"], s["model"], s["use_mock"], user_id)
 
     try:
         response_text = agent.chat(payload.message)
@@ -253,8 +337,15 @@ def chat(payload: ChatRequest):
     serialized_tools = []
     for tr in last_results or []:
         tr_data = getattr(tr, "data", None)
-        # If tool created a reservation, normalize its fields
-        if getattr(tr, "tool_name", "") in ("create_reservation", "modify_reservation") and isinstance(tr_data, dict):
+        # If tool created a reservation and user is logged in, attach user_id to reservation
+        if getattr(tr, "tool_name", "") == "create_reservation" and getattr(tr, "success", False) and isinstance(tr_data, dict):
+            code = tr_data.get("confirmation_code")
+            if code and user_id:
+                res_obj = db.get_reservation_by_code(code)
+                if res_obj:
+                    res_obj.user_id = user_id
+                    if neon_db.enabled:
+                        neon_db.update_reservation(db._reservation_data(res_obj))
             tr_data = _serialize_reservation(tr_data)
 
         serialized_tools.append({
@@ -264,7 +355,7 @@ def chat(payload: ChatRequest):
             "error": getattr(tr, "error", None),
         })
 
-    # A featured venue belongs only to a detail lookup or a one-result search in this request.
+    # Featured venue if requested explicitly
     selected_restaurant = None
     if any(getattr(tr, "tool_name", "") == "get_restaurant_details" and getattr(tr, "success", False) for tr in last_results):
         raw_restaurant = getattr(agent.conversation, "selected_restaurant", None)
@@ -273,7 +364,10 @@ def chat(payload: ChatRequest):
             selected_restaurant = _dump_model(db.restaurants[rest_id]) if rest_id in db.restaurants else raw_restaurant
         elif raw_restaurant is not None:
             selected_restaurant = _dump_model(raw_restaurant)
-    active_reservations = [_serialize_reservation(res) for res in db.reservations.values()]
+
+    active_reservations = []
+    if current_user:
+        active_reservations = [_serialize_reservation(res) for res in db.get_reservations_by_user(current_user["id"])]
 
     return {
         "response": response_text,
@@ -283,7 +377,6 @@ def chat(payload: ChatRequest):
         "selected_restaurant": selected_restaurant,
         "active_reservations": active_reservations,
     }
-
 
 @app.get("/api/restaurants")
 def list_restaurants(
@@ -311,23 +404,44 @@ def list_restaurants(
 
 
 @app.get("/api/reservations")
-def list_reservations():
-    """List all active reservations formatted for frontend."""
-    return [_serialize_reservation(r) for r in db.reservations.values()]
+def list_reservations(authorization: Optional[str] = Header(default=None)):
+    """List reservations belonging to the authenticated user."""
+    user = _get_current_user(authorization)
+    if user:
+        return [_serialize_reservation(r) for r in db.get_reservations_by_user(user["id"])]
+    return []
 
 
 @app.post("/api/reservations/cancel")
-def cancel_reservation(payload: CancelReservationRequest):
-    """Cancel a booking by confirmation code."""
-    res = db.cancel_reservation(payload.confirmation_code.strip())
+def cancel_reservation(
+    payload: CancelReservationRequest,
+    authorization: Optional[str] = Header(default=None),
+):
+    """Cancel a booking. Only authenticated users can cancel their own reservations."""
+    user = _get_current_user(authorization)
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required: Please log in to cancel or change your reservations.",
+        )
+
+    res = db.get_reservation_by_code(payload.confirmation_code.strip())
     if not res:
         raise HTTPException(
             status_code=404,
             detail=f"Reservation '{payload.confirmation_code}' not found.",
         )
-    return {"success": True, "reservation": _serialize_reservation(res)}
 
+    # Ownership verification
+    res_user_id = getattr(res, "user_id", None)
+    if res_user_id and res_user_id != user["id"]:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden: You do not have permission to cancel this reservation.",
+        )
 
+    cancelled = db.cancel_reservation(payload.confirmation_code.strip())
+    return {"success": True, "reservation": _serialize_reservation(cancelled)}
 @app.post("/api/reset")
 def reset_conversation(x_session_id: Optional[str] = Header(default="default")):
     """Reset the chat history and active agent memory for this session."""
