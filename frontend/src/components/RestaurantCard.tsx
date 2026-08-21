@@ -24,7 +24,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   const neighborhoodVal = restaurant.neighborhood || restaurant.city || 'GoodFoods Location';
 
   return (
-    <div className="bg-neo-card border-2 border-black rounded-neo shadow-neo p-3.5 flex flex-col justify-between text-left transition-all">
+    <div className="bg-neo-card border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-sm p-3.5 flex flex-col justify-between text-left transition-all">
       <div>
         {/* Top bar: Name & Price */}
         <div className="flex items-start justify-between gap-2">
@@ -47,10 +47,10 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           </div>
 
           <div className="flex flex-col items-end gap-1 shrink-0">
-            <span className="bg-neo-yellow text-black border border-black font-mono font-black text-xs px-2 py-0.5 shadow-neo-sm rounded-neo-sm">
+            <span className="bg-neo-yellow text-black border border-neutral-200 dark:border-neutral-700 font-mono font-black text-xs px-2 py-0.5 shadow-sm rounded-lg">
               {priceVal}
             </span>
-            <div className="flex items-center gap-0.5 bg-black text-white px-1.5 py-0.5 text-[11px] font-mono font-bold rounded-neo-sm border border-black">
+            <div className="flex items-center gap-0.5 bg-black text-white px-1.5 py-0.5 text-[11px] font-mono font-bold rounded-lg border border-neutral-200 dark:border-neutral-700">
               <Star className="w-3 h-3 fill-neo-yellow text-neo-yellow" />
               <span>{ratingVal}</span>
             </div>
@@ -63,7 +63,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             {cuisines.map((cuisine) => (
               <span
                 key={cuisine}
-                className="bg-neo-blue/20 text-neo-main border border-black px-1.5 py-0.5 text-[10px] font-mono uppercase font-black rounded-neo-sm"
+                className="bg-neo-blue/20 text-neo-main border border-neutral-200 dark:border-neutral-700 px-1.5 py-0.5 text-[10px] font-mono uppercase font-black rounded-lg"
               >
                 🍽️ {cuisine}
               </span>
@@ -71,7 +71,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             {ambiances.slice(0, 2).map((amb) => (
               <span
                 key={amb}
-                className="bg-neo-purple/20 text-neo-main border border-black px-1.5 py-0.5 text-[10px] font-mono uppercase font-black rounded-neo-sm"
+                className="bg-neo-purple/20 text-neo-main border border-neutral-200 dark:border-neutral-700 px-1.5 py-0.5 text-[10px] font-mono uppercase font-black rounded-lg"
               >
                 🎭 {amb}
               </span>
@@ -97,7 +97,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               {popularDishes.map((dish) => (
                 <span
                   key={dish}
-                  className="bg-neo-surface border border-black text-neo-main text-[10px] font-sans px-1.5 py-0.5 rounded-neo-sm font-bold"
+                  className="bg-neo-surface border border-neutral-200 dark:border-neutral-700 text-neo-main text-[10px] font-sans px-1.5 py-0.5 rounded-lg font-bold"
                 >
                   {dish}
                 </span>
@@ -137,7 +137,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
       {onSelect && (
         <button
           onClick={() => onSelect(restaurant)}
-          className="btn-neo bg-neo-yellow text-black text-xs font-black uppercase py-2 px-3 mt-3 w-full flex items-center justify-center gap-1 shadow-neo-sm hover:bg-neo-orange hover:text-white"
+          className="btn-neo bg-neo-yellow text-black text-xs font-black uppercase py-2 px-3 mt-3 w-full flex items-center justify-center gap-1 shadow-sm hover:bg-neo-orange hover:text-white"
         >
           <span>⚡ Select & Check Availability</span>
         </button>

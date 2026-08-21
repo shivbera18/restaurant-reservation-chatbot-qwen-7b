@@ -15,7 +15,7 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
     <div className="my-2 text-left">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-2 px-2.5 py-1 bg-neo-purple/20 border-2 border-black rounded-neo-sm shadow-neo-sm hover:shadow-neo transition-all text-xs font-mono font-bold text-neo-main"
+        className="flex items-center gap-2 px-2.5 py-1 bg-neo-purple/20 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-sm hover:shadow-sm transition-all text-xs font-mono font-bold text-neo-main"
       >
         <Wrench className="w-3.5 h-3.5 text-current" />
         <span>
@@ -25,7 +25,7 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
           {toolResults.map((tr, idx) => (
             <span
               key={idx}
-              className={`px-1.5 py-0.5 text-[10px] border border-black rounded-neo-sm font-bold ${
+              className={`px-1.5 py-0.5 text-[10px] border border-neutral-200 dark:border-neutral-700 rounded-lg font-bold ${
                 tr.success ? 'bg-neo-green text-black' : 'bg-red-500 text-white'
               }`}
             >
@@ -41,7 +41,7 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
       </button>
 
       {expanded && (
-        <div className="mt-1.5 p-3 bg-neo-card border-2 border-black rounded-neo shadow-neo font-mono text-xs space-y-2.5 max-w-full overflow-hidden text-neo-main">
+        <div className="mt-1.5 p-3 bg-neo-card border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-sm font-mono text-xs space-y-2.5 max-w-full overflow-hidden text-neo-main">
           {toolResults.map((tr, idx) => (
             <div key={idx} className="border-b border-dashed border-black pb-2.5 last:border-b-0 last:pb-0">
               <div className="flex items-center gap-1.5 font-bold">
@@ -50,7 +50,7 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
                 ) : (
                   <AlertCircle className="w-3.5 h-3.5 text-red-600" />
                 )}
-                <span className="text-black bg-neo-yellow px-1.5 py-0.5 border border-black rounded-neo-sm text-[11px]">
+                <span className="text-black bg-neo-yellow px-1.5 py-0.5 border border-neutral-200 dark:border-neutral-700 rounded-lg text-[11px]">
                   {tr.tool_name}
                 </span>
                 <span className="text-neo-muted text-[10px]">
@@ -59,7 +59,7 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
               </div>
 
               {tr.data != null && (
-                <div className="mt-1.5 bg-neo-surface p-2 border border-black rounded-neo-sm text-[11px] max-h-40 overflow-y-auto text-neo-main">
+                <div className="mt-1.5 bg-neo-surface p-2 border border-neutral-200 dark:border-neutral-700 rounded-lg text-[11px] max-h-40 overflow-y-auto text-neo-main">
                   <pre className="whitespace-pre-wrap break-all font-mono">
                     {typeof tr.data === 'string'
                       ? tr.data
@@ -69,7 +69,7 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
               )}
 
               {tr.error != null && (
-                <div className="mt-1.5 bg-red-100 p-2 border border-red-500 text-red-800 rounded-neo-sm text-[11px]">
+                <div className="mt-1.5 bg-red-100 p-2 border border-red-500 text-red-800 rounded-lg text-[11px]">
                   {String(tr.error)}
                 </div>
               )}

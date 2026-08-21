@@ -39,7 +39,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
   };
 
   return (
-    <div className="bg-neo-card border-2 border-black rounded-neo shadow-neo p-2.5 mb-2 text-left text-xs font-sans transition-colors">
+    <div className="bg-neo-card border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-sm p-2.5 mb-2 text-left text-xs font-sans transition-colors">
       {/* Top Selector Strip */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none text-[11px] font-mono font-bold">
@@ -51,28 +51,28 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('party')}
-            className={`px-2.5 py-1 border border-black rounded-neo-sm font-bold shrink-0 transition-colors ${activeTab === 'party' ? 'bg-neo-yellow text-black shadow-neo-sm' : 'bg-neo-surface text-neo-main hover:bg-neo-yellow hover:text-black'}`}
+            className={`px-2.5 py-1 border border-neutral-200 dark:border-neutral-700 rounded-lg font-bold shrink-0 transition-colors ${activeTab === 'party' ? 'bg-neo-yellow text-black shadow-sm' : 'bg-neo-surface text-neo-main hover:bg-neo-yellow hover:text-black'}`}
           >
             👥 Guests
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('time')}
-            className={`px-2.5 py-1 border border-black rounded-neo-sm font-bold shrink-0 transition-colors ${activeTab === 'time' ? 'bg-neo-yellow text-black shadow-neo-sm' : 'bg-neo-surface text-neo-main hover:bg-neo-yellow hover:text-black'}`}
+            className={`px-2.5 py-1 border border-neutral-200 dark:border-neutral-700 rounded-lg font-bold shrink-0 transition-colors ${activeTab === 'time' ? 'bg-neo-yellow text-black shadow-sm' : 'bg-neo-surface text-neo-main hover:bg-neo-yellow hover:text-black'}`}
           >
             ⏰ Time
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('cuisine')}
-            className={`px-2.5 py-1 border border-black rounded-neo-sm font-bold shrink-0 transition-colors ${activeTab === 'cuisine' ? 'bg-neo-yellow text-black shadow-neo-sm' : 'bg-neo-surface text-neo-main hover:bg-neo-yellow hover:text-black'}`}
+            className={`px-2.5 py-1 border border-neutral-200 dark:border-neutral-700 rounded-lg font-bold shrink-0 transition-colors ${activeTab === 'cuisine' ? 'bg-neo-yellow text-black shadow-sm' : 'bg-neo-surface text-neo-main hover:bg-neo-yellow hover:text-black'}`}
           >
             🍽️ Cuisine
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('area')}
-            className={`px-2.5 py-1 border border-black rounded-neo-sm font-bold shrink-0 transition-colors ${activeTab === 'area' ? 'bg-neo-yellow text-black shadow-neo-sm' : 'bg-neo-surface text-neo-main hover:bg-neo-yellow hover:text-black'}`}
+            className={`px-2.5 py-1 border border-neutral-200 dark:border-neutral-700 rounded-lg font-bold shrink-0 transition-colors ${activeTab === 'area' ? 'bg-neo-yellow text-black shadow-sm' : 'bg-neo-surface text-neo-main hover:bg-neo-yellow hover:text-black'}`}
           >
             📍 Area
           </button>
@@ -155,7 +155,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
       {/* Expandable Direct Booking Form */}
       {isFormOpen && (
         <form onSubmit={handleDirectSubmit} className="mt-2.5 pt-2.5 border-t-2 border-dashed border-black space-y-2.5">
-          <div className="bg-neo-surface p-2 border border-black rounded-neo-sm text-[11px] font-mono text-neo-main">
+          <div className="bg-neo-surface p-2 border border-neutral-200 dark:border-neutral-700 rounded-lg text-[11px] font-mono text-neo-main">
             <strong>Target Venue:</strong>{' '}
             {selectedRestaurant ? (
               <span className="text-neo-main font-bold">{selectedRestaurant.name} ({selectedRestaurant.neighborhood || 'Downtown'})</span>
@@ -174,7 +174,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
                 <button
                   type="button"
                   onClick={() => setPartySize(Math.max(1, partySize - 1))}
-                  className="w-7 h-7 bg-neo-surface text-neo-main border-2 border-black rounded-neo-sm font-mono font-black"
+                  className="w-7 h-7 bg-neo-surface text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-mono font-black"
                 >
                   -
                 </button>
@@ -184,12 +184,12 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
                   max="20"
                   value={partySize}
                   onChange={(e) => setPartySize(parseInt(e.target.value) || 1)}
-                  className="w-12 h-7 text-center bg-neo-card text-neo-main border-2 border-black rounded-neo-sm font-mono font-bold text-xs"
+                  className="w-12 h-7 text-center bg-neo-card text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-mono font-bold text-xs"
                 />
                 <button
                   type="button"
                   onClick={() => setPartySize(Math.min(20, partySize + 1))}
-                  className="w-7 h-7 bg-neo-surface text-neo-main border-2 border-black rounded-neo-sm font-mono font-black"
+                  className="w-7 h-7 bg-neo-surface text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-mono font-black"
                 >
                   +
                 </button>
@@ -205,7 +205,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full h-7 px-2 bg-neo-card text-neo-main border-2 border-black rounded-neo-sm font-mono text-xs font-bold"
+                className="w-full h-7 px-2 bg-neo-card text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-mono text-xs font-bold"
               />
             </div>
 
@@ -217,7 +217,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
               <select
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full h-7 px-1.5 bg-neo-card text-neo-main border-2 border-black rounded-neo-sm font-mono text-xs font-bold"
+                className="w-full h-7 px-1.5 bg-neo-card text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-mono text-xs font-bold"
               >
                 {TIMES.map((t) => (
                   <option key={t} value={t}>
@@ -239,7 +239,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Full Name"
-                className="w-full h-7 px-2 bg-neo-card text-neo-main border-2 border-black rounded-neo-sm font-mono text-xs placeholder:text-neo-muted font-bold"
+                className="w-full h-7 px-2 bg-neo-card text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-mono text-xs placeholder:text-neo-muted font-bold"
                 required
               />
             </div>
@@ -254,7 +254,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="e.g. 990-643-3115"
-                className="w-full h-7 px-2 bg-neo-card text-neo-main border-2 border-black rounded-neo-sm font-mono text-xs placeholder:text-neo-muted font-bold"
+                className="w-full h-7 px-2 bg-neo-card text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-mono text-xs placeholder:text-neo-muted font-bold"
                 required
               />
             </div>
@@ -272,7 +272,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="btn-neo bg-neo-yellow text-black hover:bg-neo-orange hover:text-white px-4 py-1 font-mono text-xs font-black uppercase flex items-center gap-1 shadow-neo-sm"
+              className="btn-neo bg-neo-yellow text-black hover:bg-neo-orange hover:text-white px-4 py-1 font-mono text-xs font-black uppercase flex items-center gap-1 shadow-sm"
             >
               <Zap className="w-3 h-3" />
               <span>Book Table Now</span>
