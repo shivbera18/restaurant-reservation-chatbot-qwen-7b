@@ -7,6 +7,7 @@ The LLM backend is pluggable: Ollama (local), Google Gemini, or any
 OpenAI-compatible API. See llm_providers.py for the provider contract.
 """
 import json
+import re
 from typing import List, Dict, Any, Optional, Generator
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -419,12 +420,37 @@ class MockReservationAgent(ReservationAgent):
         
         elif any(word in user_lower for word in ["book", "reserve", "reservation", "table"]):
             if any(word in user_lower for word in ["cancel"]):
-                response = "I'd be happy to help cancel your reservation. Could you please provide your confirmation code?"
+                code_match = re.search(r'\b(GF[A-Z0-9]{6}|RES\d{5})\b', user_message)
+                if code_match:
+                    result = execute_tool("cancel_reservation", {"confirmation_code": code_match.group(1)})
+                    self.conversation.last_tool_results = [result]
+                    response = result.display_text if result.display_text else ("Reservation cancelled." if result.success else "Could not cancel.")
+                else:
+                    response = "I'd be happy to help cancel your reservation. Could you please provide your confirmation code (e.g. GF123456)?"
             elif any(word in user_lower for word in ["modify", "change", "update"]):
                 response = "I can help you modify your reservation. Please provide your confirmation code and what you'd like to change."
             else:
-                response = "I'd love to help you make a reservation! Could you tell me:\n1. Which restaurant or type of cuisine you prefer?\n2. Date and time?\n3. Number of guests?"
-        
+                party_size = self._extract_party_size(user_message) or 2
+                rest_id = self._extract_restaurant_id(user_message)
+                date_str = self._extract_date(user_message) or "2026-08-22"
+                time_str = self._extract_time(user_message) or "19:00"
+                name_str = self._extract_name(user_message) or "Guest"
+                phone_str = self._extract_phone(user_message) or "555-0100"
+
+                if "name:" in user_lower or "phone:" in user_lower or rest_id or "please book" in user_lower:
+                    result = execute_tool("create_reservation", {
+                        "restaurant_id": rest_id or "REST001",
+                        "customer_name": name_str,
+                        "customer_phone": phone_str,
+                        "party_size": party_size,
+                        "date": date_str,
+                        "time": time_str,
+                    })
+                    self.conversation.last_tool_results = [result]
+                    self._update_conversation_state([result])
+                    response = result.display_text if result.display_text else ("Reservation confirmed!" if result.success else "Table not available for selected slot.")
+                else:
+                    response = "I'd love to help you make a reservation! Could you tell me:\n1. Which restaurant or type of cuisine you prefer?\n2. Date and time?\n3. Number of guests, name, and phone number?"
         elif any(word in user_lower for word in ["available", "availability", "open"]):
             response = "To check availability, please tell me:\n- Which restaurant (or type of cuisine)?\n- What date?\n- How many guests?"
         
@@ -466,14 +492,61 @@ What would you like to do?"""
         
         return response
     
+    def _extract_restaurant_id(self, text: str) -> Optional[str]:
+        """Extract or resolve restaurant ID from text"""
+        from database import db
+        text_lower = text.lower()
+        for r in db.restaurants.values():
+            if r.name.lower() in text_lower or (r.neighborhood.lower() in text_lower and any(c.value.lower() in text_lower for c in r.cuisine_types)):
+                return r.id
+        return None
+
+    def _extract_date(self, text: str) -> Optional[str]:
+        import re
+        date_match = re.search(r'\b(20\d\d-\d\d-\d\d)\b', text)
+        if date_match:
+            return date_match.group(1)
+        if "august 22" in text.lower() or "22nd august" in text.lower() or "aug 22" in text.lower():
+            return "2026-08-22"
+        if "tomorrow" in text.lower():
+            return "2026-08-22"
+        return "2026-08-22"
+
+    def _extract_time(self, text: str) -> Optional[str]:
+        import re
+        time_match = re.search(r'\b(\d{1,2}):(\d{2})\b', text)
+        if time_match:
+            return f"{int(time_match.group(1)):02d}:{time_match.group(2)}"
+        if "9 pm" in text.lower() or "9:00 pm" in text.lower() or "9pm" in text.lower():
+            return "21:00"
+        if "8 pm" in text.lower() or "8:00 pm" in text.lower() or "8pm" in text.lower():
+            return "20:00"
+        if "7 pm" in text.lower() or "7:00 pm" in text.lower() or "7pm" in text.lower():
+            return "19:00"
+        return "19:00"
+
+    def _extract_name(self, text: str) -> Optional[str]:
+        import re
+        name_match = re.search(r'(?:name\s*(?:is|:)?\s*)([A-Za-z]+)', text, re.IGNORECASE)
+        if name_match:
+            return name_match.group(1).strip()
+        return None
+
+    def _extract_phone(self, text: str) -> Optional[str]:
+        import re
+        phone_match = re.search(r'\b(\d{3}[-\s]?\d{3}[-\s]?\d{4})\b', text)
+        if phone_match:
+            return phone_match.group(1).strip()
+        return None
+
     def _extract_party_size(self, text: str) -> Optional[int]:
         """Extract party size from text"""
         import re
-        numbers = re.findall(r'\b(\d+)\s*(?:people|guests|persons?|of us)\b', text.lower())
-        if numbers:
-            return int(numbers[0])
+        numbers = re.findall(r'\b(?:for|party of)?\s*(\d+)\s*(?:people|guests|persons?|of us)?\b', text.lower())
+        for n in numbers:
+            if n.isdigit() and 1 <= int(n) <= 20:
+                return int(n)
         return None
-    
     def _extract_cuisine(self, text: str) -> Optional[str]:
         """Extract cuisine type from text"""
         cuisines = ["italian", "mexican", "japanese", "chinese", "indian", "thai", 
