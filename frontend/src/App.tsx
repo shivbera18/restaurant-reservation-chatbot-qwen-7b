@@ -59,7 +59,7 @@ export function App() {
     if (!userText.trim() || loading) return;
 
     const userMessage: ChatMessage = {
-      id: String(Date.now()),
+      id: crypto.randomUUID(),
       role: 'user',
       content: userText,
       timestamp: new Date(),
@@ -72,7 +72,7 @@ export function App() {
       const res = await sendChatMessage(userText);
 
       const assistantMessage: ChatMessage = {
-        id: String(Date.now() + 1),
+        id: crypto.randomUUID(),
         role: 'assistant',
         content: res.response,
         timestamp: new Date(),
@@ -102,7 +102,7 @@ export function App() {
     } catch (err) {
       console.error('Chat error:', err);
       const errorMessage: ChatMessage = {
-        id: String(Date.now() + 1),
+        id: crypto.randomUUID(),
         role: 'assistant',
         content: `⚠️ **Error processing request:** ${
           err instanceof Error ? err.message : 'Unknown error occurred.'
