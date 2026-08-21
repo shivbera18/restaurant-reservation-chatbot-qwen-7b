@@ -12,6 +12,7 @@ from models import (
     Reservation, ReservationStatus, TimeSlot, Availability,
     CustomerPreferences
 )
+from neon_db import neon_db
 
 
 class RestaurantDatabase:
@@ -21,6 +22,10 @@ class RestaurantDatabase:
         self.restaurants: Dict[str, Restaurant] = {}
         self.reservations: Dict[str, Reservation] = {}
         self._seed_restaurants()
+        if neon_db.enabled:
+            neon_db.migrate()
+            self._load_or_seed_restaurants()
+            self._load_reservations()
     
     def _seed_restaurants(self):
         """Populate database with 75 diverse restaurant locations."""
@@ -179,6 +184,25 @@ class RestaurantDatabase:
                 restaurant_id += 1
         
         print(f"Initialized database with {len(self.restaurants)} restaurants")
+    def _load_or_seed_restaurants(self) -> None:
+        persisted = neon_db.load_restaurants()
+        if persisted:
+            self.restaurants = {row["id"]: Restaurant(**row) for row in persisted}
+            return
+        neon_db.upsert_restaurants([
+            restaurant.model_dump(mode="json") if hasattr(restaurant, "model_dump") else restaurant.dict()
+            for restaurant in self.restaurants.values()
+        ])
+
+    def _load_reservations(self) -> None:
+        for row in neon_db.load_reservations():
+            row["status"] = ReservationStatus(row["status"])
+            self.reservations[row["id"]] = Reservation(**row)
+
+    @staticmethod
+    def _reservation_data(reservation: Reservation) -> dict:
+        return reservation.model_dump() if hasattr(reservation, "model_dump") else reservation.dict()
+
     
     def get_all_restaurants(self) -> List[Restaurant]:
         """Get all restaurants"""
@@ -459,6 +483,8 @@ class RestaurantDatabase:
         )
         
         self.reservations[reservation.id] = reservation
+        if neon_db.enabled:
+            neon_db.save_reservation(self._reservation_data(reservation))
         return reservation
     
     def get_reservation_by_code(self, confirmation_code: str) -> Optional[Reservation]:
@@ -518,6 +544,8 @@ class RestaurantDatabase:
             reservation.party_size = new_party_size
         if new_special_requests:
             reservation.special_requests = new_special_requests
+        if neon_db.enabled:
+            neon_db.update_reservation(self._reservation_data(reservation))
         
         return reservation
     
@@ -528,6 +556,8 @@ class RestaurantDatabase:
             return None
         
         reservation.status = ReservationStatus.CANCELLED
+        if neon_db.enabled:
+            neon_db.update_reservation(self._reservation_data(reservation))
         return reservation
     
     def get_neighborhoods(self) -> List[str]:
