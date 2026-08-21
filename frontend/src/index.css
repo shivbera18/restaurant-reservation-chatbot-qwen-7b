@@ -62,15 +62,15 @@ code, pre, .font-mono {
 ::-webkit-scrollbar-thumb {
   background: var(--neo-scrollbar-thumb);
   border: 2px solid var(--neo-border);
-  border-radius: 4px;
+  border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--neo-scrollbar-hover);
 }
 
-/* Neobrutalist tactile button interaction */
+/* Neobrutalist tactile button interaction with smooth modern curvature */
 .btn-neo {
-  @apply transition-all duration-100 ease-out border-2 border-black font-bold shadow-neo rounded-neo hover:-translate-y-0.5 hover:shadow-neo-lg active:translate-x-0.5 active:translate-y-0.5 active:shadow-neo-sm;
+  @apply transition-all duration-150 ease-out border-2 border-black font-bold shadow-neo rounded-neo hover:-translate-y-0.5 hover:shadow-neo-lg active:translate-x-0.5 active:translate-y-0.5 active:shadow-neo-sm;
 }
 
 .card-neo {
