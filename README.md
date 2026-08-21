@@ -3,7 +3,8 @@
 An end-to-end conversational AI agent for restaurant reservations, built from scratch with proper tool-calling architecture (MCP/A2A style).
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg)
+![React](https://img.shields.io/badge/React-18+-61DAFB.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 ## Overview
@@ -25,15 +26,13 @@ GoodFoods AI Concierge is an intelligent virtual assistant that helps customers 
 
 ```
 goodfoods_reservation/
-├── app.py              # Streamlit frontend application
+├── server.py           # FastAPI server and React production build host
 ├── agent.py            # Main AI agent with two-stage tool-calling logic
 ├── llm_providers.py    # Pluggable LLM backends (Ollama / Gemini / OpenAI-compatible)
 ├── tools.py            # Tool definitions, executors, and intent-based filtering
 ├── database.py         # Restaurant data (75 locations) and booking storage
 ├── models.py           # Pydantic data models with enums
-├── prompts.py          # Modular system prompts (base + intent-specific)
-├── config.py           # Configuration settings (all env-overridable)
-├── .env.example        # Template for API keys and model settings
+├── frontend/           # React + Vite client
 ├── requirements.txt    # Python dependencies
 └── README.md           # This file
 ```
@@ -43,6 +42,7 @@ goodfoods_reservation/
 ### Prerequisites
 
 - Python 3.9 or higher
+- Node.js 18 or higher and npm
 - **One** of: Ollama installed locally, a Gemini API key, or an OpenAI-compatible API key
 
 ### Installation
@@ -64,12 +64,17 @@ goodfoods_reservation/
    - **Using `uv` (fast Python package installer):**
      ```bash
      uv venv
-     source .venv/bin/activate  # On Windows: .venv\Scripts\activate
      uv pip install -r requirements.txt
-     # or run directly: uv run streamlit run app.py
      ```
 
-3. **Pick a backend** (copy `.env.example` to `.env` and edit it)
+3. **Install the React client**
+   ```bash
+   cd frontend
+   npm install
+   cd ..
+   ```
+
+4. **Pick a backend** (copy `.env.example` to `.env` and edit it)
 
    <details open>
    <summary><b>Option A — Ollama (local, free, no API key)</b></summary>
@@ -129,15 +134,24 @@ goodfoods_reservation/
    ```
    </details>
 
-4. **Run the application**
+5. **Run the application**
    ```bash
-   streamlit run app.py
-   # Or with uv:
-   uv run streamlit run app.py
+   # Terminal 1 — FastAPI backend
+   uvicorn server:app --reload
+
+   # Terminal 2 — React development server
+   cd frontend
+   npm run dev
    ```
 
-5. **Open in browser**
-   Navigate to `http://localhost:8501`
+6. **Open in browser**
+   Navigate to the Vite URL shown in Terminal 2 (normally `http://localhost:5173`).
+
+   For a single production server:
+   ```bash
+   cd frontend && npm run build && cd ..
+   uvicorn server:app
+   ```
 
 ### Switching Models
 
@@ -150,11 +164,11 @@ Three ways, in increasing order of convenience:
 3. **Environment variable** — wins over `.env`:
    ```bash
    # macOS/Linux
-   LLM_PROVIDER=gemini GEMINI_API_KEY=... streamlit run app.py
+   LLM_PROVIDER=gemini GEMINI_API_KEY=... uvicorn server:app
    ```
    ```powershell
    # Windows PowerShell
-   $env:LLM_PROVIDER="gemini"; $env:GEMINI_API_KEY="..."; streamlit run app.py
+   $env:LLM_PROVIDER="gemini"; $env:GEMINI_API_KEY="..."; uvicorn server:app
    ```
 
 `LLM_PROVIDER` accepts `ollama`, `gemini`, `openai`, `groq`, `openrouter`,
@@ -428,7 +442,7 @@ agent = create_agent(use_mock=True)                           # no LLM at all
 |---------|-----|
 | `Could not reach Ollama at http://localhost:11434` | Start it with `ollama serve` |
 | `Model 'x' is not pulled` | `ollama pull x` |
-| `GEMINI_API_KEY is not set` | Add it to `.env`, then restart Streamlit |
+| `GEMINI_API_KEY is not set` | Add it to `.env`, then restart the FastAPI server |
 | `Gemini API error 400: API key not valid` | Key is wrong or lacks Generative Language API access |
 | `Gemini API error 404` | Model name not available to your key — try `gemini-2.0-flash` |
 | Sidebar shows a stale status | Click **Recheck connection** |
@@ -450,7 +464,7 @@ MIT License - See LICENSE file for details.
 
 ## Acknowledgments
 
-- Built with [Streamlit](https://streamlit.io)
+- Built with [FastAPI](https://fastapi.tiangolo.com/) and [React](https://react.dev/)
 - Runs on [Ollama](https://ollama.ai), the [Gemini API](https://ai.google.dev), or any OpenAI-compatible endpoint
 - Inspired by [Model Context Protocol](https://modelcontextprotocol.io)
 
