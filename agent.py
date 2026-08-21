@@ -224,13 +224,16 @@ class ReservationAgent:
         self.conversation.last_tool_results = tool_results
 
     def _classify_intent(self, user_message: str) -> List[str]:
-        """
-        Stage 1: Classify user intent with minimal LLM call.
-        Returns: List of intents (e.g., ["SEARCH", "RESERVE"])
-        """
+        """Classify the current message using the last three conversation turns."""
+        history = [
+            {"role": msg.role, "content": msg.content}
+            for msg in self.conversation.messages
+            if msg.role in {"user", "assistant"} and msg.content
+        ][-3:]
         classification_messages = [
             {"role": "system", "content": get_intent_classification_prompt()},
-            {"role": "user", "content": user_message}
+            *history,
+            {"role": "user", "content": user_message},
         ]
 
         if DEBUG:
