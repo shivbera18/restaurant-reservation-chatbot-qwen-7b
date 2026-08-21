@@ -25,6 +25,7 @@ export function App() {
   const [loading, setLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [backendOffline, setBackendOffline] = useState(false);
 
   // Modals & Drawers
   const [isExplorerOpen, setIsExplorerOpen] = useState(false);
@@ -43,8 +44,10 @@ export function App() {
       setConfig(cfg);
       setActiveReservations(resList);
       setUser(currentUser);
+      setBackendOffline(false);
     } catch (err) {
       console.error('Failed to load initial app data:', err);
+      setBackendOffline(true);
     }
   };
 
@@ -195,6 +198,22 @@ export function App() {
             handleSendMessage(`I'd like to check table availability for ${r.name}`);
           }}
           selectedRestaurant={selectedRestaurant}
+          user={user}
+          onOpenAuth={(mode) => {
+            setAuthModalMode(mode || 'login');
+            setIsAuthModalOpen(true);
+          }}
+          onLogout={async () => {
+            await logoutUser();
+            setUser(null);
+            setActiveReservations([]);
+            refreshAppData();
+          }}
+          onOpenExplorer={() => setIsExplorerOpen(true)}
+          onOpenReservations={() => setIsReservationsOpen(true)}
+          activeReservationsCount={activeReservations.length}
+          backendOffline={backendOffline}
+          onRetryConnection={refreshAppData}
         />
       </main>
 

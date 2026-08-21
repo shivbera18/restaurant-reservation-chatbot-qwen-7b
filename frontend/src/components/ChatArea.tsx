@@ -1,8 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Send, Loader2, Copy, Check } from 'lucide-react';
-import type { ChatMessage, Restaurant } from '../types';
+import {
+  Send,
+  Loader2,
+  Copy,
+  Check,
+  UtensilsCrossed,
+  Ticket,
+  User as UserIcon,
+  LogIn,
+  AlertTriangle,
+  RotateCcw,
+} from 'lucide-react';
+import type { ChatMessage, Restaurant, User } from '../types';
 import { RestaurantCard } from './RestaurantCard';
 import { ReservationTicket } from './ReservationTicket';
 import { ToolCallBadge } from './ToolCallBadge';
@@ -15,6 +26,14 @@ interface ChatAreaProps {
   onCancelReservation?: (code: string) => Promise<void>;
   onSelectRestaurant?: (restaurant: Restaurant) => void;
   selectedRestaurant?: Restaurant | null;
+  user: User | null;
+  onOpenAuth: (mode?: 'login' | 'register') => void;
+  onLogout: () => void;
+  onOpenExplorer: () => void;
+  onOpenReservations: () => void;
+  activeReservationsCount: number;
+  backendOffline?: boolean;
+  onRetryConnection?: () => void;
 }
 
 const QUICK_PROMPTS = [
@@ -32,6 +51,14 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   onCancelReservation,
   onSelectRestaurant,
   selectedRestaurant,
+  user,
+  onOpenAuth,
+  onLogout,
+  onOpenExplorer,
+  onOpenReservations,
+  activeReservationsCount,
+  backendOffline,
+  onRetryConnection,
 }) => {
   const [input, setInput] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -60,6 +87,100 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
   return (
     <div className="flex-1 flex flex-col h-full max-w-5xl mx-auto w-full px-3 sm:px-6 py-3 overflow-hidden text-left">
+      {/* Top Header Bar with Prominent Navigation & Sign In */}
+      <header className="bg-white border-3 border-black shadow-neo rounded-neo px-3.5 py-2 mb-3 flex items-center justify-between gap-2 shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center text-base font-black shadow-neo-sm">
+            🍽️
+          </div>
+          <div>
+            <h1 className="font-black text-sm uppercase tracking-tight text-black leading-none">
+              GoodFoods<span className="text-neo-orange">.AI</span>
+            </h1>
+            <span className="font-mono text-[10px] font-bold text-gray-700 block mt-0.5">
+              Autonomous Concierge
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Restaurant Explorer Shortcut */}
+          <button
+            type="button"
+            onClick={onOpenExplorer}
+            className="btn-neo bg-neo-blue text-black px-2.5 py-1 text-xs font-black uppercase hidden sm:flex items-center gap-1.5"
+          >
+            <UtensilsCrossed className="w-3.5 h-3.5" />
+            <span>Directory (75)</span>
+          </button>
+
+          {/* My Bookings Shortcut */}
+          <button
+            type="button"
+            onClick={onOpenReservations}
+            className="btn-neo bg-neo-green text-black px-2.5 py-1 text-xs font-black uppercase flex items-center gap-1.5"
+          >
+            <Ticket className="w-3.5 h-3.5" />
+            <span>My Bookings</span>
+            {activeReservationsCount > 0 && (
+              <span className="bg-black text-white px-1.5 py-0.2 text-[10px] font-mono font-black rounded-neo-sm">
+                {activeReservationsCount}
+              </span>
+            )}
+          </button>
+
+          {/* Prominent User Sign In / Profile Pill */}
+          {user ? (
+            <div className="flex items-center gap-1.5 bg-neo-yellow border-2 border-black rounded-neo-sm shadow-neo-sm px-2.5 py-1">
+              <UserIcon className="w-3.5 h-3.5 text-black" />
+              <span className="font-black text-xs uppercase text-black max-w-[100px] truncate">
+                {user.name.split(' ')[0]}
+              </span>
+              <button
+                type="button"
+                onClick={onLogout}
+                title="Log out"
+                className="ml-1 text-[11px] font-mono font-black text-red-700 hover:text-black hover:underline"
+              >
+                Log Out
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onOpenAuth('login')}
+              className="btn-neo bg-neo-yellow hover:bg-neo-orange hover:text-white text-black px-3 py-1 text-xs font-black uppercase flex items-center gap-1.5 shadow-neo-sm"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>⚡ Sign In / Sign Up</span>
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Backend Offline Warning Banner if connection failed */}
+      {backendOffline && (
+        <div className="bg-neo-orange/20 border-3 border-black p-3 mb-3 rounded-neo shadow-neo flex items-center justify-between gap-2 text-xs font-bold text-black shrink-0">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-neo-orange shrink-0" />
+            <span>
+              <strong>Backend Offline:</strong> FastAPI is not running on port 8000. Start backend with{' '}
+              <code className="bg-white border border-black px-1.5 py-0.5 font-mono text-[11px]">uvicorn server:app --port 8000</code>.
+            </span>
+          </div>
+          {onRetryConnection && (
+            <button
+              type="button"
+              onClick={onRetryConnection}
+              className="btn-neo bg-white hover:bg-neo-yellow text-black text-xs px-2.5 py-1 font-mono uppercase font-black shrink-0 flex items-center gap-1"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Retry</span>
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Scrollable Message List Container */}
       <div className="flex-1 overflow-y-auto pr-1 space-y-4 pb-2">
         {messages.length === 0 ? (
