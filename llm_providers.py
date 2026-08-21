@@ -324,8 +324,13 @@ def _to_gemini_schema(schema: Any) -> Optional[Dict]:
         if key not in _GEMINI_SCHEMA_KEYS:
             continue
 
-        if key == "type" and isinstance(value, str):
-            cleaned["type"] = value.upper()
+        if key == "type":
+            if isinstance(value, str):
+                cleaned["type"] = value.upper()
+            elif isinstance(value, list):
+                non_null = [v for v in value if v != "null"]
+                cleaned["type"] = (non_null[0] if non_null else "STRING").upper()
+                cleaned["nullable"] = "null" in value
         elif key == "properties" and isinstance(value, dict):
             properties = {}
             for prop_name, prop_schema in value.items():

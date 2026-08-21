@@ -354,7 +354,100 @@ class ReservationAgent:
                 return assistant_content
         
         return "I apologize, but I'm having trouble processing your request. Please try again."
-    
+
+    def chat_stream(self, user_message: str):
+        """
+        Generator that yields SSE-compatible streaming events during execution:
+        - {"type": "intent", "intents": [...]}
+        - {"type": "tool_call", "name": ..., "arguments": ...}
+        - {"type": "tool_result", "name": ..., "success": ..., "data": ...}
+        - {"type": "token", "token": "..."}
+        - {"type": "done", "response": "..."}
+        """
+        intents = self._classify_intent(user_message)
+        yield {"type": "intent", "intents": intents}
+
+        filtered_tools = get_tools_for_intents(intents)
+        self._update_system_prompt(intents, tools=filtered_tools)
+
+        self.conversation.messages.append(Message(
+            role="user",
+            content=user_message
+        ))
+
+        max_iterations = 5
+        iteration = 0
+
+        while iteration < max_iterations:
+            iteration += 1
+            messages = self._format_messages_for_api()
+            response = self._call_llm(messages, filtered_tools)
+
+            if "choices" not in response or not response["choices"]:
+                err_msg = "I'm sorry, I encountered an error processing your request."
+                yield {"type": "token", "token": err_msg}
+                yield {"type": "done", "response": err_msg}
+                return
+
+            choice = response["choices"][0]
+            message = choice.get("message", {})
+            tool_calls = self._parse_tool_calls(response)
+
+            if tool_calls:
+                self.conversation.messages.append(Message(
+                    role="assistant",
+                    content=message.get("content", ""),
+                    tool_calls=tool_calls
+                ))
+
+                for tc in tool_calls:
+                    yield {
+                        "type": "tool_call",
+                        "name": tc["function"]["name"],
+                        "arguments": tc["function"].get("arguments", {}),
+                    }
+
+                results = self._execute_tool_calls(tool_calls)
+                self._update_conversation_state(results)
+
+                for tc, result in zip(tool_calls, results):
+                    yield {
+                        "type": "tool_result",
+                        "name": tc["function"]["name"],
+                        "success": result.success,
+                        "data": result.data,
+                        "error": result.error,
+                    }
+                    tool_content = json.dumps({
+                        "success": result.success,
+                        "data": result.data,
+                        "error": result.error,
+                    })
+                    self.conversation.messages.append(Message(
+                        role="tool",
+                        content=tool_content,
+                        tool_call_id=tc["id"],
+                        name=tc["function"]["name"]
+                    ))
+                continue
+            else:
+                assistant_content = message.get("content", "")
+                self.conversation.messages.append(Message(
+                    role="assistant",
+                    content=assistant_content
+                ))
+                # Yield assistant response in small realistic token chunks
+                words = assistant_content.split(" ")
+                for i, word in enumerate(words):
+                    chunk = word if i == len(words) - 1 else word + " "
+                    yield {"type": "token", "token": chunk}
+
+                yield {"type": "done", "response": assistant_content}
+                return
+
+        fallback = "I apologize, but I'm having trouble processing your request. Please try again."
+        yield {"type": "token", "token": fallback}
+        yield {"type": "done", "response": fallback}
     def reset_conversation(self):
         """Reset the conversation state"""
         self.conversation = ConversationState()
@@ -492,9 +585,17 @@ What would you like to do?"""
             role="assistant",
             content=response
         ))
-        
         return response
-    
+
+    def chat_stream(self, user_message: str):
+        """Simulate SSE streaming for MockAgent in tests or offline demo mode."""
+        yield {"type": "intent", "intents": ["GENERAL"]}
+        full_response = self.chat(user_message)
+        words = full_response.split(" ")
+        for i, word in enumerate(words):
+            chunk = word if i == len(words) - 1 else word + " "
+            yield {"type": "token", "token": chunk}
+        yield {"type": "done", "response": full_response}
     def _extract_restaurant_id(self, text: str) -> Optional[str]:
         """Extract or resolve restaurant ID from text"""
         from database import db

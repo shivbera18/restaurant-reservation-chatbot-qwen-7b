@@ -193,7 +193,7 @@ TOOL_DEFINITIONS = [
                         "description": "Guest's phone number"
                     },
                     "customer_email": {
-                        "type": "string",
+                        "type": ["string", "null"],
                         "description": "Guest's email address (optional)"
                     },
                     "party_size": {
@@ -209,12 +209,12 @@ TOOL_DEFINITIONS = [
                         "description": "Reservation time (format: HH:MM)"
                     },
                     "special_requests": {
-                        "type": "string",
-                        "description": "Any special requests or notes"
+                        "type": ["string", "null"],
+                        "description": "Any special requests or notes (optional)"
                     },
                     "occasion": {
-                        "type": "string",
-                        "description": "Special occasion (birthday, anniversary, etc.)"
+                        "type": ["string", "null"],
+                        "description": "Special occasion (birthday, anniversary, etc., optional)"
                     }
                 },
                 "required": ["restaurant_id", "customer_name", "customer_phone", "party_size", "date", "time"]
@@ -267,8 +267,8 @@ TOOL_DEFINITIONS = [
                         "description": "New party size"
                     },
                     "new_special_requests": {
-                        "type": "string",
-                        "description": "Updated special requests"
+                        "type": ["string", "null"],
+                        "description": "Updated special requests (optional)"
                     }
                 },
                 "required": ["confirmation_code"]

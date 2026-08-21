@@ -9,6 +9,7 @@ import type { ChatMessage, Restaurant, Reservation, SystemConfig, User } from '.
 import {
   fetchConfig,
   sendChatMessage,
+  sendChatMessageStream,
   fetchReservations,
   cancelReservation,
   resetConversation,
@@ -54,7 +55,6 @@ export function App() {
   useEffect(() => {
     refreshAppData();
   }, []);
-
   const handleSendMessage = async (userText: string) => {
     if (!userText.trim() || loading) return;
 
@@ -65,51 +65,97 @@ export function App() {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const assistantMsgId = crypto.randomUUID();
+    const initialAssistantMessage: ChatMessage = {
+      id: assistantMsgId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage, initialAssistantMessage]);
     setLoading(true);
 
     try {
-      const res = await sendChatMessage(userText);
+      let accumulatedTokens = '';
+      await sendChatMessageStream(
+        userText,
+        {
+          onToken: (token) => {
+            accumulatedTokens += token;
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantMsgId
+                  ? { ...msg, content: accumulatedTokens }
+                  : msg
+              )
+            );
+          },
+          onFinal: (finalData) => {
+            setMessages((prev) =>
+              prev.map((msg) => {
+                if (msg.id !== assistantMsgId) return msg;
+                const updated: ChatMessage = {
+                  ...msg,
+                  tool_results: finalData.tool_results as ChatMessage['tool_results'],
+                  selected_restaurant: finalData.selected_restaurant || undefined,
+                };
+                const createTool = finalData.tool_results?.find(
+                  (tool) => tool.tool_name === 'create_reservation' && tool.success && tool.data
+                );
+                if (createTool && typeof createTool.data === 'object') {
+                  const data = createTool.data as Record<string, unknown>;
+                  updated.created_reservation = (data.reservation || data) as Reservation;
+                }
+                return updated;
+              })
+            );
 
-      const assistantMessage: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: res.response,
-        timestamp: new Date(),
-        tool_results: res.tool_results,
-        selected_restaurant: res.selected_restaurant || undefined,
-      };
+            if (finalData.selected_restaurant) {
+              setSelectedRestaurant(finalData.selected_restaurant);
+            }
 
-      const createTool = res.tool_results?.find(
-        (tool) => tool.tool_name === 'create_reservation' && tool.success && tool.data,
+            if (finalData.active_reservations) {
+              setActiveReservations(finalData.active_reservations);
+            } else {
+              refreshAppData();
+            }
+          },
+        }
       );
-      if (createTool && typeof createTool.data === 'object') {
-        const data = createTool.data as Record<string, unknown>;
-        assistantMessage.created_reservation = (data.reservation || data) as Reservation;
-      }
-
-      setMessages((prev) => [...prev, assistantMessage]);
-
-      if (res.selected_restaurant) {
-        setSelectedRestaurant(res.selected_restaurant);
-      }
-
-      if (res.active_reservations) {
-        setActiveReservations(res.active_reservations);
-      } else {
-        refreshAppData();
-      }
     } catch (err) {
-      console.error('Chat error:', err);
-      const errorMessage: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: `⚠️ **Error processing request:** ${
-          err instanceof Error ? err.message : 'Unknown error occurred.'
-        }\n\nPlease check your API key / model configuration in the AI Engine menu above.`,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      console.warn('Stream failed or fell back, attempting standard chat...', err);
+      try {
+        const fallbackRes = await sendChatMessage(userText);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMsgId
+              ? {
+                  ...msg,
+                  content: fallbackRes.response,
+                  tool_results: fallbackRes.tool_results,
+                  selected_restaurant: fallbackRes.selected_restaurant || undefined,
+                }
+              : msg
+          )
+        );
+        if (fallbackRes.selected_restaurant) setSelectedRestaurant(fallbackRes.selected_restaurant);
+        if (fallbackRes.active_reservations) setActiveReservations(fallbackRes.active_reservations);
+      } catch (fallbackErr) {
+        console.error('Chat error:', fallbackErr);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMsgId
+              ? {
+                  ...msg,
+                  content: `⚠️ **Error processing request:** ${
+                    fallbackErr instanceof Error ? fallbackErr.message : 'Unknown error occurred.'
+                  }\n\nPlease check your API key / model configuration in the AI Engine menu above.`,
+                }
+              : msg
+          )
+        );
+      }
     } finally {
       setLoading(false);
     }

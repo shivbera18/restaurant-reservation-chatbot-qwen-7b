@@ -4,15 +4,16 @@ Exposes REST APIs for chat, restaurant discovery, reservation management,
 and LLM provider configuration. Serves the React frontend when built.
 """
 from typing import Any, Dict, List, Optional
+import asyncio
+import json
 import os
 from pathlib import Path
-
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from config import (
@@ -391,6 +392,90 @@ def chat(payload: ChatRequest, authorization: Optional[str] = Header(default=Non
         "selected_restaurant": selected_restaurant,
         "active_reservations": active_reservations,
     }
+
+@app.post("/api/chat/stream")
+def chat_stream_endpoint(payload: ChatRequest, authorization: Optional[str] = Header(default=None)):
+    """Stream agent response tokens and events over Server-Sent Events (SSE)."""
+    sid = payload.session_id or "default"
+    if not payload.message.strip():
+        raise HTTPException(status_code=422, detail="Message cannot be empty.")
+    s = store.get_or_create(sid)
+    current_user = _get_current_user(authorization)
+    user_id = current_user["id"] if current_user else None
+
+    if payload.use_mock is not None or (payload.provider and (payload.provider != s["provider"] or payload.model != s["model"])):
+        store.switch_model(
+            session_id=sid,
+            provider=payload.provider or s["provider"],
+            model=payload.model or s["model"],
+            use_mock=bool(payload.use_mock),
+        )
+        s = store.get_or_create(sid)
+    agent = s["agent"]
+    if neon_db.enabled:
+        neon_db.save_message(sid, "user", payload.message)
+        neon_db.save_session(sid, s["provider"], s["model"], s["use_mock"], user_id)
+
+    def event_generator():
+        full_response = ""
+        try:
+            for event in agent.chat_stream(payload.message):
+                if event.get("type") == "token":
+                    full_response += event.get("token", "")
+                yield f"data: {json.dumps(event)}\n\n"
+        except Exception as e:
+            err_event = {"type": "error", "error": str(e)}
+            yield f"data: {json.dumps(err_event)}\n\n"
+            return
+
+        if neon_db.enabled and full_response:
+            neon_db.save_message(sid, "assistant", full_response)
+
+        last_results = getattr(agent.conversation, "last_tool_results", [])
+        serialized_tools = []
+        for tr in last_results or []:
+            tr_data = getattr(tr, "data", None)
+            if getattr(tr, "tool_name", "") == "create_reservation" and getattr(tr, "success", False) and isinstance(tr_data, dict):
+                code = tr_data.get("confirmation_code")
+                if code and user_id:
+                    res_obj = db.get_reservation_by_code(code)
+                    if res_obj:
+                        res_obj.user_id = user_id
+                        if neon_db.enabled:
+                            neon_db.update_reservation(db._reservation_data(res_obj))
+                tr_data = _serialize_reservation(tr_data)
+
+            serialized_tools.append({
+                "tool_name": getattr(tr, "tool_name", ""),
+                "success": getattr(tr, "success", True),
+                "data": tr_data,
+                "error": getattr(tr, "error", None),
+            })
+
+        selected_restaurant = None
+        if any(getattr(tr, "tool_name", "") == "get_restaurant_details" and getattr(tr, "success", False) for tr in last_results or []):
+            raw_restaurant = getattr(agent.conversation, "selected_restaurant", None)
+            if isinstance(raw_restaurant, dict):
+                rest_id = raw_restaurant.get("id") or raw_restaurant.get("restaurant_id")
+                selected_restaurant = _dump_model(db.restaurants[rest_id]) if rest_id in db.restaurants else raw_restaurant
+            elif raw_restaurant is not None:
+                selected_restaurant = _dump_model(raw_restaurant)
+
+        active_reservations = []
+        if current_user:
+            active_reservations = [_serialize_reservation(res) for res in db.get_reservations_by_user(current_user["id"])]
+
+        final_payload = {
+            "type": "final",
+            "tool_results": serialized_tools,
+            "selected_restaurant": selected_restaurant,
+            "active_reservations": active_reservations,
+            "provider": s["provider"],
+            "model": s["model"],
+        }
+        yield f"data: {json.dumps(final_payload)}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 @app.get("/api/restaurants")
 def list_restaurants(

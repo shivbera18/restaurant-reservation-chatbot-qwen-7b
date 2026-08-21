@@ -121,6 +121,90 @@ export async function sendChatMessage(
   return res.json();
 }
 
+export interface StreamEventHandlers {
+  onToken?: (token: string) => void;
+  onIntent?: (intents: string[]) => void;
+  onToolCall?: (toolCall: { name: string; arguments: Record<string, unknown> }) => void;
+  onToolResult?: (toolResult: { name: string; success: boolean; data: unknown; error?: string }) => void;
+  onFinal?: (finalData: {
+    tool_results: Array<{ tool_name: string; success: boolean; data: unknown; error?: string }>;
+    selected_restaurant?: Restaurant | null;
+    active_reservations: Reservation[];
+    provider: string;
+    model: string;
+  }) => void;
+}
+
+export async function sendChatMessageStream(
+  message: string,
+  handlers: StreamEventHandlers,
+  provider?: string,
+  model?: string,
+  useMock?: boolean
+): Promise<string> {
+  const res = await fetch(`${API_BASE}/chat/stream`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({
+      message,
+      provider,
+      model,
+      use_mock: useMock,
+    }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(errorData.detail || `Stream request failed with status ${res.status}`);
+  }
+
+  const reader = res.body?.getReader();
+  if (!reader) {
+    throw new Error('Response body is not readable');
+  }
+
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullResponse = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n\n');
+    buffer = lines.pop() || '';
+
+    for (const block of lines) {
+      const trimmed = block.trim();
+      if (!trimmed.startsWith('data:')) continue;
+      const jsonStr = trimmed.replace(/^data:\s*/, '');
+      if (!jsonStr) continue;
+
+      try {
+        const event = JSON.parse(jsonStr);
+        if (event.type === 'token' && event.token) {
+          fullResponse += event.token;
+          handlers.onToken?.(event.token);
+        } else if (event.type === 'intent' && event.intents) {
+          handlers.onIntent?.(event.intents);
+        } else if (event.type === 'tool_call') {
+          handlers.onToolCall?.(event);
+        } else if (event.type === 'tool_result') {
+          handlers.onToolResult?.(event);
+        } else if (event.type === 'final') {
+          handlers.onFinal?.(event);
+        } else if (event.type === 'error') {
+          throw new Error(event.error || 'Stream error');
+        }
+      } catch (err) {
+        console.error('Error parsing SSE chunk:', err, jsonStr);
+      }
+    }
+  }
+
+  return fullResponse;
+}
 export async function fetchRestaurants(params?: {
   cuisine?: string;
   neighborhood?: string;
