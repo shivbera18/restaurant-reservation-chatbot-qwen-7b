@@ -1,25 +1,53 @@
 import React, { useState } from 'react';
-import { Ticket, Calendar, Clock, Users, Phone, User, Check, Copy, XCircle, AlertTriangle } from 'lucide-react';
+import {
+  Ticket,
+  Calendar,
+  Clock,
+  Users,
+  Phone,
+  User,
+  Check,
+  Copy,
+  XCircle,
+  Edit3,
+  Save,
+} from 'lucide-react';
 import type { Reservation } from '../types';
 
 interface ReservationTicketProps {
   reservation: Reservation;
   onCancel?: (code: string) => Promise<void>;
+  onModify?: (
+    code: string,
+    newDate: string,
+    newTime: string,
+    newPartySize: number,
+    newRequests?: string
+  ) => Promise<void>;
 }
 
 export const ReservationTicket: React.FC<ReservationTicketProps> = ({
   reservation,
   onCancel,
+  onModify,
 }) => {
   const [copied, setCopied] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [modifyError, setModifyError] = useState<string | null>(null);
 
   const resDate = reservation.date || reservation.reservation_date || 'Upcoming';
   const resTime = reservation.time || reservation.reservation_time || 'Scheduled';
   const partySize = reservation.party_size || 2;
   const guestName = reservation.customer_name || 'Guest';
   const guestPhone = reservation.customer_phone || 'On file';
+
+  const [editDate, setEditDate] = useState(resDate);
+  const [editTime, setEditTime] = useState(resTime);
+  const [editSize, setEditSize] = useState(partySize);
+  const [editRequests, setEditRequests] = useState(reservation.special_requests || '');
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(reservation.confirmation_code);
@@ -37,6 +65,27 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
       // Error handled by parent
     } finally {
       setIsCancelling(false);
+    }
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!onModify) return;
+    setIsSaving(true);
+    setModifyError(null);
+    try {
+      await onModify(
+        reservation.confirmation_code,
+        editDate,
+        editTime,
+        Number(editSize),
+        editRequests.trim() || undefined
+      );
+      setIsEditing(false);
+    } catch (err: unknown) {
+      setModifyError(err instanceof Error ? err.message : 'Could not modify booking.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -180,39 +229,141 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
         </div>
       </div>
 
-      {/* Cancel Action Footer */}
-      {isConfirmed && onCancel && (
-        <div className="bg-neo-canvas border-t-2 border-black p-2.5 text-center">
-          {!confirmCancel ? (
-            <button
-              onClick={() => setConfirmCancel(true)}
-              className="text-[11px] font-mono font-bold text-red-700 hover:text-red-900 flex items-center justify-center gap-1 mx-auto"
-            >
-              <XCircle className="w-3.5 h-3.5" />
-              <span>Need to cancel this booking?</span>
-            </button>
+      {/* Modify / Cancel Actions Footer */}
+      {isConfirmed && (
+        <div className="bg-neo-canvas border-t-2 border-black p-3 text-center space-y-2">
+          {isEditing ? (
+            <form onSubmit={handleSaveEdit} className="space-y-3 bg-white p-3 border-2 border-black rounded-neo-sm text-left">
+              <div className="flex items-center justify-between border-b-2 border-dashed border-black pb-1.5">
+                <span className="font-black text-xs uppercase text-black flex items-center gap-1.5">
+                  <Edit3 className="w-3.5 h-3.5 text-neo-orange" />
+                  <span>Edit Reservation Details</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="text-xs font-bold text-black hover:underline"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              {modifyError && (
+                <div className="p-2 bg-red-100 border border-red-500 text-red-800 text-[11px] font-bold rounded-neo-sm">
+                  {modifyError}
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-black block mb-0.5">Date</label>
+                  <input
+                    type="date"
+                    value={editDate}
+                    onChange={(e) => setEditDate(e.target.value)}
+                    required
+                    className="w-full bg-neo-canvas border-2 border-black p-1 text-xs font-mono font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-black block mb-0.5">Time</label>
+                  <select
+                    value={editTime}
+                    onChange={(e) => setEditTime(e.target.value)}
+                    className="w-full bg-neo-canvas border-2 border-black p-1 text-xs font-mono font-bold"
+                  >
+                    {['11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00'].map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-black block mb-0.5">Guests</label>
+                  <select
+                    value={editSize}
+                    onChange={(e) => setEditSize(Number(e.target.value))}
+                    className="w-full bg-neo-canvas border-2 border-black p-1 text-xs font-mono font-bold"
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12].map((s) => (
+                      <option key={s} value={s}>{s} {s === 1 ? 'Guest' : 'Guests'}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-black block mb-0.5">Notes</label>
+                  <input
+                    type="text"
+                    placeholder="Window seat, anniversary, etc."
+                    value={editRequests}
+                    onChange={(e) => setEditRequests(e.target.value)}
+                    className="w-full bg-neo-canvas border-2 border-black p-1 text-xs font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="btn-neo bg-white text-black py-1 px-3 text-xs flex-1"
+                >
+                  Discard
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="btn-neo bg-neo-yellow hover:bg-neo-orange hover:text-white text-black py-1 px-3 text-xs flex-1 flex items-center justify-center gap-1 font-black uppercase"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
+                </button>
+              </div>
+            </form>
           ) : (
-            <div className="space-y-2 p-1">
-              <div className="text-xs font-bold text-red-800 flex items-center justify-center gap-1.5">
-                <AlertTriangle className="w-4 h-4 text-red-600" />
-                <span>Are you sure you want to cancel?</span>
-              </div>
-              <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-between gap-2">
+              {onModify && (
                 <button
-                  onClick={() => setConfirmCancel(false)}
-                  disabled={isCancelling}
-                  className="btn-neo bg-white text-black text-xs px-3 py-1 font-mono"
+                  onClick={() => setIsEditing(true)}
+                  className="btn-neo bg-white hover:bg-neo-yellow text-black text-xs px-3 py-1 flex items-center gap-1 font-mono font-bold"
                 >
-                  Keep Booking
+                  <Edit3 className="w-3.5 h-3.5 text-neo-orange" />
+                  <span>Edit Details</span>
                 </button>
-                <button
-                  onClick={handleCancelClick}
-                  disabled={isCancelling}
-                  className="btn-neo bg-red-500 text-white hover:bg-red-600 text-xs px-3 py-1 font-mono font-black uppercase shadow-neo-sm"
-                >
-                  {isCancelling ? 'Cancelling...' : 'Confirm Cancel'}
-                </button>
-              </div>
+              )}
+
+              {onCancel && (
+                <>
+                  {!confirmCancel ? (
+                    <button
+                      onClick={() => setConfirmCancel(true)}
+                      className="text-[11px] font-mono font-bold text-red-700 hover:text-red-900 flex items-center gap-1 ml-auto"
+                    >
+                      <XCircle className="w-3.5 h-3.5" />
+                      <span>Cancel Booking</span>
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-2 ml-auto">
+                      <button
+                        onClick={() => setConfirmCancel(false)}
+                        disabled={isCancelling}
+                        className="btn-neo bg-white text-black text-xs px-2 py-0.5 font-mono"
+                      >
+                        Keep
+                      </button>
+                      <button
+                        onClick={handleCancelClick}
+                        disabled={isCancelling}
+                        className="btn-neo bg-red-500 text-white hover:bg-red-600 text-xs px-2 py-0.5 font-mono font-black uppercase"
+                      >
+                        {isCancelling ? '...' : 'Confirm'}
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           )}
         </div>

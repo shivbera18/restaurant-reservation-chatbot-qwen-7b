@@ -161,6 +161,25 @@ export async function cancelReservation(confirmationCode: string): Promise<boole
   return true;
 }
 
+export async function modifyReservation(params: {
+  confirmation_code: string;
+  new_date?: string;
+  new_time?: string;
+  new_party_size?: number;
+  new_special_requests?: string;
+}): Promise<Reservation> {
+  const res = await fetch(`${API_BASE}/reservations/modify`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(params),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(errorData.detail || 'Modification failed');
+  }
+  const data = await res.json();
+  return data.reservation;
+}
 export async function resetConversation(): Promise<void> {
   const res = await fetch(`${API_BASE}/reset`, { method: 'POST' });
   if (!res.ok) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { X, Ticket, RefreshCw, AlertCircle, Search, Lock, LogIn } from 'lucide-react';
 import type { Reservation, User } from '../types';
-import { fetchReservations, cancelReservation } from '../api';
+import { fetchReservations, cancelReservation, modifyReservation } from '../api';
 import { ReservationTicket } from './ReservationTicket';
 
 interface ReservationsDrawerProps {
@@ -61,6 +61,33 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
       if (onReservationUpdated) onReservationUpdated();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to cancel reservation');
+    }
+  };
+
+  const handleModifyBooking = async (
+    code: string,
+    newDate: string,
+    newTime: string,
+    newPartySize: number,
+    newRequests?: string
+  ) => {
+    if (!user) {
+      onOpenAuth();
+      return;
+    }
+    try {
+      await modifyReservation({
+        confirmation_code: code,
+        new_date: newDate,
+        new_time: newTime,
+        new_party_size: newPartySize,
+        new_special_requests: newRequests,
+      });
+      await loadReservations();
+      if (onReservationUpdated) onReservationUpdated();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to update reservation');
+      throw err;
     }
   };
   const filteredReservations = useMemo(() => {
@@ -132,6 +159,33 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
           </div>
         )}
 
+        {/* User Account Overview Banner if Logged In */}
+        {user && (
+          <div className="p-3 bg-white border-b-2 border-black flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center font-black text-xs">
+                👤
+              </div>
+              <div>
+                <span className="font-black text-xs uppercase text-black block leading-none">
+                  {user.name}
+                </span>
+                <span className="font-mono text-[10px] text-gray-700 block">
+                  {user.email}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="bg-neo-canvas border border-black px-2 py-0.5 text-[11px] font-mono font-bold text-black rounded-neo-sm">
+                {reservations.filter((r) => r.status === 'confirmed').length} Active
+              </span>
+              <span className="bg-neo-yellow border border-black px-2 py-0.5 text-[11px] font-mono font-bold text-black rounded-neo-sm">
+                {reservations.length} Total
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Content */}
         <div className="flex-1 p-4 overflow-y-auto bg-neo-canvas space-y-4">
           {error && (
@@ -140,7 +194,6 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
               <span>{error}</span>
             </div>
           )}
-
           {!user ? (
             <div className="py-12 text-center">
               <div className="inline-block p-6 bg-white border-3 border-black rounded-neo shadow-neo max-w-sm">
@@ -192,6 +245,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
                   key={res.id || res.confirmation_code}
                   reservation={res}
                   onCancel={handleCancelBooking}
+                  onModify={handleModifyBooking}
                 />
               ))}
             </div>
