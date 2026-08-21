@@ -66,20 +66,14 @@ export function App() {
         timestamp: new Date(),
         tool_results: res.tool_results,
         selected_restaurant: res.selected_restaurant || undefined,
-        created_reservation: res.active_reservations && res.active_reservations.length > 0
-          ? res.active_reservations[res.active_reservations.length - 1]
-          : undefined,
       };
 
-      // Also check if any tool created a reservation
-      if (!assistantMessage.created_reservation && res.tool_results) {
-        const createTool = res.tool_results.find(
-          (t) => t.tool_name === 'create_reservation' && t.success && t.data
-        );
-        if (createTool && createTool.data && typeof createTool.data === 'object') {
-          const dataObj = createTool.data as Record<string, unknown>;
-          assistantMessage.created_reservation = (dataObj.reservation || dataObj) as unknown as Reservation;
-        }
+      const createTool = res.tool_results?.find(
+        (tool) => tool.tool_name === 'create_reservation' && tool.success && tool.data,
+      );
+      if (createTool && typeof createTool.data === 'object') {
+        const data = createTool.data as Record<string, unknown>;
+        assistantMessage.created_reservation = (data.reservation || data) as Reservation;
       }
 
       setMessages((prev) => [...prev, assistantMessage]);
