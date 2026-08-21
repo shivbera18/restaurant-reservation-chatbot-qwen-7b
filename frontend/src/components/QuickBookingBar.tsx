@@ -43,7 +43,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
       {/* Top Selector Strip */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none text-[11px] font-mono font-bold">
-          <span className="text-gray-600 dark:text-gray-400 uppercase flex items-center gap-1 shrink-0 mr-1">
+          <span className="text-black dark:text-black uppercase flex items-center gap-1 shrink-0 mr-1">
             <Sparkles className="w-3.5 h-3.5 text-neo-orange" />
             <span>Quick Answer:</span>
           </span>
@@ -170,20 +170,20 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
 
       {/* Expandable Direct Booking Form */}
       {isFormOpen && (
-        <form onSubmit={handleDirectSubmit} className="mt-2.5 pt-2.5 border-t-2 border-dashed border-black/30 dark:border-gray-600 space-y-2.5">
-          <div className="bg-neo-canvas dark:bg-neo-surface-alt p-2 border border-black dark:border-gray-600 rounded-neo-sm text-[11px] font-mono text-gray-700 dark:text-gray-300">
+        <form onSubmit={handleDirectSubmit} className="mt-2.5 pt-2.5 border-t-2 border-dashed border-black dark:border-gray-600 space-y-2.5">
+          <div className="bg-neo-canvas dark:bg-neo-surface-alt p-2 border border-black dark:border-gray-600 rounded-neo-sm text-[11px] font-mono text-black dark:text-gray-300">
             <strong>Target Venue:</strong>{' '}
             {selectedRestaurant ? (
               <span className="text-black dark:text-gray-100 font-bold">{selectedRestaurant.name} ({selectedRestaurant.neighborhood || 'Downtown'})</span>
             ) : (
-              <span className="text-gray-600 dark:text-gray-400">Best-rated restaurant in selected cuisine</span>
+              <span className="text-black dark:text-black">Best-rated restaurant in selected cuisine</span>
             )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {/* Party Size */}
             <div>
-              <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 dark:text-gray-400 mb-0.5">
+              <label className="block text-[10px] font-mono uppercase font-bold text-black dark:text-black mb-0.5">
                 Guests:
               </label>
               <div className="flex items-center gap-1">
@@ -214,7 +214,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
 
             {/* Date */}
             <div>
-              <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 dark:text-gray-400 mb-0.5">
+              <label className="block text-[10px] font-mono uppercase font-bold text-black dark:text-black mb-0.5">
                 Date:
               </label>
               <input
@@ -227,7 +227,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
 
             {/* Time */}
             <div>
-              <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 dark:text-gray-400 mb-0.5">
+              <label className="block text-[10px] font-mono uppercase font-bold text-black dark:text-black mb-0.5">
                 Time:
               </label>
               <select
@@ -247,7 +247,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {/* Guest Name */}
             <div>
-              <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 dark:text-gray-400 mb-0.5">
+              <label className="block text-[10px] font-mono uppercase font-bold text-black dark:text-black mb-0.5">
                 Your Name:
               </label>
               <input
@@ -255,14 +255,14 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Full Name"
-                className="w-full h-7 px-2 bg-white dark:bg-neo-surface-alt text-black dark:text-gray-100 border-2 border-black dark:border-gray-600 rounded-neo-sm font-mono text-xs placeholder:text-gray-400"
+                className="w-full h-7 px-2 bg-white dark:bg-neo-surface-alt text-black dark:text-gray-100 border-2 border-black dark:border-gray-600 rounded-neo-sm font-mono text-xs placeholder:text-black"
                 required
               />
             </div>
 
             {/* Guest Phone */}
             <div>
-              <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 dark:text-gray-400 mb-0.5">
+              <label className="block text-[10px] font-mono uppercase font-bold text-black dark:text-black mb-0.5">
                 Mobile Phone:
               </label>
               <input
@@ -270,7 +270,7 @@ export const QuickBookingBar: React.FC<QuickBookingBarProps> = ({
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="e.g. 990-643-3115"
-                className="w-full h-7 px-2 bg-white dark:bg-neo-surface-alt text-black dark:text-gray-100 border-2 border-black dark:border-gray-600 rounded-neo-sm font-mono text-xs placeholder:text-gray-400"
+                className="w-full h-7 px-2 bg-white dark:bg-neo-surface-alt text-black dark:text-gray-100 border-2 border-black dark:border-gray-600 rounded-neo-sm font-mono text-xs placeholder:text-black"
                 required
               />
             </div>

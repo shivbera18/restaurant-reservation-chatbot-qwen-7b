@@ -65,7 +65,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
       <div className="p-4 space-y-3.5 text-left">
         {/* Restaurant Name */}
         <div>
-          <span className="text-[10px] font-mono font-bold uppercase text-gray-500 dark:text-gray-400">
+          <span className="text-[10px] font-mono font-bold uppercase text-black dark:text-black">
             Venue
           </span>
           <h3 className="font-black text-lg uppercase tracking-tight text-black dark:text-gray-100 leading-none mt-0.5">
@@ -76,7 +76,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
         {/* Date, Time, Party Size Grid */}
         <div className="grid grid-cols-3 gap-2 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 p-2.5 rounded-neo-sm text-center">
           <div>
-            <div className="text-[9px] uppercase font-bold text-gray-600 dark:text-gray-400 flex items-center justify-center gap-1">
+            <div className="text-[9px] uppercase font-bold text-black dark:text-black flex items-center justify-center gap-1">
               <Calendar className="w-3 h-3 text-neo-orange" />
               <span>Date</span>
             </div>
@@ -86,7 +86,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
           </div>
 
           <div>
-            <div className="text-[9px] uppercase font-bold text-gray-600 dark:text-gray-400 flex items-center justify-center gap-1">
+            <div className="text-[9px] uppercase font-bold text-black dark:text-black flex items-center justify-center gap-1">
               <Clock className="w-3 h-3 text-neo-orange" />
               <span>Time</span>
             </div>
@@ -96,7 +96,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
           </div>
 
           <div>
-            <div className="text-[9px] uppercase font-bold text-gray-600 dark:text-gray-400 flex items-center justify-center gap-1">
+            <div className="text-[9px] uppercase font-bold text-black dark:text-black flex items-center justify-center gap-1">
               <Users className="w-3 h-3 text-neo-orange" />
               <span>Guests</span>
             </div>
@@ -109,7 +109,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
         {/* Customer Info */}
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div>
-            <span className="text-[10px] font-mono font-bold text-gray-500 dark:text-gray-400 uppercase flex items-center gap-1">
+            <span className="text-[10px] font-mono font-bold text-black dark:text-black uppercase flex items-center gap-1">
               <User className="w-3 h-3 text-neo-blue" /> Guest Name
             </span>
             <div className="font-bold text-black dark:text-gray-100 truncate mt-0.5">
@@ -117,7 +117,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
             </div>
           </div>
           <div>
-            <span className="text-[10px] font-mono font-bold text-gray-500 dark:text-gray-400 uppercase flex items-center gap-1">
+            <span className="text-[10px] font-mono font-bold text-black dark:text-black uppercase flex items-center gap-1">
               <Phone className="w-3 h-3 text-neo-green" /> Phone
             </span>
             <div className="font-mono font-bold text-black dark:text-gray-100 truncate mt-0.5">
@@ -128,21 +128,21 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
 
         {/* Special Requests if any */}
         {reservation.special_requests && (
-          <div className="bg-neo-blue/10 dark:bg-neo-blue/20 border border-black/30 dark:border-gray-600 p-2 text-xs rounded-neo-sm">
-            <span className="font-mono font-bold text-[10px] uppercase text-gray-700 dark:text-gray-300 block">
+          <div className="bg-neo-blue/10 dark:bg-neo-blue/20 border border-black dark:border-gray-600 p-2 text-xs rounded-neo-sm">
+            <span className="font-mono font-bold text-[10px] uppercase text-black dark:text-gray-300 block">
               Special Requests:
             </span>
-            <span className="text-gray-900 dark:text-gray-100">{reservation.special_requests}</span>
+            <span className="text-black dark:text-gray-100">{reservation.special_requests}</span>
           </div>
         )}
 
         {/* Confirmation Code Strip */}
-        <div className="border-t-2 border-dashed border-black/30 dark:border-gray-600 pt-3 flex items-center justify-between">
+        <div className="border-t-2 border-dashed border-black dark:border-gray-600 pt-3 flex items-center justify-between">
           <div>
-            <span className="text-[9px] font-mono uppercase font-bold text-gray-500 dark:text-gray-400 block">
+            <span className="text-[9px] font-mono uppercase font-bold text-black dark:text-black block">
               Confirmation Code
             </span>
-            <span className="font-mono font-black text-base tracking-widest text-black dark:text-gray-100 bg-neo-yellow/30 dark:bg-neo-yellow/20 px-2 py-0.5 border border-black/40 dark:border-gray-600 rounded-neo-sm">
+            <span className="font-mono font-black text-base tracking-widest text-black dark:text-gray-100 bg-neo-yellow/30 dark:bg-neo-yellow/20 px-2 py-0.5 border border-black dark:border-gray-600 rounded-neo-sm">
               {reservation.confirmation_code}
             </span>
           </div>
@@ -174,7 +174,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
               <div key={i} className="bg-black dark:bg-gray-300 h-full" style={{ width: `${((i % 3) + 1) * 2}px` }} />
             ))}
           </div>
-          <span className="font-mono text-[9px] text-gray-500 dark:text-gray-400 tracking-widest mt-1">
+          <span className="font-mono text-[9px] text-black dark:text-black tracking-widest mt-1">
             * {reservation.confirmation_code} *
           </span>
         </div>

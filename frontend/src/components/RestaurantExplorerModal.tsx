@@ -76,7 +76,7 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
               <h2 className="font-black text-lg sm:text-xl uppercase tracking-tight text-black leading-none">
                 Restaurant Directory
               </h2>
-              <p className="text-xs font-bold text-gray-900 mt-0.5">
+              <p className="text-xs font-bold text-black mt-0.5">
                 Explore all {restaurants.length} GoodFoods network locations
               </p>
             </div>
@@ -96,13 +96,13 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
           <div className="flex flex-col sm:flex-row gap-2.5">
             {/* Search Input */}
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-black dark:text-black absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search by restaurant name, dish (e.g. Pad Thai, Truffle Pasta)..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 rounded-neo-sm font-mono text-xs font-bold text-black dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:bg-white dark:focus:bg-neutral-800"
+                className="w-full pl-9 pr-3 py-2 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 rounded-neo-sm font-mono text-xs font-bold text-black dark:text-gray-100 placeholder:text-gray-600 dark:placeholder:text-gray-400 dark:placeholder:text-black focus:outline-none focus:bg-white dark:focus:bg-neutral-800"
               />
             </div>
 
@@ -125,7 +125,7 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
 
           {/* Cuisine Pill Filter Chips */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-            <span className="font-mono font-bold text-gray-500 dark:text-gray-400 text-[11px] uppercase shrink-0">
+            <span className="font-mono font-bold text-black dark:text-black text-[11px] uppercase shrink-0">
               Cuisines:
             </span>
             <button
@@ -166,7 +166,7 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
             <div className="py-16 text-center">
               <div className="inline-block p-6 bg-white dark:bg-neo-surface border-2 border-black dark:border-gray-600 rounded-neo shadow-neo dark:shadow-neo-dark max-w-md">
                 <p className="font-black text-base uppercase text-black dark:text-gray-100">No restaurants match your search</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Try clearing filters or searching for another keyword.</p>
+                <p className="text-xs text-black dark:text-black mt-1">Try clearing filters or searching for another keyword.</p>
                 <button
                   onClick={() => {
                     setSearch('');
@@ -196,7 +196,7 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
         </div>
 
         {/* Modal Footer */}
-        <div className="bg-white dark:bg-neo-surface border-t-2 border-black dark:border-gray-600 p-3 flex items-center justify-between text-xs font-mono text-gray-600 dark:text-gray-300">
+        <div className="bg-white dark:bg-neo-surface border-t-2 border-black dark:border-gray-600 p-3 flex items-center justify-between text-xs font-mono text-black dark:text-gray-300">
           <span>Showing {filteredRestaurants.length} of {restaurants.length} locations</span>
           <button
             onClick={onClose}

@@ -43,7 +43,7 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
       {expanded && (
         <div className="mt-1.5 p-3 bg-white dark:bg-neo-surface border-2 border-black dark:border-gray-600 rounded-neo shadow-neo dark:shadow-neo-dark font-mono text-xs space-y-2.5 max-w-full overflow-hidden">
           {toolResults.map((tr, idx) => (
-            <div key={idx} className="border-b border-dashed border-gray-300 dark:border-gray-700 pb-2.5 last:border-b-0 last:pb-0">
+            <div key={idx} className="border-b border-dashed border-black dark:border-gray-700 pb-2.5 last:border-b-0 last:pb-0">
               <div className="flex items-center gap-1.5 font-bold">
                 {tr.success ? (
                   <CheckCircle className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
@@ -53,13 +53,13 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
                 <span className="text-black bg-neo-yellow px-1.5 py-0.5 border border-black rounded-neo-sm text-[11px]">
                   {tr.tool_name}
                 </span>
-                <span className="text-gray-500 dark:text-gray-400 text-[10px]">
+                <span className="text-black dark:text-black text-[10px]">
                   {tr.success ? 'Status: 200 OK' : 'Status: Failed'}
                 </span>
               </div>
 
               {tr.data != null && (
-                <div className="mt-1.5 bg-neo-canvas dark:bg-neutral-900 p-2 border border-black/30 dark:border-gray-700 rounded-neo-sm text-[11px] max-h-40 overflow-y-auto text-black dark:text-gray-200">
+                <div className="mt-1.5 bg-neo-canvas dark:bg-neutral-900 p-2 border border-black dark:border-gray-700 rounded-neo-sm text-[11px] max-h-40 overflow-y-auto text-black dark:text-gray-200">
                   <pre className="whitespace-pre-wrap break-all font-mono">
                     {typeof tr.data === 'string'
                       ? tr.data

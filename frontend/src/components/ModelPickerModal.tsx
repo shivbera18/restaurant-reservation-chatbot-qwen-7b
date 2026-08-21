@@ -72,7 +72,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
               <h2 className="font-black text-lg uppercase tracking-tight text-black leading-none">
                 AI Engine & Provider
               </h2>
-              <p className="text-xs font-bold text-gray-900 mt-0.5">
+              <p className="text-xs font-bold text-black mt-0.5">
                 Pluggable LLM Backend Configuration
               </p>
             </div>
@@ -103,7 +103,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
                 <Sparkles className="w-3.5 h-3.5 text-neo-orange" />
                 <span>Offline Demo Mode</span>
               </div>
-              <p className="text-[11px] text-gray-700 dark:text-gray-300 mt-0.5">
+              <p className="text-[11px] text-black dark:text-gray-300 mt-0.5">
                 Zero API keys needed; uses deterministic rule-based pattern matching.
               </p>
             </div>
@@ -119,7 +119,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
             <>
               {/* Provider Selection */}
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-xs font-mono font-bold uppercase text-black dark:text-gray-300 mb-1.5">
                   Select Provider Backend:
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -146,7 +146,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
 
               {/* Model Selection */}
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-xs font-mono font-bold uppercase text-black dark:text-gray-300 mb-1.5">
                   Select Model ID:
                 </label>
                 <select
@@ -168,7 +168,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
                     placeholder="Enter custom model ID (e.g. openai/gpt-oss-120b)"
                     value={customModel}
                     onChange={(e) => setCustomModel(e.target.value)}
-                    className="w-full mt-2 p-2.5 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 rounded-neo-sm text-xs font-mono font-bold text-black dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none"
+                    className="w-full mt-2 p-2.5 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 rounded-neo-sm text-xs font-mono font-bold text-black dark:text-gray-100 placeholder:text-gray-600 dark:placeholder:text-gray-400 dark:placeholder:text-black focus:outline-none"
                   />
                 )}
               </div>
@@ -176,7 +176,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
           )}
 
           {/* Context Note */}
-          <div className="bg-neo-canvas dark:bg-neo-surface-alt border border-black/30 dark:border-gray-600 p-2.5 rounded-neo-sm text-[11px] font-mono text-gray-700 dark:text-gray-300 flex items-start gap-2">
+          <div className="bg-neo-canvas dark:bg-neo-surface-alt border border-black dark:border-gray-600 p-2.5 rounded-neo-sm text-[11px] font-mono text-black dark:text-gray-300 flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-green-700 dark:text-green-400 shrink-0 mt-0.5" />
             <span>
               <strong>Context Preserved:</strong> Switching models retains all existing conversation turns, selected venues, and active reservations.

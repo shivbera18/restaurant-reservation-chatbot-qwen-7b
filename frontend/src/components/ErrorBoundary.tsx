@@ -34,7 +34,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <span>Rendering Encountered an Error</span>
             </div>
 
-            <p className="text-xs text-gray-700 dark:text-gray-300 font-mono break-words bg-neo-canvas dark:bg-neo-surface-alt p-2.5 border border-black dark:border-gray-600/30">
+            <p className="text-xs text-black dark:text-gray-300 font-mono break-words bg-neo-canvas dark:bg-neo-surface-alt p-2.5 border border-black dark:border-gray-600/30">
               {this.state.error?.message || 'Unknown UI runtime error'}
             </p>
 

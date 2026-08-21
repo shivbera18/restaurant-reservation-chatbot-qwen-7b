@@ -80,7 +80,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
               <h2 className="font-black text-lg sm:text-xl uppercase tracking-tight text-black leading-none">
                 My Bookings & Reservations
               </h2>
-              <p className="text-xs font-bold text-gray-900 mt-0.5">
+              <p className="text-xs font-bold text-black mt-0.5">
                 {reservations.length} {reservations.length === 1 ? 'booking' : 'bookings'} on file
               </p>
             </div>
@@ -110,13 +110,13 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
         {reservations.length > 0 && (
           <div className="p-3 bg-white dark:bg-neo-surface border-b-2 border-black dark:border-gray-600">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-black dark:text-black absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search by code (e.g. GF-RES-...), venue, name, or phone..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 rounded-neo-sm font-mono text-xs font-bold text-black dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none"
+                className="w-full pl-8 pr-3 py-1.5 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 rounded-neo-sm font-mono text-xs font-bold text-black dark:text-gray-100 placeholder:text-gray-600 dark:placeholder:text-gray-400 dark:placeholder:text-black focus:outline-none"
               />
             </div>
           </div>
@@ -140,9 +140,9 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
           ) : filteredReservations.length === 0 ? (
             <div className="py-16 text-center">
               <div className="inline-block p-6 bg-white dark:bg-neo-surface border-3 border-black dark:border-gray-600 rounded-neo shadow-neo dark:shadow-neo-dark max-w-sm">
-                <Ticket className="w-10 h-10 mx-auto text-gray-400 mb-2" />
+                <Ticket className="w-10 h-10 mx-auto text-black mb-2" />
                 <p className="font-black text-base uppercase text-black dark:text-gray-100">No Bookings Found</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-xs text-black dark:text-black mt-1">
                   {search
                     ? 'No reservation matches your search query.'
                     : "You haven't made any reservations yet. Use the chat to book a table at any of our 75 locations!"}
@@ -169,7 +169,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="bg-white dark:bg-neo-surface border-t-2 border-black dark:border-gray-600 p-3 flex items-center justify-between text-xs font-mono text-gray-600 dark:text-gray-300">
+        <div className="bg-white dark:bg-neo-surface border-t-2 border-black dark:border-gray-600 p-3 flex items-center justify-between text-xs font-mono text-black dark:text-gray-300">
           <span>
             Showing {filteredReservations.length} of {reservations.length} bookings
           </span>

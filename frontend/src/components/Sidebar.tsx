@@ -63,7 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <h1 className="font-black text-sm tracking-tight uppercase leading-none text-black dark:text-gray-100">
               GoodFoods<span className="text-neo-orange">.AI</span>
             </h1>
-            <span className="text-[10px] font-mono font-bold text-gray-800 dark:text-gray-300">
+            <span className="text-[10px] font-mono font-bold text-black dark:text-gray-300">
               v{config?.app_version || '1.1.0'}
             </span>
           </div>
@@ -114,7 +114,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile Drawer Dropdown Panel */}
       {mobileMenuOpen && (
         <div className="md:hidden fixed inset-x-3 top-16 z-50 bg-[#F4EFE6] dark:bg-neo-surface border-3 border-black dark:border-gray-600 p-4 shadow-neo-xl dark:shadow-neo-xl-dark rounded-neo-lg space-y-2.5">
-          <div className="flex items-center justify-between pb-2 border-b-2 border-dashed border-black/30 dark:border-gray-600">
+          <div className="flex items-center justify-between pb-2 border-b-2 border-dashed border-black dark:border-gray-600">
             <span className="font-mono font-black text-xs uppercase tracking-wider text-black dark:text-gray-100">
               Quick Navigation
             </span>
@@ -186,7 +186,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         <div className="space-y-3.5">
           {/* Header Bar with Logo & Collapse Toggle */}
-          <div className="flex items-center justify-between gap-2 pb-3 border-b-2 border-dashed border-black/20 dark:border-gray-700">
+          <div className="flex items-center justify-between gap-2 pb-3 border-b-2 border-dashed border-black dark:border-gray-700">
             {!isCollapsed ? (
               <div className="flex items-center gap-2.5 overflow-hidden">
                 <div className="w-9 h-9 bg-neo-yellow border-2 border-black dark:border-gray-600 shadow-neo-sm flex items-center justify-center text-lg rounded-neo-sm shrink-0">
@@ -196,7 +196,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <h1 className="font-black text-base tracking-tight uppercase leading-none text-black dark:text-gray-100">
                     GoodFoods<span className="text-neo-orange">.AI</span>
                   </h1>
-                  <span className="text-[10px] font-mono font-bold text-gray-800 dark:text-gray-300 block mt-0.5">
+                  <span className="text-[10px] font-mono font-bold text-black dark:text-gray-300 block mt-0.5">
                     Autonomous Concierge
                   </span>
                 </div>
@@ -244,7 +244,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             {!isCollapsed ? (
               <>
-                <div className="flex items-center justify-between text-[11px] font-mono font-black text-gray-800 dark:text-gray-300 mb-1">
+                <div className="flex items-center justify-between text-[11px] font-mono font-black text-black dark:text-gray-300 mb-1">
                   <span className="flex items-center gap-1.5 text-black dark:text-gray-100">
                     <Cpu className="w-3.5 h-3.5 text-neo-purple" />
                     <span>AI ENGINE</span>
@@ -262,7 +262,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <span className="font-black text-xs uppercase text-black dark:text-gray-100 block truncate">
                     {activeProviderName}
                   </span>
-                  <span className="text-[11px] font-mono font-bold text-gray-800 dark:text-gray-300 truncate block">
+                  <span className="text-[11px] font-mono font-bold text-black dark:text-gray-300 truncate block">
                     {activeModelName}
                   </span>
                 </div>
@@ -282,7 +282,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Primary Navigation Actions */}
           <div className="space-y-2">
             {!isCollapsed && (
-              <span className="text-[10px] font-mono font-black uppercase text-gray-800 dark:text-gray-300 pl-1 block">
+              <span className="text-[10px] font-mono font-black uppercase text-black dark:text-gray-300 pl-1 block">
                 Directory & Bookings
               </span>
             )}
@@ -363,7 +363,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Sidebar Footer Controls & Info */}
-        <div className="space-y-3 pt-3 border-t-2 border-dashed border-black/20 dark:border-gray-700">
+        <div className="space-y-3 pt-3 border-t-2 border-dashed border-black dark:border-gray-700">
           {/* Dark Mode Toggle */}
           <button
             onClick={onToggleDarkMode}
@@ -393,7 +393,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
 
           {!isCollapsed && (
-            <div className="p-2.5 bg-[#FAF8F5] dark:bg-neo-surface-alt border border-black/30 dark:border-gray-700 rounded-neo text-[10px] font-mono text-gray-800 dark:text-gray-300 space-y-0.5 text-left">
+            <div className="p-2.5 bg-[#FAF8F5] dark:bg-neo-surface-alt border border-black dark:border-gray-700 rounded-neo text-[10px] font-mono text-black dark:text-gray-300 space-y-0.5 text-left">
               <div className="flex items-center justify-between font-bold text-black dark:text-gray-100">
                 <span className="flex items-center gap-1">
                   <Sparkles className="w-3 h-3 text-neo-orange" />
@@ -401,7 +401,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </span>
                 <span className="text-[9px] font-mono font-black">v1.1</span>
               </div>
-              <p className="text-[9px] font-medium leading-tight text-gray-700 dark:text-gray-300">
+              <p className="text-[9px] font-medium leading-tight text-black dark:text-gray-300">
                 75 locations across 12 metro districts
               </p>
             </div>

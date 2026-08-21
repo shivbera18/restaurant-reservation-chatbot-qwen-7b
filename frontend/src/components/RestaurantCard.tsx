@@ -32,13 +32,13 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             <h4 className="font-black text-base uppercase tracking-tight text-black dark:text-gray-100 leading-snug">
               {restaurant.name}
             </h4>
-            <div className="flex items-center gap-1.5 mt-0.5 text-xs text-gray-700 dark:text-gray-300 font-bold">
+            <div className="flex items-center gap-1.5 mt-0.5 text-xs text-black dark:text-gray-300 font-bold">
               <MapPin className="w-3.5 h-3.5 text-neo-orange shrink-0" />
               <span>{neighborhoodVal}</span>
               {restaurant.address && (
                 <>
                   <span>•</span>
-                  <span className="text-gray-500 dark:text-gray-400 font-mono text-[11px] truncate max-w-[160px]">
+                  <span className="text-black dark:text-gray-400 font-mono text-[11px] truncate max-w-[160px]">
                     {restaurant.address}
                   </span>
                 </>
@@ -63,7 +63,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             {cuisines.map((cuisine) => (
               <span
                 key={cuisine}
-                className="bg-neo-blue/20 dark:bg-neo-blue/30 text-black dark:text-blue-200 border border-black dark:border-gray-600 px-1.5 py-0.5 text-[10px] font-mono uppercase font-bold rounded-neo-sm"
+                className="bg-neo-blue/20 dark:bg-neo-blue/30 text-black dark:text-blue-200 border border-black dark:border-gray-600 px-1.5 py-0.5 text-[10px] font-mono uppercase font-black rounded-neo-sm"
               >
                 🍽️ {cuisine}
               </span>
@@ -71,7 +71,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             {ambiances.slice(0, 2).map((amb) => (
               <span
                 key={amb}
-                className="bg-neo-purple/20 dark:bg-neo-purple/30 text-black dark:text-purple-200 border border-black dark:border-gray-600 px-1.5 py-0.5 text-[10px] font-mono uppercase font-bold rounded-neo-sm"
+                className="bg-neo-purple/20 dark:bg-neo-purple/30 text-black dark:text-purple-200 border border-black dark:border-gray-600 px-1.5 py-0.5 text-[10px] font-mono uppercase font-black rounded-neo-sm"
               >
                 🎭 {amb}
               </span>
@@ -81,15 +81,15 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
 
         {/* Description */}
         {restaurant.description && !compact && (
-          <p className="text-xs text-gray-700 dark:text-gray-300 mt-2 line-clamp-2 leading-relaxed font-medium">
+          <p className="text-xs text-black dark:text-gray-300 mt-2 line-clamp-2 leading-relaxed font-bold">
             {restaurant.description}
           </p>
         )}
 
         {/* Popular Dishes */}
         {popularDishes.length > 0 && !compact && (
-          <div className="mt-2.5 pt-2 border-t border-dashed border-gray-300 dark:border-gray-700">
-            <div className="text-[10px] font-mono uppercase font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
+          <div className="mt-2.5 pt-2 border-t border-dashed border-black dark:border-gray-700">
+            <div className="text-[10px] font-mono uppercase font-black text-black dark:text-gray-400 flex items-center gap-1">
               <Sparkles className="w-2.5 h-2.5 text-neo-orange" />
               <span>Popular Dishes:</span>
             </div>
@@ -97,7 +97,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               {popularDishes.map((dish) => (
                 <span
                   key={dish}
-                  className="bg-neo-canvas dark:bg-neo-surface-alt border border-black/30 dark:border-gray-600 text-black dark:text-gray-200 text-[10px] font-sans px-1.5 py-0.5 rounded-neo-sm font-medium"
+                  className="bg-neo-canvas dark:bg-neo-surface-alt border border-black dark:border-gray-600 text-black dark:text-gray-200 text-[10px] font-sans px-1.5 py-0.5 rounded-neo-sm font-bold"
                 >
                   {dish}
                 </span>
@@ -107,26 +107,26 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
         )}
 
         {/* Features / Amenities */}
-        <div className="flex flex-wrap items-center gap-2 mt-2.5 text-[10px] font-mono text-gray-600 dark:text-gray-400">
+        <div className="flex flex-wrap items-center gap-2 mt-2.5 text-[10px] font-mono text-black dark:text-gray-300 font-bold">
           {restaurant.open_time && (
             <span className="flex items-center gap-0.5">
-              <Clock className="w-3 h-3 text-black dark:text-gray-400" />
+              <Clock className="w-3 h-3 text-neo-orange shrink-0" />
               {restaurant.open_time} - {restaurant.close_time || '22:00'}
             </span>
           )}
           {restaurant.seating_capacity != null && (
             <span className="flex items-center gap-0.5">
-              <Users className="w-3 h-3 text-black dark:text-gray-400" />
+              <Users className="w-3 h-3 text-neo-blue shrink-0" />
               {restaurant.seating_capacity} seats
             </span>
           )}
           {restaurant.has_outdoor_seating && (
-            <span className="text-green-700 dark:text-green-400 font-bold flex items-center gap-0.5">
+            <span className="text-green-700 dark:text-green-400 font-black flex items-center gap-0.5">
               <CheckCircle2 className="w-2.5 h-2.5" /> Outdoor
             </span>
           )}
           {restaurant.parking_available && (
-            <span className="text-blue-700 dark:text-blue-400 font-bold flex items-center gap-0.5">
+            <span className="text-blue-700 dark:text-blue-400 font-black flex items-center gap-0.5">
               <CheckCircle2 className="w-2.5 h-2.5" /> Parking
             </span>
           )}
