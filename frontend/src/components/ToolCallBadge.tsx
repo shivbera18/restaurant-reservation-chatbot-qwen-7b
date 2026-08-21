@@ -15,9 +15,9 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
     <div className="my-2 text-left">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-2 px-2.5 py-1 bg-neo-purple/15 border-2 border-black rounded-neo-sm shadow-neo-sm hover:shadow-neo transition-all text-xs font-mono font-bold text-black"
+        className="flex items-center gap-2 px-2.5 py-1 bg-neo-purple/15 border-2 border-black dark:border-gray-600 rounded-neo-sm shadow-neo dark:shadow-neo-dark-sm dark:shadow-neo dark:shadow-neo-dark-sm-dark hover:shadow-neo dark:shadow-neo-dark transition-all text-xs font-mono font-bold text-black dark:text-gray-100"
       >
-        <Wrench className="w-3.5 h-3.5 text-black" />
+        <Wrench className="w-3.5 h-3.5 text-black dark:text-gray-100" />
         <span>
           Executed {toolResults.length} {toolResults.length === 1 ? 'tool' : 'tools'} (MCP)
         </span>
@@ -25,8 +25,8 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
           {toolResults.map((tr, idx) => (
             <span
               key={idx}
-              className={`px-1 py-0.2 text-[10px] border border-black ${
-                tr.success ? 'bg-neo-green text-black' : 'bg-red-400 text-white'
+              className={`px-1 py-0.2 text-[10px] border border-black dark:border-gray-600 ${
+                tr.success ? 'bg-neo-green text-black dark:text-gray-100' : 'bg-red-400 text-white'
               }`}
             >
               {tr.tool_name}
@@ -41,7 +41,7 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
       </button>
 
       {expanded && (
-        <div className="mt-1.5 p-2.5 bg-white border-2 border-black rounded-neo-sm shadow-neo font-mono text-xs space-y-2 max-w-full overflow-x-auto">
+        <div className="mt-1.5 p-2.5 bg-white dark:bg-neo-surface border-2 border-black dark:border-gray-600 rounded-neo-sm shadow-neo dark:shadow-neo-dark font-mono text-xs space-y-2 max-w-full overflow-x-auto">
           {toolResults.map((tr, idx) => (
             <div key={idx} className="border-b border-dashed border-gray-300 pb-2 last:border-b-0 last:pb-0">
               <div className="flex items-center gap-1.5 font-bold">
@@ -50,16 +50,16 @@ export const ToolCallBadge: React.FC<ToolCallBadgeProps> = ({ toolResults }) => 
                 ) : (
                   <AlertCircle className="w-3.5 h-3.5 text-red-600" />
                 )}
-                <span className="text-black bg-neo-yellow px-1 border border-black">
+                <span className="text-black dark:text-gray-100 bg-neo-yellow px-1 border border-black dark:border-gray-600">
                   {tr.tool_name}
                 </span>
-                <span className="text-gray-500 text-[10px]">
+                <span className="text-gray-500 dark:text-gray-400 text-[10px]">
                   {tr.success ? 'Status: 200 OK' : 'Status: Failed'}
                 </span>
               </div>
 
               {tr.data != null && (
-                <div className="mt-1 bg-neo-canvas p-1.5 border border-black/30 text-[11px] max-h-36 overflow-y-auto">
+                <div className="mt-1 bg-neo-canvas dark:bg-neo-surface-alt p-1.5 border border-black dark:border-gray-600/30 text-[11px] max-h-36 overflow-y-auto">
                   <pre className="whitespace-pre-wrap break-all">
                     {typeof tr.data === 'string'
                       ? tr.data

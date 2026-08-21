@@ -66,39 +66,39 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
           /* Welcome State */
           <div className="py-4 text-center max-w-2xl mx-auto space-y-4">
             {/* Hero Card */}
-            <div className="bg-white border-3 border-black rounded-neo p-6 shadow-neo-lg text-left relative overflow-hidden">
-              <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-neo-yellow/30 rounded-full border-2 border-black/10 select-none pointer-events-none" />
+            <div className="bg-white dark:bg-neo-surface border-3 border-black dark:border-gray-600 rounded-neo p-6 shadow-neo-lg dark:shadow-neo-dark text-left relative overflow-hidden">
+              <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-neo-yellow/30 rounded-full border-2 border-black dark:border-gray-600/10 select-none pointer-events-none" />
 
-              <div className="inline-block bg-neo-yellow border-2 border-black rounded-neo-sm px-2.5 py-0.5 text-xs font-mono font-black uppercase mb-3 shadow-neo-sm">
+              <div className="inline-block bg-neo-yellow border-2 border-black dark:border-gray-600 rounded-neo-sm px-2.5 py-0.5 text-xs font-mono font-black uppercase mb-3 shadow-neo dark:shadow-neo-dark-sm dark:shadow-neo dark:shadow-neo-dark-sm-dark">
                 ⭐ Autonomous Concierge
               </div>
 
-              <h2 className="font-black text-2xl sm:text-3xl uppercase tracking-tight text-black leading-tight">
+              <h2 className="font-black text-2xl sm:text-3xl uppercase tracking-tight text-black dark:text-gray-100 leading-tight">
                 GoodFoods Dining Concierge
               </h2>
-              <p className="text-xs sm:text-sm font-bold text-gray-700 mt-2 leading-relaxed">
+              <p className="text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-300 mt-2 leading-relaxed">
                 Your AI concierge connected to <strong>75 restaurant locations</strong> with real-time table availability, instant bookings, and customized dining recommendations.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4 font-mono text-xs">
-                <div className="bg-neo-canvas border-2 border-black p-2.5">
-                  <span className="font-black block text-xs uppercase text-black">🔍 Discover</span>
-                  <span className="text-gray-600 text-[11px]">15 cuisines & 12 areas</span>
+                <div className="bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 p-2.5">
+                  <span className="font-black block text-xs uppercase text-black dark:text-gray-100">🔍 Discover</span>
+                  <span className="text-gray-600 dark:text-gray-400 text-[11px]">15 cuisines & 12 areas</span>
                 </div>
-                <div className="bg-neo-canvas border-2 border-black p-2.5">
-                  <span className="font-black block text-xs uppercase text-black">⚡ Instant Book</span>
-                  <span className="text-gray-600 text-[11px]">Live table reservation</span>
+                <div className="bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 p-2.5">
+                  <span className="font-black block text-xs uppercase text-black dark:text-gray-100">⚡ Instant Book</span>
+                  <span className="text-gray-600 dark:text-gray-400 text-[11px]">Live table reservation</span>
                 </div>
-                <div className="bg-neo-canvas border-2 border-black p-2.5">
-                  <span className="font-black block text-xs uppercase text-black">🎫 Manage</span>
-                  <span className="text-gray-600 text-[11px]">Instant modify & cancel</span>
+                <div className="bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 p-2.5">
+                  <span className="font-black block text-xs uppercase text-black dark:text-gray-100">🎫 Manage</span>
+                  <span className="text-gray-600 dark:text-gray-400 text-[11px]">Instant modify & cancel</span>
                 </div>
               </div>
             </div>
 
             {/* Quick Prompt Starters */}
             <div className="text-left space-y-1.5">
-              <span className="text-xs font-mono font-bold uppercase text-gray-600 block pl-1">
+              <span className="text-xs font-mono font-bold uppercase text-gray-600 dark:text-gray-400 block pl-1">
                 🚀 Quick Action Prompts:
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -107,7 +107,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                     key={idx}
                     type="button"
                     onClick={() => onSendMessage(item.prompt)}
-                    className="btn-neo bg-white hover:bg-neo-yellow text-black text-xs px-3 py-1.5 font-bold flex items-center gap-1.5"
+                    className="btn-neo bg-white dark:bg-neo-surface hover:bg-neo-yellow text-black dark:text-gray-100 text-xs px-3 py-1.5 font-bold flex items-center gap-1.5"
                   >
                     <span>{item.label}</span>
                   </button>
@@ -125,17 +125,17 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               }`}
             >
               {/* Role Header Avatar Pill */}
-              <div className="flex items-center gap-1.5 mb-1 px-1 text-[11px] font-mono font-bold text-gray-600">
+              <div className="flex items-center gap-1.5 mb-1 px-1 text-[11px] font-mono font-bold text-gray-600 dark:text-gray-400">
                 {msg.role === 'user' ? (
                   <>
                     <span>YOU</span>
-                    <div className="w-4 h-4 bg-neo-yellow border border-black flex items-center justify-center text-[10px]">
+                    <div className="w-4 h-4 bg-neo-yellow border border-black dark:border-gray-600 flex items-center justify-center text-[10px]">
                       👤
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="w-4 h-4 bg-neo-green border border-black flex items-center justify-center text-[10px]">
+                    <div className="w-4 h-4 bg-neo-green border border-black dark:border-gray-600 flex items-center justify-center text-[10px]">
                       🍽️
                     </div>
                     <span>GOODFOODS AI</span>
@@ -145,28 +145,28 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
               {/* Message Bubble Card */}
               <div
-                className={`max-w-[92%] sm:max-w-[85%] p-4 text-left border-3 border-black rounded-neo shadow-neo relative group ${
+                className={`max-w-[92%] sm:max-w-[85%] p-4 text-left border-3 border-black dark:border-gray-600 rounded-neo shadow-neo dark:shadow-neo-dark relative group ${
                   msg.role === 'user'
-                    ? 'bg-neo-yellow text-black'
-                    : 'bg-white text-gray-900'
+                    ? 'bg-neo-yellow text-black dark:text-gray-100'
+                    : 'bg-white dark:bg-neo-surface text-gray-900 dark:text-gray-100'
                 }`}
               >
                 {/* Copy message button */}
                 <button
                   onClick={() => handleCopyMessage(msg.id, msg.content)}
                   aria-label="Copy message text"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-neo-canvas border border-black p-1 text-gray-700 hover:bg-white"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-neo-canvas dark:bg-neo-surface-alt border border-black dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300 hover:bg-white dark:bg-neo-surface"
                   title="Copy text"
                 >
                   {copiedId === msg.id ? (
                     <Check className="w-3 h-3 text-green-700" />
                   ) : (
-                    <Copy className="w-3 h-3 text-black" />
+                    <Copy className="w-3 h-3 text-black dark:text-gray-100" />
                   )}
                 </button>
 
                 {/* Markdown Content */}
-                <div className="prose prose-sm max-w-none text-black font-sans leading-relaxed break-words">
+                <div className="prose prose-sm max-w-none text-black dark:text-gray-100 font-sans leading-relaxed break-words">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {msg.content}
                   </ReactMarkdown>
@@ -180,7 +180,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 {/* Selected Restaurant Card if present */}
                 {msg.selected_restaurant && (
                   <div className="mt-3">
-                    <span className="text-[10px] font-mono font-bold uppercase text-gray-500 block mb-1">
+                    <span className="text-[10px] font-mono font-bold uppercase text-gray-500 dark:text-gray-400 block mb-1">
                       Featured Venue:
                     </span>
                     <RestaurantCard
@@ -207,13 +207,13 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         {/* Thinking Indicator */}
         {loading && (
           <div className="flex flex-col items-start">
-            <div className="flex items-center gap-1.5 mb-1 px-1 text-[11px] font-mono font-bold text-gray-600">
-              <div className="w-4 h-4 bg-neo-green border border-black flex items-center justify-center text-[10px]">
+            <div className="flex items-center gap-1.5 mb-1 px-1 text-[11px] font-mono font-bold text-gray-600 dark:text-gray-400">
+              <div className="w-4 h-4 bg-neo-green border border-black dark:border-gray-600 flex items-center justify-center text-[10px]">
                 🍽️
               </div>
               <span>GOODFOODS AI</span>
             </div>
-            <div className="bg-white border-3 border-black rounded-neo p-3 shadow-neo flex items-center gap-2.5 font-mono text-xs font-bold">
+            <div className="bg-white dark:bg-neo-surface border-3 border-black dark:border-gray-600 rounded-neo p-3 shadow-neo dark:shadow-neo-dark flex items-center gap-2.5 font-mono text-xs font-bold">
               <Loader2 className="w-4 h-4 animate-spin text-neo-orange" />
               <span>Checking tables & generating response...</span>
             </div>
@@ -231,7 +231,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       />
 
       {/* Sticky Bottom Input Bar */}
-      <div className="pt-2 border-t-3 border-black bg-[#F4EFE6]">
+      <div className="pt-2 border-t-3 border-black dark:border-gray-600 bg-[#F4EFE6] dark:bg-neo-dark">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="text"
@@ -239,7 +239,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 bg-white border-3 border-black rounded-neo shadow-neo font-bold text-xs sm:text-sm text-black placeholder:text-gray-500 focus:outline-none focus:bg-[#FFFDE8] disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 bg-white dark:bg-neo-surface border-3 border-black dark:border-gray-600 rounded-neo shadow-neo dark:shadow-neo-dark font-bold text-xs sm:text-sm text-black dark:text-gray-100 placeholder:text-gray-500 dark:text-gray-400 focus:outline-none focus:bg-[#FFFDE8] disabled:opacity-50"
           />
           <button
             type="submit"

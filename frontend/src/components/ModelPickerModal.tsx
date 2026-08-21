@@ -61,18 +61,18 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="bg-[#FAF8F5] border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-xl my-auto overflow-hidden">
+      <div className="bg-[#FAF8F5] dark:bg-neo-surface border-3 border-black dark:border-gray-600 shadow-neo-xl dark:shadow-neo-lg dark:shadow-neo-dark-dark rounded-neo-lg w-full max-w-xl my-auto overflow-hidden">
         {/* Header */}
-        <div className="bg-neo-purple border-b-3 border-black p-4 flex items-center justify-between">
+        <div className="bg-neo-purple border-b-3 border-black dark:border-gray-600 p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-white border-2 border-black flex items-center justify-center font-bold">
+            <div className="w-8 h-8 bg-white dark:bg-neo-surface border-2 border-black dark:border-gray-600 flex items-center justify-center font-bold">
               🧠
             </div>
             <div>
-              <h2 className="font-black text-lg uppercase tracking-tight text-black leading-none">
+              <h2 className="font-black text-lg uppercase tracking-tight text-black dark:text-gray-100 leading-none">
                 AI Engine & Provider
               </h2>
-              <p className="text-xs font-bold text-gray-800 mt-0.5">
+              <p className="text-xs font-bold text-gray-800 dark:text-gray-200 mt-0.5">
                 Pluggable LLM Backend Configuration
               </p>
             </div>
@@ -80,14 +80,14 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
 
           <button
             onClick={onClose}
-            className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center font-black shadow-neo-sm"
+            className="w-8 h-8 bg-white dark:bg-neo-surface hover:bg-neo-yellow border-2 border-black dark:border-gray-600 rounded-neo-sm flex items-center justify-center font-black shadow-neo dark:shadow-neo-dark-sm dark:shadow-neo dark:shadow-neo-dark-sm-dark"
           >
-            <X className="w-5 h-5 text-black" />
+            <X className="w-5 h-5 text-black dark:text-gray-100" />
           </button>
         </div>
 
         {/* Form Body */}
-        <div className="p-5 space-y-4 bg-white">
+        <div className="p-5 space-y-4 bg-white dark:bg-neo-surface">
           {error && (
             <div className="p-3 bg-red-100 border-2 border-red-500 text-red-800 text-xs font-bold flex items-center gap-2">
               <ShieldAlert className="w-4 h-4 shrink-0" />
@@ -96,13 +96,13 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
           )}
 
           {/* Offline Demo Mode Toggle */}
-          <div className="bg-neo-yellow/20 border-2 border-black p-3 flex items-center justify-between">
+          <div className="bg-neo-yellow/20 border-2 border-black dark:border-gray-600 p-3 flex items-center justify-between">
             <div>
-              <div className="font-black text-xs uppercase text-black flex items-center gap-1.5">
+              <div className="font-black text-xs uppercase text-black dark:text-gray-100 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-neo-orange" />
                 <span>Offline Demo Mode</span>
               </div>
-              <p className="text-[11px] text-gray-700 mt-0.5">
+              <p className="text-[11px] text-gray-700 dark:text-gray-300 mt-0.5">
                 Zero API keys needed; uses deterministic rule-based pattern matching.
               </p>
             </div>
@@ -110,7 +110,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
               type="checkbox"
               checked={useMock}
               onChange={(e) => setUseMock(e.target.checked)}
-              className="w-5 h-5 border-2 border-black text-black focus:ring-0 cursor-pointer"
+              className="w-5 h-5 border-2 border-black dark:border-gray-600 text-black dark:text-gray-100 focus:ring-0 cursor-pointer"
             />
           </div>
 
@@ -118,7 +118,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
             <>
               {/* Provider Selection */}
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-gray-700 mb-1">
+                <label className="block text-xs font-mono font-bold uppercase text-gray-700 dark:text-gray-300 mb-1">
                   Select Provider Backend:
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -130,10 +130,10 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
                         key={p}
                         type="button"
                         onClick={() => handleProviderChange(p)}
-                        className={`p-2 border-2 border-black text-left text-xs font-bold transition-all ${
+                        className={`p-2 border-2 border-black dark:border-gray-600 text-left text-xs font-bold transition-all ${
                           isSelected
-                            ? 'bg-neo-yellow shadow-neo-sm translate-x-0.5 translate-y-0.5'
-                            : 'bg-neo-canvas hover:bg-gray-100'
+                            ? 'bg-neo-yellow shadow-neo dark:shadow-neo-dark-sm dark:shadow-neo dark:shadow-neo-dark-sm-dark translate-x-0.5 translate-y-0.5'
+                            : 'bg-neo-canvas dark:bg-neo-surface-alt hover:bg-gray-100'
                         }`}
                       >
                         <span className="block truncate">{label}</span>
@@ -145,13 +145,13 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
 
               {/* Model Selection */}
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-gray-700 mb-1">
+                <label className="block text-xs font-mono font-bold uppercase text-gray-700 dark:text-gray-300 mb-1">
                   Select Model ID:
                 </label>
                 <select
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value)}
-                  className="w-full p-2.5 bg-neo-canvas border-2 border-black text-xs font-mono font-bold focus:outline-none focus:bg-white"
+                  className="w-full p-2.5 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 text-xs font-mono font-bold focus:outline-none focus:bg-white dark:bg-neo-surface"
                 >
                   {availableModelsForProvider.map((m) => (
                     <option key={m} value={m}>
@@ -167,7 +167,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
                     placeholder="Enter custom model ID (e.g. openai/gpt-oss-120b)"
                     value={customModel}
                     onChange={(e) => setCustomModel(e.target.value)}
-                    className="w-full mt-2 p-2 bg-neo-canvas border-2 border-black text-xs font-mono font-bold focus:outline-none focus:bg-white"
+                    className="w-full mt-2 p-2 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 text-xs font-mono font-bold focus:outline-none focus:bg-white dark:bg-neo-surface"
                   />
                 )}
               </div>
@@ -175,7 +175,7 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
           )}
 
           {/* Context Note */}
-          <div className="bg-neo-canvas border border-black/30 p-2.5 text-[11px] font-mono text-gray-700 flex items-start gap-2">
+          <div className="bg-neo-canvas dark:bg-neo-surface-alt border border-black dark:border-gray-600/30 p-2.5 text-[11px] font-mono text-gray-700 dark:text-gray-300 flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-green-700 shrink-0 mt-0.5" />
             <span>
               <strong>Context Preserved:</strong> Switching models retains all existing conversation turns, selected venues, and pending reservation details.
@@ -184,17 +184,17 @@ export const ModelPickerModal: React.FC<ModelPickerModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="bg-neo-canvas border-t-2 border-black p-3 flex items-center justify-between">
+        <div className="bg-neo-canvas dark:bg-neo-surface-alt border-t-2 border-black dark:border-gray-600 p-3 flex items-center justify-between">
           <button
             onClick={onClose}
-            className="btn-neo bg-white text-black px-4 py-1.5 font-mono uppercase text-xs"
+            className="btn-neo bg-white dark:bg-neo-surface text-black dark:text-gray-100 px-4 py-1.5 font-mono uppercase text-xs"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="btn-neo bg-neo-green text-black px-5 py-1.5 font-mono uppercase font-black text-xs shadow-neo-sm"
+            className="btn-neo bg-neo-green text-black dark:text-gray-100 px-5 py-1.5 font-mono uppercase font-black text-xs shadow-neo dark:shadow-neo-dark-sm dark:shadow-neo dark:shadow-neo-dark-sm-dark"
           >
             {saving ? 'Switching...' : 'Apply & Switch Engine'}
           </button>

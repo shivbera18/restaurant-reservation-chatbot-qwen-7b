@@ -27,14 +27,14 @@ export class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen neo-grid-bg flex items-center justify-center p-4 text-black font-sans">
-          <div className="bg-white border-3 border-black rounded-neo p-6 shadow-neo-lg max-w-md w-full text-left space-y-4">
+        <div className="min-h-screen neo-grid-bg flex items-center justify-center p-4 text-black dark:text-gray-100 font-sans">
+          <div className="bg-white dark:bg-neo-surface border-3 border-black dark:border-gray-600 rounded-neo p-6 shadow-neo-lg dark:shadow-neo-dark max-w-md w-full text-left space-y-4">
             <div className="flex items-center gap-2 bg-red-100 border-2 border-red-500 p-2.5 text-red-800 font-bold text-sm">
               <AlertTriangle className="w-5 h-5 shrink-0" />
               <span>Rendering Encountered an Error</span>
             </div>
 
-            <p className="text-xs text-gray-700 font-mono break-words bg-neo-canvas p-2.5 border border-black/30">
+            <p className="text-xs text-gray-700 dark:text-gray-300 font-mono break-words bg-neo-canvas dark:bg-neo-surface-alt p-2.5 border border-black dark:border-gray-600/30">
               {this.state.error?.message || 'Unknown UI runtime error'}
             </p>
 
