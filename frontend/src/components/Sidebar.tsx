@@ -12,6 +12,7 @@ import {
   User as UserIcon,
   LogIn,
   LogOut,
+  Settings,
 } from 'lucide-react';
 import type { SystemConfig, User } from '../types';
 
@@ -169,7 +170,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span>My Bookings</span>
             </span>
             {activeReservationsCount > 0 && (
-              <span className="bg-black text-white px-1.5 py-0.5 text-[10px] font-mono font-black rounded-neo-sm animate-bounce">
+              <span className="bg-black text-white px-1.5 py-0.5 text-[10px] font-mono font-black rounded-neo-sm">
                 {activeReservationsCount}
               </span>
             )}
@@ -343,7 +344,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               {!isCollapsed ? (
                 activeReservationsCount > 0 ? (
-                  <span className="bg-black text-white px-2 py-0.5 text-[10px] font-mono font-black rounded-neo-sm animate-bounce">
+                  <span className="bg-black text-white px-2 py-0.5 text-[10px] font-mono font-black rounded-neo-sm">
                     {activeReservationsCount}
                   </span>
                 ) : (
@@ -358,62 +359,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
             </button>
 
-            {/* Account / Login Action Button */}
-            {user ? (
-              <div
-                className={`p-2.5 bg-neo-yellow/20 border-2 border-black shadow-neo-sm rounded-neo text-left ${
-                  isCollapsed ? 'p-2 text-center' : ''
-                }`}
-              >
-                {!isCollapsed ? (
-                  <div className="flex items-center justify-between gap-1.5">
-                    <div className="flex items-center gap-2 truncate">
-                      <div className="w-7 h-7 bg-neo-yellow border border-black flex items-center justify-center rounded-neo-sm shrink-0 font-black text-xs">
-                        👤
-                      </div>
-                      <div className="truncate">
-                        <span className="font-black text-xs text-black block truncate leading-none">
-                          {user.name}
-                        </span>
-                        <span className="text-[10px] font-mono text-black truncate block mt-0.5">
-                          {user.email}
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      onClick={onLogout}
-                      title="Sign out of your account"
-                      className="p-1 hover:bg-red-200 border border-black rounded-neo-sm shrink-0 text-black"
-                    >
-                      <LogOut className="w-3.5 h-3.5 text-red-700" />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={onLogout}
-                    title={`Logged in as ${user.name}. Click to log out`}
-                    className="mx-auto"
-                  >
-                    <UserIcon className="w-4 h-4 text-black" />
-                  </button>
-                )}
-              </div>
-            ) : (
-              <button
-                onClick={() => onOpenAuth('login')}
-                title="Sign in to view and manage reservations"
-                className={`btn-neo bg-neo-yellow text-black hover:bg-neo-orange hover:text-white w-full flex items-center transition-all ${
-                  isCollapsed
-                    ? 'justify-center p-2.5'
-                    : 'justify-start gap-2.5 p-2.5 text-xs'
-                }`}
-              >
-                <LogIn className="w-4 h-4 shrink-0" />
-                {!isCollapsed && (
-                  <span className="font-black uppercase tracking-tight truncate">Sign In / Sign Up</span>
-                )}
-              </button>
-            )}
 
             {/* New Conversation Button */}
             <button
@@ -434,6 +379,88 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
+        {/* Account Section — pinned to lower half, separated from nav */}
+        <div className="mt-auto space-y-2 pt-3 border-t-2 border-dashed border-black">
+          {!isCollapsed && (
+            <span className="text-[10px] font-mono font-black uppercase text-black pl-1 block">
+              Account
+            </span>
+          )}
+
+          {user ? (
+            <div
+              className={`bg-neo-yellow/20 border-2 border-black shadow-neo-sm rounded-neo text-left ${
+                isCollapsed ? 'p-2' : 'p-2.5'
+              }`}
+            >
+              {!isCollapsed ? (
+                <div className="flex items-center justify-between gap-1.5">
+                  <div className="flex items-center gap-2 truncate">
+                    <div className="w-7 h-7 bg-neo-yellow border border-black flex items-center justify-center rounded-neo-sm shrink-0 text-sm">
+                      👤
+                    </div>
+                    <div className="truncate">
+                      <span className="font-black text-xs text-black block truncate leading-none">
+                        {user.name}
+                      </span>
+                      <span className="text-[10px] font-mono text-black truncate block mt-0.5">
+                        {user.email}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={onLogout}
+                    title="Sign out of your account"
+                    aria-label="Log out"
+                    className="p-1 hover:bg-red-200 border border-black rounded-neo-sm shrink-0 text-black"
+                  >
+                    <LogOut className="w-3.5 h-3.5 text-red-700" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={onLogout}
+                  title={`Logged in as ${user.name}. Click to log out`}
+                  aria-label="Log out"
+                  className="mx-auto flex"
+                >
+                  <LogOut className="w-4 h-4 text-red-700" />
+                </button>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={() => onOpenAuth('login')}
+              title="Sign in to view and manage reservations"
+              className={`btn-neo bg-neo-yellow text-black hover:bg-neo-orange hover:text-white w-full flex items-center transition-all ${
+                isCollapsed
+                  ? 'justify-center p-2.5'
+                  : 'justify-start gap-2.5 p-2.5 text-xs'
+              }`}
+            >
+              <LogIn className="w-4 h-4 shrink-0" />
+              {!isCollapsed && (
+                <span className="font-black uppercase tracking-tight truncate">Sign In / Sign Up</span>
+              )}
+            </button>
+          )}
+
+          {/* Settings-style entry point for model picker */}
+          <button
+            onClick={onOpenModelModal}
+            title="AI engine settings: provider and model"
+            className={`btn-neo bg-white text-black w-full flex items-center transition-all ${
+              isCollapsed
+                ? 'justify-center p-2.5'
+                : 'justify-start gap-2.5 p-2.5 text-xs'
+            }`}
+          >
+            <Settings className="w-4 h-4 shrink-0" />
+            {!isCollapsed && (
+              <span className="font-black uppercase tracking-tight truncate">AI Engine Settings</span>
+            )}
+          </button>
+        </div>
         <div className="space-y-3 pt-3 border-t-2 border-dashed border-black">
 
           {!isCollapsed && (
