@@ -82,7 +82,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Header */}
         <div className="bg-neo-yellow border-b-3 border-black p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-white border-2 border-black flex items-center justify-center rounded-neo-sm text-lg font-bold shadow-neo-sm">
+            <div className="w-9 h-9 bg-neo-card border-2 border-black flex items-center justify-center rounded-neo-sm text-lg font-bold shadow-neo-sm">
               🔐
             </div>
             <div>
@@ -98,7 +98,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="w-8 h-8 bg-white hover:bg-neo-orange hover:text-white border-2 border-black flex items-center justify-center rounded-neo-sm text-black transition-colors"
+            className="w-8 h-8 bg-neo-card hover:bg-neo-orange hover:text-white border-2 border-black flex items-center justify-center rounded-neo-sm text-neo-main transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -150,7 +150,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 Full Name *
               </label>
               <div className="relative">
-                <User className="w-4 h-4 text-black absolute left-3 top-1/2 -translate-y-1/2" />
+                <User className="w-4 h-4 text-neo-muted absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   required
@@ -168,7 +168,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               Email Address *
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-black absolute left-3 top-1/2 -translate-y-1/2" />
+              <Mail className="w-4 h-4 text-neo-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
                 required
@@ -185,7 +185,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               Password *
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-black absolute left-3 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-neo-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
                 required
@@ -204,7 +204,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 Mobile Phone (Optional)
               </label>
               <div className="relative">
-                <Phone className="w-4 h-4 text-black absolute left-3 top-1/2 -translate-y-1/2" />
+                <Phone className="w-4 h-4 text-neo-muted absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="tel"
                   placeholder="e.g. +91 990-643-3115"

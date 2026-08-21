@@ -119,7 +119,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
         {/* Header */}
         <div className="bg-neo-green border-b-3 border-black p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-white border-2 border-black flex items-center justify-center rounded-neo-sm font-bold text-base">
+            <div className="w-8 h-8 bg-neo-card border-2 border-black flex items-center justify-center rounded-neo-sm font-bold text-base">
               🎫
             </div>
             <div>
@@ -137,7 +137,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
               onClick={loadReservations}
               disabled={loading}
               aria-label="Refresh reservations"
-              className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black flex items-center justify-center rounded-neo-sm text-black transition-colors"
+              className="w-8 h-8 bg-neo-card hover:bg-neo-yellow border-2 border-black flex items-center justify-center rounded-neo-sm text-neo-main transition-colors"
               title="Refresh"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -145,7 +145,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
             <button
               onClick={onClose}
               aria-label="Close"
-              className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black flex items-center justify-center rounded-neo-sm text-black transition-colors"
+              className="w-8 h-8 bg-neo-card hover:bg-neo-yellow border-2 border-black flex items-center justify-center rounded-neo-sm text-neo-main transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -262,7 +262,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="bg-white border-t-2 border-black p-3 flex items-center justify-between text-xs font-mono text-black">
+        <div className="bg-neo-card border-t-2 border-black p-3 flex items-center justify-between text-xs font-mono text-neo-main">
           <span>
             Showing {filteredReservations.length} of {reservations.length} bookings
           </span>
