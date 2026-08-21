@@ -36,9 +36,16 @@ def stream_request(
 
     chunks = []
     status = 200
+    sent_body = False
+    disconnected = asyncio.Event()
 
     async def receive():
-        return {"type": "http.request", "body": body_bytes, "more_body": False}
+        nonlocal sent_body
+        if not sent_body:
+            sent_body = True
+            return {"type": "http.request", "body": body_bytes, "more_body": False}
+        await disconnected.wait()
+        return {"type": "http.disconnect"}
 
     async def send(message):
         nonlocal status
@@ -46,7 +53,8 @@ def stream_request(
             status = message["status"]
         elif message["type"] == "http.response.body":
             chunks.append(message.get("body", b"").decode("utf-8"))
-
+            if not message.get("more_body", False):
+                disconnected.set()
     async def runner():
         await app(scope, receive, send)
 
