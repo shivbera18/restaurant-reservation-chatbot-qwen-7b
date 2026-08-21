@@ -1,13 +1,11 @@
+import asyncio
 import datetime
 import json
 from typing import Any, Dict, Optional, Tuple
 import unittest
-import urllib.error
-import urllib.request
 
 from database import db
-
-BASE_URL = "http://127.0.0.1:8000"
+from server import app
 
 
 def make_request(
@@ -16,26 +14,53 @@ def make_request(
     data: Optional[Dict[str, Any]] = None,
     headers: Optional[Dict[str, str]] = None,
 ) -> Tuple[int, Any]:
-    url = f"{BASE_URL}{path}"
-    req_headers = {"Content-Type": "application/json"}
+    """Execute request directly against the ASGI app with zero socket overhead."""
+    body_bytes = json.dumps(data).encode("utf-8") if data is not None else b""
+    raw_headers = [
+        (b"content-type", b"application/json"),
+        (b"content-length", str(len(body_bytes)).encode("utf-8")),
+    ]
     if headers:
-        req_headers.update(headers)
+        for k, v in headers.items():
+            raw_headers.append((k.lower().encode("utf-8"), v.encode("utf-8")))
 
-    body = json.dumps(data).encode("utf-8") if data is not None else None
-    req = urllib.request.Request(url, data=body, headers=req_headers, method=method)
+    scope = {
+        "type": "http",
+        "asgi": {"version": "3.0"},
+        "http_version": "1.1",
+        "method": method,
+        "scheme": "http",
+        "path": path,
+        "raw_path": path.encode("utf-8"),
+        "query_string": b"",
+        "headers": raw_headers,
+        "client": ("127.0.0.1", 12345),
+        "server": ("127.0.0.1", 80),
+    }
 
+    response_status = 200
+    response_headers = []
+    response_body = bytearray()
+
+    async def receive():
+        return {"type": "http.request", "body": body_bytes, "more_body": False}
+
+    async def send(message):
+        nonlocal response_status, response_headers, response_body
+        if message["type"] == "http.response.start":
+            response_status = message["status"]
+            response_headers = message.get("headers", [])
+        elif message["type"] == "http.response.body":
+            response_body.extend(message.get("body", b""))
+
+    asyncio.run(app(scope, receive, send))
+
+    body_str = response_body.decode("utf-8")
     try:
-        with urllib.request.urlopen(req) as response:
-            status = response.status
-            res_body = response.read().decode("utf-8")
-            return status, json.loads(res_body) if res_body else {}
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode("utf-8")
-        try:
-            parsed = json.loads(err_body)
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            parsed = {"raw": err_body}
-        return e.code, parsed
+        parsed = json.loads(body_str) if body_str else {}
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        parsed = {"raw": body_str}
+    return response_status, parsed
 
 
 class TestUserAuthAndIsolation(unittest.TestCase):
