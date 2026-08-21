@@ -444,6 +444,13 @@ def cancel_reservation(
             detail=f"Reservation '{payload.confirmation_code}' not found.",
         )
 
+    # Already-cancelled guard
+    if res.status == "cancelled":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Reservation '{payload.confirmation_code}' is already cancelled.",
+        )
+
     # Ownership verification
     res_user_id = getattr(res, "user_id", None)
     if res_user_id and res_user_id != user["id"]:

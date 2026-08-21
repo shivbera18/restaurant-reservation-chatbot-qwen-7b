@@ -436,6 +436,11 @@ class RestaurantDatabase:
         if not restaurant or not customer_name.strip() or not customer_phone.strip():
             return None
 
+        # T1: phone must contain 7-15 digits (allows +, spaces, dashes, parens, dots)
+        phone_digits = "".join(c for c in customer_phone if c.isdigit())
+        if not 7 <= len(phone_digits) <= 15:
+            return None
+
         if not isinstance(party_size, int) or not 1 <= party_size <= restaurant.seating_capacity:
             return None
 
@@ -581,11 +586,13 @@ class RestaurantDatabase:
         return reservation
     
     def cancel_reservation(self, confirmation_code: str) -> Optional[Reservation]:
-        """Cancel a reservation"""
+        """Cancel a reservation. Returns None if not found or already cancelled."""
         reservation = self.get_reservation_by_code(confirmation_code)
         if not reservation:
             return None
-        
+        if reservation.status == ReservationStatus.CANCELLED:
+            return None
+
         reservation.status = ReservationStatus.CANCELLED
         if neon_db.enabled:
             neon_db.update_reservation(self._reservation_data(reservation))
