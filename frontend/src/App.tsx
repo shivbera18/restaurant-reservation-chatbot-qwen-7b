@@ -229,6 +229,7 @@ export function App() {
     <div className="min-h-screen neo-grid-bg text-neo-main relative overflow-x-hidden">
       {/* Floating Hovering Sidebar Navigation */}
       <Sidebar
+        config={config}
         theme={theme}
         onToggleTheme={handleToggleTheme}
         activeReservationsCount={activeReservations.length}
