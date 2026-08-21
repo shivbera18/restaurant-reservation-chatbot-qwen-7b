@@ -79,11 +79,11 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
       aria-modal="true"
       onClick={onClose}
     >
-      <div className="bg-white border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-5xl max-h-[90vh] flex flex-col my-auto overflow-hidden text-left" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-neo-card border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-5xl max-h-[90vh] flex flex-col my-auto overflow-hidden text-left" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
         <div className="bg-neo-blue border-b-3 border-black p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-white border-2 border-black flex items-center justify-center rounded-neo-sm font-bold text-base">
+            <div className="w-8 h-8 bg-neo-card border-2 border-black flex items-center justify-center rounded-neo-sm font-bold text-base">
               🏢
             </div>
             <div>
@@ -99,24 +99,24 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
           <button
             onClick={onClose}
             aria-label="Close"
-            className="w-8 h-8 bg-white hover:bg-neo-yellow border-2 border-black flex items-center justify-center rounded-neo-sm text-black transition-colors"
+            className="w-8 h-8 bg-neo-card hover:bg-neo-yellow border-2 border-black flex items-center justify-center rounded-neo-sm text-neo-main transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search and Filters Bar */}
-        <div className="p-4 bg-white border-b-2 border-black space-y-3">
+        <div className="p-4 bg-neo-card border-b-2 border-black space-y-3">
           <div className="flex flex-col sm:flex-row gap-2.5">
             {/* Search Input */}
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-black absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-neo-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search by restaurant name, dish (e.g. Pad Thai, Truffle Pasta)..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-neo-canvas border-2 border-black rounded-neo-sm font-mono text-xs font-bold text-black placeholder:text-gray-600 focus:outline-none focus:bg-white"
+                className="w-full pl-9 pr-3 py-2 bg-neo-surface text-neo-main border-2 border-black rounded-neo-sm font-mono text-xs font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-card"
               />
             </div>
 
@@ -125,7 +125,7 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
               <select
                 value={selectedNeighborhood}
                 onChange={(e) => setSelectedNeighborhood(e.target.value)}
-                className="w-full py-2 px-2.5 bg-neo-canvas border-2 border-black rounded-neo-sm font-mono text-xs font-bold text-black focus:outline-none"
+                className="w-full py-2 px-2.5 bg-neo-surface text-neo-main border-2 border-black rounded-neo-sm font-mono text-xs font-bold focus:outline-none"
               >
                 <option value="all">📍 All Neighborhoods</option>
                 {neighborhoods.map((n) => (
@@ -139,12 +139,12 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
 
           {/* Cuisine Pill Filter Chips */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-            <span className="font-mono font-bold text-black text-[11px] uppercase shrink-0">
+            <span className="font-mono font-bold text-neo-main text-[11px] uppercase shrink-0">
               Cuisines:
             </span>
             <button
               onClick={() => setSelectedCuisine('all')}
-              className={`px-2.5 py-1 border border-black font-mono font-bold shrink-0 text-[11px] rounded-neo-sm transition-all ${selectedCuisine === 'all' ? 'bg-neo-yellow text-black shadow-neo-sm' : 'bg-neo-canvas text-black hover:bg-gray-200'}`}
+              className={`px-2.5 py-1 border border-black font-mono font-bold shrink-0 text-[11px] rounded-neo-sm transition-all ${selectedCuisine === 'all' ? 'bg-neo-yellow text-black shadow-neo-sm' : 'bg-neo-surface text-neo-main hover:bg-neo-yellow hover:text-black'}`}
             >
               ALL
             </button>
@@ -152,7 +152,7 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
               <button
                 key={c}
                 onClick={() => setSelectedCuisine(c)}
-                className={`px-2.5 py-1 border border-black font-mono font-bold shrink-0 text-[11px] rounded-neo-sm transition-all ${selectedCuisine === c ? 'bg-neo-yellow text-black shadow-neo-sm' : 'bg-neo-canvas text-black hover:bg-gray-200'}`}
+                className={`px-2.5 py-1 border border-black font-mono font-bold shrink-0 text-[11px] rounded-neo-sm transition-all ${selectedCuisine === c ? 'bg-neo-yellow text-black shadow-neo-sm' : 'bg-neo-surface text-neo-main hover:bg-neo-yellow hover:text-black'}`}
               >
                 {c}
               </button>
@@ -164,15 +164,15 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
         <div className="flex-1 p-4 overflow-y-auto bg-neo-canvas">
           {loading ? (
             <div className="py-16 text-center font-mono font-bold">
-              <div className="inline-block p-4 bg-white border-2 border-black rounded-neo shadow-neo text-black">
+              <div className="inline-block p-4 bg-neo-card border-2 border-black rounded-neo shadow-neo text-neo-main">
                 ⏳ Loading restaurant locations...
               </div>
             </div>
           ) : filteredRestaurants.length === 0 ? (
             <div className="py-16 text-center">
-              <div className="inline-block p-6 bg-white border-2 border-black rounded-neo shadow-neo max-w-md">
-                <p className="font-black text-base uppercase text-black">No restaurants match your search</p>
-                <p className="text-xs text-black mt-1">Try clearing filters or searching for another keyword.</p>
+              <div className="inline-block p-6 bg-neo-card border-2 border-black rounded-neo shadow-neo max-w-md">
+                <p className="font-black text-base uppercase text-neo-main">No restaurants match your search</p>
+                <p className="text-xs text-neo-muted mt-1">Try clearing filters or searching for another keyword.</p>
                 <button
                   onClick={() => {
                     setSearch('');
@@ -202,7 +202,7 @@ export const RestaurantExplorerModal: React.FC<RestaurantExplorerModalProps> = (
         </div>
 
         {/* Modal Footer */}
-        <div className="bg-white border-t-2 border-black p-3 flex items-center justify-between text-xs font-mono text-black">
+        <div className="bg-neo-card border-t-2 border-black p-3 flex items-center justify-between text-xs font-mono text-neo-main">
           <span>Showing {filteredRestaurants.length} of {restaurants.length} locations</span>
           <button
             onClick={onClose}

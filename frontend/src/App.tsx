@@ -6,6 +6,7 @@ import { ReservationsDrawer } from './components/ReservationsDrawer';
 import { ModelPickerModal } from './components/ModelPickerModal';
 import { AuthModal } from './components/AuthModal';
 import type { ChatMessage, Restaurant, Reservation, SystemConfig, User } from './types';
+import { getStoredTheme, setStoredTheme, applyTheme, type ThemeMode } from './theme';
 import {
   fetchConfig,
   sendChatMessage,
@@ -27,7 +28,17 @@ export function App() {
   const [isResetting, setIsResetting] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [backendOffline, setBackendOffline] = useState(false);
+  const [theme, setTheme] = useState<ThemeMode>(() => getStoredTheme());
 
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
+  const handleToggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    setStoredTheme(next);
+  };
   // Modals & Drawers
   const [isExplorerOpen, setIsExplorerOpen] = useState(false);
   const [isReservationsOpen, setIsReservationsOpen] = useState(false);
@@ -215,10 +226,12 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen neo-grid-bg text-black relative overflow-x-hidden">
+    <div className="min-h-screen neo-grid-bg text-neo-main relative overflow-x-hidden">
       {/* Floating Hovering Sidebar Navigation */}
       <Sidebar
         config={config}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
         activeReservationsCount={activeReservations.length}
         onOpenModelModal={() => setIsModelModalOpen(true)}
         onOpenExplorer={() => setIsExplorerOpen(true)}
@@ -272,7 +285,8 @@ export function App() {
           onOpenReservations={() => setIsReservationsOpen(true)}
           activeReservationsCount={activeReservations.length}
           backendOffline={backendOffline}
-          onRetryConnection={refreshAppData}
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
         />
       </main>
 

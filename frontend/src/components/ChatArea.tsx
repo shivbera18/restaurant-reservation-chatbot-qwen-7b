@@ -12,6 +12,8 @@ import {
   LogIn,
   AlertTriangle,
   RotateCcw,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import type { ChatMessage, Restaurant, User } from '../types';
 import { RestaurantCard } from './RestaurantCard';
@@ -35,6 +37,8 @@ interface ChatAreaProps {
   activeReservationsCount: number;
   backendOffline?: boolean;
   onRetryConnection?: () => void;
+  theme?: 'light' | 'dark' | 'system';
+  onToggleTheme?: () => void;
 }
 
 const QUICK_PROMPTS = [
@@ -61,6 +65,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   activeReservationsCount,
   backendOffline,
   onRetryConnection,
+  theme,
+  onToggleTheme,
 }) => {
   const [input, setInput] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -90,16 +96,16 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   return (
     <div className="flex-1 flex flex-col h-full max-w-5xl mx-auto w-full px-3 sm:px-6 py-3 overflow-hidden text-left">
       {/* Top Header Bar with Prominent Navigation & Sign In */}
-      <header className="bg-white border-3 border-black shadow-neo rounded-neo px-3.5 py-2 mb-3 flex items-center justify-between gap-2 shrink-0">
+      <header className="bg-neo-card border-3 border-black shadow-neo rounded-neo px-3.5 py-2 mb-3 flex items-center justify-between gap-2 shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center text-base font-black shadow-neo-sm">
             🍽️
           </div>
           <div>
-            <h1 className="font-black text-sm uppercase tracking-tight text-black leading-none">
+            <h1 className="font-black text-sm uppercase tracking-tight text-neo-main leading-none">
               GoodFoods<span className="text-neo-orange">.AI</span>
             </h1>
-            <span className="font-mono text-[10px] font-bold text-gray-700 block mt-0.5">
+            <span className="font-mono text-[10px] font-bold text-neo-muted block mt-0.5">
               Autonomous Concierge
             </span>
           </div>
@@ -131,10 +137,27 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             )}
           </button>
 
+          {/* Theme Toggle Button */}
+          {onToggleTheme && (
+            <button
+              type="button"
+              onClick={onToggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              className="btn-neo bg-neo-card text-neo-main p-1.5 text-xs font-black uppercase flex items-center justify-center"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-3.5 h-3.5 text-neo-yellow" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-black" />
+              )}
+            </button>
+          )}
+
           {/* Prominent User Sign In / Profile Pill */}
           {user ? (
             <div className="flex items-center gap-1.5 bg-neo-yellow border-2 border-black rounded-neo-sm shadow-neo-sm px-2.5 py-1">
-              <UserIcon className="w-3.5 h-3.5 text-black" />
+              <UserIcon className="w-3.5 h-3.5 text-current" />
               <span className="font-black text-xs uppercase text-black max-w-[100px] truncate">
                 {user.name.split(' ')[0]}
               </span>
@@ -162,19 +185,19 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
       {/* Backend Offline Warning Banner if connection failed */}
       {backendOffline && (
-        <div className="bg-neo-orange/20 border-3 border-black p-3 mb-3 rounded-neo shadow-neo flex items-center justify-between gap-2 text-xs font-bold text-black shrink-0">
+        <div className="bg-neo-orange/20 border-3 border-black p-3 mb-3 rounded-neo shadow-neo flex items-center justify-between gap-2 text-xs font-bold text-neo-main shrink-0">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-neo-orange shrink-0" />
             <span>
               <strong>Backend Offline:</strong> FastAPI is not running on port 8000. Start backend with{' '}
-              <code className="bg-white border border-black px-1.5 py-0.5 font-mono text-[11px]">uvicorn server:app --port 8000</code>.
+              <code className="bg-neo-card border border-black px-1.5 py-0.5 font-mono text-[11px]">uvicorn server:app --port 8000</code>.
             </span>
           </div>
           {onRetryConnection && (
             <button
               type="button"
               onClick={onRetryConnection}
-              className="btn-neo bg-white hover:bg-neo-yellow text-black text-xs px-2.5 py-1 font-mono uppercase font-black shrink-0 flex items-center gap-1"
+              className="btn-neo bg-neo-card hover:bg-neo-yellow text-neo-main text-xs px-2.5 py-1 font-mono uppercase font-black shrink-0 flex items-center gap-1"
             >
               <RotateCcw className="w-3 h-3" />
               <span>Retry</span>
@@ -189,39 +212,39 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
           /* Welcome State */
           <div className="py-4 text-center max-w-2xl mx-auto space-y-4">
             {/* Hero Card */}
-            <div className="bg-white border-3 border-black rounded-neo-lg p-6 shadow-neo-lg text-left relative overflow-hidden transition-colors">
+            <div className="bg-neo-card border-3 border-black rounded-neo-lg p-6 shadow-neo-lg text-left relative overflow-hidden transition-colors">
               <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-neo-yellow/30 rounded-full border-2 border-black select-none pointer-events-none" />
 
               <div className="inline-block bg-neo-yellow text-black border-2 border-black rounded-neo-sm px-2.5 py-0.5 text-xs font-mono font-black uppercase mb-3 shadow-neo-sm">
                 ⭐ Autonomous Concierge
               </div>
 
-              <h2 className="font-black text-2xl sm:text-3xl uppercase tracking-tight text-black leading-tight">
+              <h2 className="font-black text-2xl sm:text-3xl uppercase tracking-tight text-neo-main leading-tight">
                 GoodFoods Dining Concierge
               </h2>
-              <p className="text-xs sm:text-sm font-bold text-black mt-2 leading-relaxed">
+              <p className="text-xs sm:text-sm font-bold text-neo-main mt-2 leading-relaxed">
                 Your AI concierge connected to <strong>{restaurantCount ?? 75} restaurant locations</strong> with real-time table availability, instant bookings, and reservation management.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-4 font-mono text-xs">
-                <div className="bg-[#FAF8F5] border-2 border-black p-3 rounded-neo-sm">
-                  <span className="font-black block text-xs uppercase text-black">🔍 Discover</span>
-                  <span className="text-black text-[11px] font-bold mt-0.5 block">15 cuisines & 12 areas</span>
+                <div className="bg-neo-surface border-2 border-black p-3 rounded-neo-sm">
+                  <span className="font-black block text-xs uppercase text-neo-main">🔍 Discover</span>
+                  <span className="text-neo-main text-[11px] font-bold mt-0.5 block">15 cuisines & 12 areas</span>
                 </div>
-                <div className="bg-[#FAF8F5] border-2 border-black p-3 rounded-neo-sm">
-                  <span className="font-black block text-xs uppercase text-black">⚡ Instant Book</span>
-                  <span className="text-black text-[11px] font-bold mt-0.5 block">Live table reservation</span>
+                <div className="bg-neo-surface border-2 border-black p-3 rounded-neo-sm">
+                  <span className="font-black block text-xs uppercase text-neo-main">⚡ Instant Book</span>
+                  <span className="text-neo-main text-[11px] font-bold mt-0.5 block">Live table reservation</span>
                 </div>
-                <div className="bg-[#FAF8F5] border-2 border-black p-3 rounded-neo-sm">
-                  <span className="font-black block text-xs uppercase text-black">🎫 Manage</span>
-                  <span className="text-black text-[11px] font-bold mt-0.5 block">Instant modify & cancel</span>
+                <div className="bg-neo-surface border-2 border-black p-3 rounded-neo-sm">
+                  <span className="font-black block text-xs uppercase text-neo-main">🎫 Manage</span>
+                  <span className="text-neo-main text-[11px] font-bold mt-0.5 block">Instant modify & cancel</span>
                 </div>
               </div>
             </div>
 
             {/* Quick Prompt Starters */}
             <div className="text-left space-y-1.5">
-              <span className="text-xs font-mono font-black uppercase text-black block pl-1">
+              <span className="text-xs font-mono font-black uppercase text-neo-main block pl-1">
                 🚀 Quick Action Prompts:
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -230,7 +253,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                     key={idx}
                     type="button"
                     onClick={() => onSendMessage(item.prompt)}
-                    className="btn-neo bg-white hover:bg-neo-yellow text-black hover:text-black text-xs px-3 py-1.5 font-bold flex items-center gap-1.5 shadow-neo-sm"
+                    className="btn-neo bg-neo-card hover:bg-neo-yellow text-neo-main hover:text-black text-xs px-3 py-1.5 font-bold flex items-center gap-1.5"
                   >
                     <span>{item.label}</span>
                   </button>
@@ -248,17 +271,17 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               }`}
             >
               {/* Role Header Avatar Pill */}
-              <div className="flex items-center gap-1.5 mb-1 px-1 text-[11px] font-mono font-black text-black">
+              <div className="flex items-center gap-1.5 mb-1 px-1 text-[11px] font-mono font-black text-neo-main">
                 {msg.role === 'user' ? (
                   <>
                     <span>YOU</span>
-                    <div className="w-4 h-4 bg-neo-yellow text-black border border-black flex items-center justify-center text-[10px] rounded-neo-sm">
+                    <div className="w-4 h-4 bg-neo-yellow text-black border border-black flex items-center justify-center rounded-neo-sm">
                       👤
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="w-4 h-4 bg-neo-green text-black border border-black flex items-center justify-center text-[10px] rounded-neo-sm">
+                    <div className="w-4 h-4 bg-neo-green text-black border border-black flex items-center justify-center rounded-neo-sm">
                       🍽️
                     </div>
                     <span>GOODFOODS AI</span>
@@ -268,26 +291,25 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
               {/* Message Bubble Card */}
               <div
-                className={`max-w-[92%] sm:max-w-[85%] p-4 text-left border-3 border-black rounded-neo shadow-neo relative group transition-colors ${
-                  msg.role === 'user' ? 'bg-neo-yellow text-black' : 'bg-white text-black'
+                className={`max-w-[92%] sm:max-w-[85%] p-4 text-left border-3 border-black rounded-neo shadow-neo relative group transition-all ${
+                  msg.role === 'user' ? 'bg-neo-yellow text-black' : 'bg-neo-card text-neo-main'
                 }`}
               >
                 {/* Copy message button */}
                 <button
                   onClick={() => handleCopyMessage(msg.id, msg.content)}
                   aria-label="Copy message text"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity bg-neo-canvas border border-black p-1.5 rounded-neo-sm shadow-neo-sm text-black"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity bg-neo-canvas border border-black p-1.5 rounded-neo-sm shadow-neo-sm text-current"
                   title="Copy text"
                 >
                   {copiedId === msg.id ? (
                     <Check className="w-3.5 h-3.5 text-green-700" />
                   ) : (
-                    <Copy className="w-3.5 h-3.5 text-black" />
+                    <Copy className="w-3.5 h-3.5 text-current" />
                   )}
                 </button>
 
-                {/* Markdown Content with Theme Awareness */}
-                <div className="prose prose-sm max-w-none text-black prose-headings:text-inherit prose-p:text-inherit prose-strong:text-inherit prose-li:text-inherit prose-code:text-inherit font-sans leading-relaxed break-words">
+                <div className="prose prose-sm max-w-none text-current prose-headings:text-inherit prose-p:text-inherit prose-strong:text-inherit prose-li:text-inherit font-sans text-xs sm:text-sm font-medium leading-relaxed">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {msg.content}
                   </ReactMarkdown>
@@ -301,7 +323,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 {/* Selected Restaurant Card if present */}
                 {msg.selected_restaurant && (
                   <div className="mt-3">
-                    <span className="text-[10px] font-mono font-black uppercase text-black block mb-1">
+                    <span className="text-[10px] font-mono font-black uppercase text-neo-main block mb-1">
                       Featured Venue:
                     </span>
                     <RestaurantCard
@@ -328,13 +350,13 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         {/* Thinking Indicator */}
         {loading && (
           <div className="flex flex-col items-start">
-            <div className="flex items-center gap-1.5 mb-1 px-1 text-[11px] font-mono font-black text-black">
-              <div className="w-4 h-4 bg-neo-green text-black border border-black flex items-center justify-center text-[10px] rounded-neo-sm">
+            <div className="flex items-center gap-1.5 mb-1 px-1 text-[11px] font-mono font-black text-neo-main">
+              <div className="w-4 h-4 bg-neo-green text-black border border-black flex items-center justify-center rounded-neo-sm">
                 🍽️
               </div>
               <span>GOODFOODS AI</span>
             </div>
-            <div className="bg-white border-3 border-black rounded-neo p-3 shadow-neo text-black flex items-center gap-2">
+            <div className="bg-neo-card border-3 border-black rounded-neo p-3 shadow-neo text-neo-main flex items-center gap-2 text-xs font-bold font-mono">
               <Loader2 className="w-4 h-4 animate-spin text-neo-orange" />
               <span>Checking tables & generating response...</span>
             </div>
@@ -360,13 +382,13 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 bg-white border-3 border-black rounded-neo text-sm font-bold text-black placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-neo-yellow disabled:opacity-60"
+            className="flex-1 bg-neo-card text-neo-main border-3 border-black rounded-neo px-4 py-2.5 text-xs sm:text-sm font-sans font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-surface shadow-neo transition-all disabled:opacity-50"
           />
           <button
             type="submit"
-            disabled={!input.trim() || loading}
+            disabled={loading || !input.trim()}
             aria-label="Send message"
-            className="btn-neo bg-neo-yellow text-black hover:bg-neo-orange hover:text-white px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-black uppercase flex items-center gap-1.5 shadow-neo disabled:opacity-40"
+            className="btn-neo bg-neo-yellow hover:bg-neo-orange hover:text-white text-black px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-black uppercase flex items-center gap-1.5 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed shadow-neo"
           >
             <Send className="w-4 h-4" />
             <span className="hidden sm:inline">Send</span>

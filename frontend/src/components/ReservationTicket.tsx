@@ -92,7 +92,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
   const isConfirmed = reservation.status === 'confirmed' || reservation.status === 'modified';
 
   return (
-    <div className="relative bg-white border-3 border-black rounded-neo-lg shadow-neo-lg my-3 max-w-md w-full mx-auto overflow-hidden transition-all">
+    <div className="relative bg-neo-card border-3 border-black rounded-neo-lg shadow-neo-lg my-3 max-w-md w-full mx-auto overflow-hidden transition-all">
       {/* Top Banner with Perforated Accent */}
       <div className="bg-neo-yellow border-b-2 border-black p-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -114,42 +114,42 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
       <div className="p-4 space-y-3.5 text-left">
         {/* Restaurant Name */}
         <div>
-          <span className="text-[10px] font-mono font-bold uppercase text-black">
+          <span className="text-[10px] font-mono font-bold uppercase text-neo-muted">
             Venue
           </span>
-          <h3 className="font-black text-lg uppercase tracking-tight text-black leading-none mt-0.5">
+          <h3 className="font-black text-lg uppercase tracking-tight text-neo-main leading-none mt-0.5">
             {reservation.restaurant_name}
           </h3>
         </div>
 
         {/* Date, Time, Party Size Grid */}
-        <div className="grid grid-cols-3 gap-2 bg-neo-canvas border-2 border-black p-2.5 rounded-neo-sm text-center">
+        <div className="grid grid-cols-3 gap-2 bg-neo-surface border-2 border-black p-2.5 rounded-neo-sm text-center">
           <div>
-            <div className="text-[9px] uppercase font-bold text-black flex items-center justify-center gap-1">
+            <div className="text-[9px] uppercase font-bold text-neo-muted flex items-center justify-center gap-1">
               <Calendar className="w-3 h-3 text-neo-orange" />
               <span>Date</span>
             </div>
-            <div className="font-black text-xs text-black mt-0.5 font-mono">
+            <div className="font-black text-xs text-neo-main mt-0.5 font-mono">
               {resDate}
             </div>
           </div>
 
           <div>
-            <div className="text-[9px] uppercase font-bold text-black flex items-center justify-center gap-1">
+            <div className="text-[9px] uppercase font-bold text-neo-muted flex items-center justify-center gap-1">
               <Clock className="w-3 h-3 text-neo-orange" />
               <span>Time</span>
             </div>
-            <div className="font-black text-xs text-black mt-0.5 font-mono">
+            <div className="font-black text-xs text-neo-main mt-0.5 font-mono">
               {resTime}
             </div>
           </div>
 
           <div>
-            <div className="text-[9px] uppercase font-bold text-black flex items-center justify-center gap-1">
+            <div className="text-[9px] uppercase font-bold text-neo-muted flex items-center justify-center gap-1">
               <Users className="w-3 h-3 text-neo-orange" />
               <span>Guests</span>
             </div>
-            <div className="font-black text-xs text-black mt-0.5 font-mono">
+            <div className="font-black text-xs text-neo-main mt-0.5 font-mono">
               {partySize} {partySize === 1 ? 'Guest' : 'Guests'}
             </div>
           </div>
@@ -158,18 +158,18 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
         {/* Customer Info */}
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div>
-            <span className="text-[10px] font-mono font-bold text-black uppercase flex items-center gap-1">
+            <span className="text-[10px] font-mono font-bold text-neo-muted uppercase flex items-center gap-1">
               <User className="w-3 h-3 text-neo-blue" /> Guest Name
             </span>
-            <div className="font-bold text-black truncate mt-0.5">
+            <div className="font-bold text-neo-main truncate mt-0.5">
               {guestName}
             </div>
           </div>
           <div>
-            <span className="text-[10px] font-mono font-bold text-black uppercase flex items-center gap-1">
+            <span className="text-[10px] font-mono font-bold text-neo-muted uppercase flex items-center gap-1">
               <Phone className="w-3 h-3 text-neo-green" /> Phone
             </span>
-            <div className="font-mono font-bold text-black truncate mt-0.5">
+            <div className="font-mono font-bold text-neo-main truncate mt-0.5">
               {guestPhone}
             </div>
           </div>
@@ -178,20 +178,20 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
         {/* Special Requests if any */}
         {reservation.special_requests && (
           <div className="bg-neo-blue/10 border border-black p-2 text-xs rounded-neo-sm">
-            <span className="font-mono font-bold text-[10px] uppercase text-black block">
+            <span className="font-mono font-bold text-[10px] uppercase text-neo-main block">
               Special Requests:
             </span>
-            <span className="text-black">{reservation.special_requests}</span>
+            <span className="text-neo-main">{reservation.special_requests}</span>
           </div>
         )}
 
         {/* Confirmation Code Strip */}
         <div className="border-t-2 border-dashed border-black pt-3 flex items-center justify-between">
           <div>
-            <span className="text-[9px] font-mono uppercase font-bold text-black block">
+            <span className="text-[9px] font-mono uppercase font-bold text-neo-muted block">
               Confirmation Code
             </span>
-            <span className="font-mono font-black text-base tracking-widest text-black bg-neo-yellow/30 px-2 py-0.5 border border-black rounded-neo-sm">
+            <span className="font-mono font-black text-base tracking-widest text-black bg-neo-yellow px-2 py-0.5 border border-black rounded-neo-sm inline-block">
               {reservation.confirmation_code}
             </span>
           </div>
@@ -199,7 +199,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
           <button
             onClick={handleCopyCode}
             aria-label="Copy Confirmation Code"
-            className="btn-neo bg-white hover:bg-neo-yellow text-xs px-2.5 py-1 flex items-center gap-1.5 font-mono font-bold text-black"
+            className="btn-neo bg-neo-card hover:bg-neo-yellow text-xs px-2.5 py-1 flex items-center gap-1.5 font-mono font-bold text-neo-main"
             title="Copy Confirmation Code"
           >
             {copied ? (
@@ -233,16 +233,13 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
       {isConfirmed && (
         <div className="bg-neo-canvas border-t-2 border-black p-3 text-center space-y-2">
           {isEditing ? (
-            <form onSubmit={handleSaveEdit} className="space-y-3 bg-white p-3 border-2 border-black rounded-neo-sm text-left">
-              <div className="flex items-center justify-between border-b-2 border-dashed border-black pb-1.5">
-                <span className="font-black text-xs uppercase text-black flex items-center gap-1.5">
-                  <Edit3 className="w-3.5 h-3.5 text-neo-orange" />
-                  <span>Edit Reservation Details</span>
-                </span>
+            <form onSubmit={handleSaveEdit} className="space-y-3 bg-neo-card p-3 border-2 border-black rounded-neo-sm text-left">
+              <div className="flex items-center justify-between border-b border-black pb-1">
+                <span className="text-[10px] font-black uppercase text-neo-main">Edit Reservation Details</span>
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="text-xs font-bold text-black hover:underline"
+                  className="text-[10px] font-mono font-bold text-neo-muted hover:text-neo-main"
                 >
                   Cancel
                 </button>
@@ -281,11 +278,11 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[10px] font-bold uppercase text-black block mb-0.5">Guests</label>
+                  <label className="text-[10px] font-bold uppercase text-neo-main block mb-0.5">Guests</label>
                   <select
                     value={editSize}
                     onChange={(e) => setEditSize(Number(e.target.value))}
-                    className="w-full bg-neo-canvas border-2 border-black p-1 text-xs font-mono font-bold"
+                    className="w-full bg-neo-surface text-neo-main border-2 border-black p-1 text-xs font-mono font-bold"
                   >
                     {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12].map((s) => (
                       <option key={s} value={s}>{s} {s === 1 ? 'Guest' : 'Guests'}</option>
@@ -293,13 +290,13 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase text-black block mb-0.5">Notes</label>
+                  <label className="text-[10px] font-bold uppercase text-neo-main block mb-0.5">Notes</label>
                   <input
                     type="text"
                     placeholder="Window seat, anniversary, etc."
                     value={editRequests}
                     onChange={(e) => setEditRequests(e.target.value)}
-                    className="w-full bg-neo-canvas border-2 border-black p-1 text-xs font-bold"
+                    className="w-full bg-neo-surface text-neo-main border-2 border-black p-1 text-xs font-bold placeholder:text-neo-muted"
                   />
                 </div>
               </div>
@@ -308,7 +305,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="btn-neo bg-white text-black py-1 px-3 text-xs flex-1"
+                  className="btn-neo bg-neo-card text-neo-main py-1 px-3 text-xs flex-1"
                 >
                   Discard
                 </button>
@@ -327,7 +324,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
               {onModify && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="btn-neo bg-white hover:bg-neo-yellow text-black text-xs px-3 py-1 flex items-center gap-1 font-mono font-bold"
+                  className="btn-neo bg-neo-card hover:bg-neo-yellow text-neo-main hover:text-black text-xs px-3 py-1 flex items-center gap-1 font-mono font-bold"
                 >
                   <Edit3 className="w-3.5 h-3.5 text-neo-orange" />
                   <span>Edit Details</span>
@@ -349,7 +346,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
                       <button
                         onClick={() => setConfirmCancel(false)}
                         disabled={isCancelling}
-                        className="btn-neo bg-white text-black text-xs px-2 py-0.5 font-mono"
+                        className="btn-neo bg-neo-card text-neo-main text-xs px-2 py-0.5 font-mono"
                       >
                         Keep
                       </button>
