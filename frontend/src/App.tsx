@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
 import { RestaurantExplorerModal } from './components/RestaurantExplorerModal';
 import { ReservationsDrawer } from './components/ReservationsDrawer';
@@ -21,6 +21,27 @@ export function App() {
   const [loading, setLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
 
+  // Dark Mode State
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem('goodfoods_theme');
+    if (saved) return saved === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('goodfoods_theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('goodfoods_theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => !prev);
+  };
+
   // Modals & Drawers
   const [isExplorerOpen, setIsExplorerOpen] = useState(false);
   const [isReservationsOpen, setIsReservationsOpen] = useState(false);
@@ -33,7 +54,7 @@ export function App() {
       setConfig(cfg);
       setActiveReservations(resList);
     } catch (err) {
-      console.error('Failed to load initial data:', err);
+      console.error('Failed to load initial app data:', err);
     }
   };
 
@@ -42,64 +63,66 @@ export function App() {
   }, []);
 
   const handleSendMessage = async (userText: string) => {
-    const userMsg: ChatMessage = {
-      id: `user-${Date.now()}`,
+    if (!userText.trim() || loading) return;
+
+    const userMessage: ChatMessage = {
+      id: String(Date.now()),
       role: 'user',
       content: userText,
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMessage]);
     setLoading(true);
 
     try {
-      const response = await sendChatMessage(userText);
+      const res = await sendChatMessage(userText);
 
-      // Check if this turn created or modified a reservation
-      let createdRes: Reservation | null = null;
-      if (response.tool_results) {
-        const createTool = response.tool_results.find(
-          (t) => (t.tool_name === 'create_reservation' || t.tool_name === 'modify_reservation') && t.success
+      const assistantMessage: ChatMessage = {
+        id: String(Date.now() + 1),
+        role: 'assistant',
+        content: res.response,
+        timestamp: new Date(),
+        tool_results: res.tool_results,
+        selected_restaurant: res.selected_restaurant || undefined,
+        created_reservation: res.active_reservations && res.active_reservations.length > 0
+          ? res.active_reservations[res.active_reservations.length - 1]
+          : undefined,
+      };
+
+      // Also check if any tool created a reservation
+      if (!assistantMessage.created_reservation && res.tool_results) {
+        const createTool = res.tool_results.find(
+          (t) => t.tool_name === 'create_reservation' && t.success && t.data
         );
         if (createTool && createTool.data && typeof createTool.data === 'object') {
           const dataObj = createTool.data as Record<string, unknown>;
-          createdRes = (dataObj.reservation || dataObj) as unknown as Reservation;
+          assistantMessage.created_reservation = (dataObj.reservation || dataObj) as unknown as Reservation;
         }
       }
 
-      if (response.selected_restaurant) {
-        setSelectedRestaurant(response.selected_restaurant);
+      setMessages((prev) => [...prev, assistantMessage]);
+
+      if (res.selected_restaurant) {
+        setSelectedRestaurant(res.selected_restaurant);
       }
 
-      const assistantMsg: ChatMessage = {
-        id: `assistant-${Date.now()}`,
-        role: 'assistant',
-        content: response.response,
-        timestamp: new Date(),
-        tool_results: response.tool_results,
-        selected_restaurant: response.selected_restaurant,
-        created_reservation: createdRes,
-      };
-
-      setMessages((prev) => [...prev, assistantMsg]);
-
-      // Refresh active bookings list
-      if (response.active_reservations && response.active_reservations.length > 0) {
-        setActiveReservations(response.active_reservations);
+      if (res.active_reservations) {
+        setActiveReservations(res.active_reservations);
       } else {
-        const freshBookings = await fetchReservations();
-        setActiveReservations(freshBookings);
+        refreshAppData();
       }
     } catch (err) {
-      const errorMsg: ChatMessage = {
-        id: `assistant-error-${Date.now()}`,
+      console.error('Chat error:', err);
+      const errorMessage: ChatMessage = {
+        id: String(Date.now() + 1),
         role: 'assistant',
-        content: `⚠️ **Error processing request**: ${
-          err instanceof Error ? err.message : 'Unknown error occurred'
+        content: `⚠️ **Error processing request:** ${
+          err instanceof Error ? err.message : 'Unknown error occurred.'
         }\n\nPlease check your API key / model configuration in the AI Engine menu above.`,
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, errorMsg]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setLoading(false);
     }
@@ -109,16 +132,15 @@ export function App() {
     try {
       await cancelReservation(code);
       await refreshAppData();
-      // Add system confirmation message in chat
-      const sysMsg: ChatMessage = {
-        id: `cancel-${Date.now()}`,
+      const cancelConfirmMsg: ChatMessage = {
+        id: String(Date.now()),
         role: 'assistant',
-        content: `✅ Reservation **${code}** has been cancelled successfully.`,
+        content: `✅ Reservation with confirmation code **${code}** has been successfully cancelled.`,
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, sysMsg]);
+      setMessages((prev) => [...prev, cancelConfirmMsg]);
     } catch (err) {
-      alert(`Could not cancel booking: ${err instanceof Error ? err.message : 'Error'}`);
+      alert(`Failed to cancel: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
@@ -128,8 +150,9 @@ export function App() {
       await resetConversation();
       setMessages([]);
       setSelectedRestaurant(null);
+      await refreshAppData();
     } catch (err) {
-      console.error('Reset failed:', err);
+      console.error('Failed to reset conversation:', err);
     } finally {
       setIsResetting(false);
     }
@@ -137,14 +160,14 @@ export function App() {
 
   const handleSelectRestaurantFromExplorer = (restaurant: Restaurant) => {
     setSelectedRestaurant(restaurant);
-    const prompt = `Can you check table availability and tell me about ${restaurant.name} in ${restaurant.neighborhood}?`;
-    handleSendMessage(prompt);
+    setIsExplorerOpen(false);
+    handleSendMessage(`I'd like to check table availability for ${restaurant.name} in ${restaurant.neighborhood || 'Downtown'}.`);
   };
 
   return (
-    <div className="min-h-screen flex flex-col neo-grid-bg text-[#121212]">
-      {/* Header */}
-      <Header
+    <div className="min-h-screen flex flex-col md:flex-row neo-grid-bg text-[#121212] dark:text-gray-100">
+      {/* Sidebar Navigation */}
+      <Sidebar
         config={config}
         activeReservationsCount={activeReservations.length}
         onOpenModelModal={() => setIsModelModalOpen(true)}
@@ -152,10 +175,12 @@ export function App() {
         onOpenReservations={() => setIsReservationsOpen(true)}
         onResetChat={handleResetChat}
         isResetting={isResetting}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={toggleDarkMode}
       />
 
       {/* Main Chat Canvas */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col h-[calc(100vh-53px)] md:h-screen overflow-hidden">
         <ChatArea
           messages={messages}
           loading={loading}
