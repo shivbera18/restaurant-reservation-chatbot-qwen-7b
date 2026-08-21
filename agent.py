@@ -262,9 +262,9 @@ class ReservationAgent:
                 print("[DEBUG] Classification failed, defaulting to GENERAL")
             return ["GENERAL"]
 
-    def _update_system_prompt(self, intents: List[str]):
-        """Update the system message with intent-specific prompt"""
-        new_system_prompt = get_system_prompt(intents=intents)
+    def _update_system_prompt(self, intents: List[str], tools: Optional[List[Dict]] = None):
+        """Update the system message with intent-specific prompt and matching tool list"""
+        new_system_prompt = get_system_prompt(intents=intents, tools=tools)
 
         for msg in self.conversation.messages:
             if msg.role == "system":
@@ -281,9 +281,9 @@ class ReservationAgent:
 
         intents = self._classify_intent(user_message)
 
-        self._update_system_prompt(intents)
-
         filtered_tools = get_tools_for_intents(intents)
+
+        self._update_system_prompt(intents, tools=filtered_tools)
 
         if DEBUG:
             tool_names = [t["function"]["name"] for t in filtered_tools]

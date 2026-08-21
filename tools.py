@@ -809,10 +809,10 @@ tool_executor = ToolExecutor()
 
 INTENT_TOOLS = {
     "SEARCH": ["search_restaurants", "get_recommendations", "get_restaurant_details", "get_neighborhoods", "get_cuisine_types"],
-    "RESERVE": ["check_availability", "create_reservation", "get_restaurant_details"],
+    "RESERVE": ["check_availability", "create_reservation", "get_restaurant_details", "search_restaurants", "get_recommendations"],
     "MANAGE": ["lookup_reservation", "modify_reservation", "cancel_reservation"],
-    "INFO": ["get_restaurant_details", "get_neighborhoods", "get_cuisine_types"],
-    "GENERAL": ["get_neighborhoods", "get_cuisine_types"],
+    "INFO": ["get_restaurant_details", "get_neighborhoods", "get_cuisine_types", "get_faq"],
+    "GENERAL": ["get_faq", "get_neighborhoods", "get_cuisine_types"],
 }
 
 
