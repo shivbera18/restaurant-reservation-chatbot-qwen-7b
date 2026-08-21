@@ -2,17 +2,17 @@
 GoodFoods AI Reservation Agent
 Implements tool-calling architecture with LLM inference
 Built from scratch without LangChain or similar frameworks
+
+The LLM backend is pluggable: Ollama (local), Google Gemini, or any
+OpenAI-compatible API. See llm_providers.py for the provider contract.
 """
 import json
-import requests
 from typing import List, Dict, Any, Optional, Generator
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from config import (
-    LLM_PROVIDER, LLM_MODEL, API_ENDPOINT,
-    DEBUG, MAX_HISTORY_MESSAGES
-)
+from config import DEBUG, MAX_HISTORY_MESSAGES
+from llm_providers import LLMError, LLMProvider, create_provider
 from prompts import get_system_prompt, get_intent_classification_prompt
 from tools import execute_tool, get_tools_for_intents
 from models import ToolResult
@@ -41,15 +41,17 @@ class ConversationState:
 class ReservationAgent:
     """
     AI-powered reservation agent using tool-calling architecture.
-    Uses Ollama as the LLM provider.
+    Works with any backend registered in llm_providers.py
+    (Ollama, Gemini, or an OpenAI-compatible API).
     """
 
-    def __init__(self, model: str = None):
-        self.provider = LLM_PROVIDER
-        self.model = model or LLM_MODEL
-        self.endpoint = API_ENDPOINT
+    def __init__(self, model: str = None, provider: str = None):
+        self.llm: LLMProvider = create_provider(provider=provider, model=model)
+        self.provider = self.llm.name
+        self.model = self.llm.model
+        self.endpoint = self.llm.endpoint
         self.conversation = ConversationState()
-        
+
         self._add_system_message()
     
     def _add_system_message(self):
@@ -108,71 +110,36 @@ class ReservationAgent:
                     if msg.content:
                         formatted.append({"role": "assistant", "content": msg.content})
 
-            elif msg.role == "tool":
-                if is_current_turn:
-                    try:
-                        tool_data = json.loads(msg.content)
-                        if tool_data.get("display_text"):
-                            content = tool_data["display_text"]
-                        else:
-                            content = msg.content
-                    except (json.JSONDecodeError, TypeError):
-                        content = msg.content
-
-                    formatted.append({
-                        "role": "tool",
-                        "tool_call_id": msg.tool_call_id,
-                        "content": content
-                    })
+            elif msg.role == "tool" and is_current_turn:
+                formatted.append({
+                    "role": "tool",
+                    "tool_call_id": msg.tool_call_id,
+                    "name": msg.name,
+                    "content": msg.content,
+                })
 
         return formatted
     
     def _call_llm(self, messages: List[Dict], tools: Optional[List[Dict]] = None) -> Dict:
-        """Make API call to Ollama"""
+        """Send a request to the active LLM backend.
+
+        The provider normalizes its own wire format into an OpenAI-style
+        envelope, so everything downstream is backend-agnostic.
+        """
 
         if DEBUG:
-            print(f"\n[DEBUG] API Request to {self.endpoint}")
-            print(f"[DEBUG] Model: {self.model}")
-            print(f"[DEBUG] Messages: {len(messages)}")
+            print(f"\n[DEBUG] {self.llm.label} request")
+            print(f"[DEBUG] Model: {self.llm.model}")
+            print(f"[DEBUG] Messages: {len(messages)} | Tools: {len(tools) if tools else 0}")
 
         try:
-            return self._call_ollama(messages, tools)
-        except requests.exceptions.RequestException as e:
-            raise Exception(f"LLM API error: {str(e)}")
-    
-    def _call_ollama(self, messages: List[Dict], tools: Optional[List[Dict]] = None) -> Dict:
-        """Handle Ollama-specific API format"""
-        payload = {
-            "model": self.model,
-            "messages": messages,
-            "stream": False,
-            "keep_alive": "10m",
-            "options": {
-                "temperature": 0.3,
-                "top_p": 0.9,
-                "repeat_penalty": 1.1,
-                "num_ctx":2048
-            }
-        }
-        
-        if tools:
-            payload["tools"] = tools
-        
-        response = requests.post(
-            self.endpoint,
-            json=payload,
-            timeout=120
-        )
-        print(f"LLM OP: {response.json()}")
-        response.raise_for_status()
-        data = response.json()
-        
-        return {
-            "choices": [{
-                "message": data.get("message", {}),
-                "finish_reason": "stop"
-            }]
-        }
+            return self.llm.chat(messages, tools)
+        except LLMError:
+            raise
+        except Exception as e:
+            raise LLMError(
+                f"Unexpected {self.llm.label} error: {type(e).__name__}: {e}"
+            )
     
     def _parse_tool_calls(self, response: Dict) -> List[Dict]:
         """Extract tool calls from LLM response"""
@@ -185,14 +152,25 @@ class ReservationAgent:
         
         if "tool_calls" in message:
             for tc in message["tool_calls"]:
-                tool_calls.append({
+                func = tc.get("function", {})
+                parsed_func = {
+                    "name": func.get("name", ""),
+                    "arguments": func.get("arguments", {})
+                }
+                for k, v in func.items():
+                    if k not in ("name", "arguments"):
+                        parsed_func[k] = v
+
+                parsed_tc = {
                     "id": tc.get("id", f"call_{len(tool_calls)}"),
                     "type": "function",
-                    "function": {
-                        "name": tc["function"]["name"],
-                        "arguments": tc["function"]["arguments"]
-                    }
-                })
+                    "function": parsed_func
+                }
+                for k, v in tc.items():
+                    if k not in ("id", "type", "function"):
+                        parsed_tc[k] = v
+
+                tool_calls.append(parsed_tc)
         
         return tool_calls
     
@@ -214,7 +192,6 @@ class ReservationAgent:
             
             if DEBUG:
                 print(f"\n[DEBUG] Executing tool: {tool_name}")
-                print(f"[DEBUG] Arguments: {arguments}")
             
             result = execute_tool(tool_name, arguments)
             result.tool_call_id = tc["id"]
@@ -222,7 +199,6 @@ class ReservationAgent:
             
             if DEBUG:
                 print(f"[DEBUG] Result success: {result.success}")
-                print(f"RESULT ERROR: {result.error}")
         
         return results
     
@@ -281,14 +257,14 @@ class ReservationAgent:
                 print("[DEBUG] Could not classify, defaulting to GENERAL")
             return ["GENERAL"]
 
-        except Exception as e:
+        except Exception:
             if DEBUG:
-                print(f"[DEBUG] Classification error: {e}, defaulting to GENERAL")
+                print("[DEBUG] Classification failed, defaulting to GENERAL")
             return ["GENERAL"]
 
-    def _update_system_prompt(self, intents: List[str]):
-        """Update the system message with intent-specific prompt"""
-        new_system_prompt = get_system_prompt(intents=intents)
+    def _update_system_prompt(self, intents: List[str], tools: Optional[List[Dict]] = None):
+        """Update the system message with intent-specific prompt and matching tool list"""
+        new_system_prompt = get_system_prompt(intents=intents, tools=tools)
 
         for msg in self.conversation.messages:
             if msg.role == "system":
@@ -305,9 +281,9 @@ class ReservationAgent:
 
         intents = self._classify_intent(user_message)
 
-        self._update_system_prompt(intents)
-
         filtered_tools = get_tools_for_intents(intents)
+
+        self._update_system_prompt(intents, tools=filtered_tools)
 
         if DEBUG:
             tool_names = [t["function"]["name"] for t in filtered_tools]
@@ -352,7 +328,6 @@ class ReservationAgent:
                         "success": result.success,
                         "data": result.data,
                         "error": result.error,
-                        "display_text": result.display_text
                     })
                     
                     self.conversation.messages.append(Message(
@@ -405,6 +380,10 @@ class MockReservationAgent(ReservationAgent):
     """
     
     def __init__(self):
+        self.llm = None
+        self.provider = "mock"
+        self.model = "mock"
+        self.endpoint = None
         self.conversation = ConversationState()
         self._add_system_message()
     
@@ -533,8 +512,16 @@ What would you like to do?"""
         return intro
 
 
-def create_agent(use_mock: bool = False, model: str = None) -> ReservationAgent:
-    """Factory function to create an agent instance"""
+def create_agent(
+    use_mock: bool = False, model: str = None, provider: str = None
+) -> ReservationAgent:
+    """Factory function to create an agent instance.
+
+    Args:
+        use_mock: skip the LLM entirely and use pattern matching.
+        model: model id, e.g. "qwen2.5:7b" or "gemini-2.5-flash".
+        provider: "ollama", "gemini" or "openai". Defaults to LLM_PROVIDER.
+    """
     if use_mock:
         return MockReservationAgent()
-    return ReservationAgent(model=model)
+    return ReservationAgent(model=model, provider=provider)

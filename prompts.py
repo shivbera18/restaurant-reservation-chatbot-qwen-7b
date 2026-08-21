@@ -47,19 +47,36 @@ Core Rules:
 4. ONLY pass parameters the user explicitly mentioned - never guess or add extra parameters"""
 
 
-def get_tool_prompt() -> str:
-    """Tool usage instructions"""
-    return """Available Tools:
-- search_restaurants: Find restaurants by cuisine, location, price
-- get_recommendations: Personalized suggestions for occasion/preferences
-- get_restaurant_details: Get specific restaurant info
-- check_availability: Check time slots before booking
-- create_reservation: Book (needs: restaurant_id, date, time, party_size, name, phone)
-- lookup_reservation: Find booking by confirmation code or phone
-- modify_reservation: Change existing booking
-- cancel_reservation: Cancel booking
-- get_neighborhoods: List available areas
-- get_cuisine_types: List cuisine options"""
+TOOL_DESCRIPTIONS = {
+    "search_restaurants": "- search_restaurants: Find restaurants by cuisine, location, price",
+    "get_recommendations": "- get_recommendations: Personalized suggestions for occasion/preferences",
+    "get_restaurant_details": "- get_restaurant_details: Get specific restaurant info",
+    "check_availability": "- check_availability: Check time slots before booking",
+    "create_reservation": "- create_reservation: Book (needs: restaurant_id, date, time, party_size, name, phone)",
+    "lookup_reservation": "- lookup_reservation: Find booking by confirmation code or phone",
+    "modify_reservation": "- modify_reservation: Change existing booking",
+    "cancel_reservation": "- cancel_reservation: Cancel booking",
+    "get_faq": "- get_faq: Restaurant policy answers",
+    "get_neighborhoods": "- get_neighborhoods: List available areas",
+    "get_cuisine_types": "- get_cuisine_types: List cuisine options",
+}
+
+
+def get_tool_prompt(tools: list = None) -> str:
+    """Tool usage instructions filtered to available tools"""
+    if tools is None:
+        lines = list(TOOL_DESCRIPTIONS.values())
+    else:
+        names = {
+            t["function"]["name"]
+            for t in tools
+            if isinstance(t, dict) and "function" in t and "name" in t.get("function", {})
+        }
+        lines = [TOOL_DESCRIPTIONS[n] for n in names if n in TOOL_DESCRIPTIONS]
+
+    if not lines:
+        return ""
+    return "Available Tools:\n" + "\n".join(lines)
 
 
 def get_search_prompt() -> str:
@@ -113,13 +130,14 @@ INTENT_PROMPTS = {
 }
 
 
-def get_system_prompt(intents: list = None, include_tools: bool = True) -> str:
+def get_system_prompt(intents: list = None, include_tools: bool = True, tools: list = None) -> str:
     """
     Get modular system prompt based on classified intents.
 
     Args:
         intents: List of classified intents (SEARCH, RESERVE, MANAGE, INFO, GENERAL)
         include_tools: Whether to include tool descriptions
+        tools: List of active tool definition dicts to include descriptions for
 
     Returns:
         Assembled system prompt with relevant modules
@@ -127,7 +145,9 @@ def get_system_prompt(intents: list = None, include_tools: bool = True) -> str:
     parts = [get_base_prompt()]
 
     if include_tools:
-        parts.append(get_tool_prompt())
+        tool_prompt = get_tool_prompt(tools=tools)
+        if tool_prompt:
+            parts.append(tool_prompt)
 
     added_prompts = set()
     if intents:

@@ -8,7 +8,7 @@ An end-to-end conversational AI agent for restaurant reservations, built from sc
 
 ## Overview
 
-GoodFoods AI Concierge is an intelligent virtual assistant that helps customers discover restaurants, get personalized recommendations, and manage reservations across 75 restaurant locations. The system uses a local LLM (via Ollama) with a two-stage architecture: intent classification followed by intent-specific response generation with filtered tools.
+GoodFoods AI Concierge is an intelligent virtual assistant that helps customers discover restaurants, get personalized recommendations, and manage reservations across 75 restaurant locations. The system runs on a **pluggable LLM backend** — a local model via Ollama, the Google Gemini API, or any OpenAI-compatible API — with a two-stage architecture: intent classification followed by intent-specific response generation with filtered tools.
 
 ### Key Features
 
@@ -16,6 +16,7 @@ GoodFoods AI Concierge is an intelligent virtual assistant that helps customers 
 - **Personalized Recommendations**: AI-powered suggestions based on occasion and preferences
 - **Instant Booking**: Create reservations through natural conversation
 - **Reservation Management**: View, modify, or cancel existing bookings
+- **Pluggable LLM Backends**: Ollama (local), Gemini, or any OpenAI-compatible API — switchable from the sidebar
 - **Two-Stage Architecture**: Intent classification + focused response generation
 - **Intent-Based Tool Filtering**: Reduces hallucination by exposing only relevant tools
 - **Tool-Calling Architecture**: MCP-style function calling for reliable operations
@@ -26,11 +27,13 @@ GoodFoods AI Concierge is an intelligent virtual assistant that helps customers 
 goodfoods_reservation/
 ├── app.py              # Streamlit frontend application
 ├── agent.py            # Main AI agent with two-stage tool-calling logic
+├── llm_providers.py    # Pluggable LLM backends (Ollama / Gemini / OpenAI-compatible)
 ├── tools.py            # Tool definitions, executors, and intent-based filtering
 ├── database.py         # Restaurant data (75 locations) and booking storage
 ├── models.py           # Pydantic data models with enums
 ├── prompts.py          # Modular system prompts (base + intent-specific)
-├── config.py           # Configuration settings (Ollama)
+├── config.py           # Configuration settings (all env-overridable)
+├── .env.example        # Template for API keys and model settings
 ├── requirements.txt    # Python dependencies
 └── README.md           # This file
 ```
@@ -40,7 +43,7 @@ goodfoods_reservation/
 ### Prerequisites
 
 - Python 3.9 or higher
-- Ollama installed and running locally
+- **One** of: Ollama installed locally, a Gemini API key, or an OpenAI-compatible API key
 
 ### Installation
 
@@ -49,42 +52,118 @@ goodfoods_reservation/
    cd goodfoods_reservation
    ```
 
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+2. **Create virtual environment & install dependencies**
 
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+   - **Using standard `venv` & `pip`:**
+     ```bash
+     python -m venv venv
+     source venv/bin/activate  # On Windows: venv\Scripts\activate
+     pip install -r requirements.txt
+     ```
 
-4. **Install and run Ollama**
+   - **Using `uv` (fast Python package installer):**
+     ```bash
+     uv venv
+     source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+     uv pip install -r requirements.txt
+     # or run directly: uv run streamlit run app.py
+     ```
+
+3. **Pick a backend** (copy `.env.example` to `.env` and edit it)
+
+   <details open>
+   <summary><b>Option A — Ollama (local, free, no API key)</b></summary>
+
    ```bash
    # Install Ollama from https://ollama.ai
-   # Pull the default model
    ollama pull qwen2.5:7b
+   ```
+   ```ini
+   # .env
+   LLM_PROVIDER=ollama
+   OLLAMA_MODEL=qwen2.5:7b
+   ```
+   </details>
 
-   # Or use an alternative model
-   ollama pull llama3.1:8b
+   <details>
+   <summary><b>Option B — Google Gemini API (free tier, no local GPU)</b></summary>
+
+   Create a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey).
+   ```ini
+   # .env
+   LLM_PROVIDER=gemini
+   GEMINI_API_KEY=your-key-here
+   GEMINI_MODEL=gemini-3.6-flash
+   ```
+   </details>
+
+   <details>
+   <summary><b>Option C — OpenAI-compatible API (OpenAI, Groq, OpenRouter, and more)</b></summary>
+
+   Named services select their endpoint and API-key variable automatically:
+   ```ini
+   # .env — Groq
+   LLM_PROVIDER=groq
+   GROQ_API_KEY=your-key-here
+   GROQ_MODEL=openai/gpt-oss-120b  # optional
    ```
 
-5. **Run the application**
+   | Vendor | `LLM_PROVIDER` | Key variable |
+   |--------|----------------|--------------|
+   | OpenAI | `openai` | `OPENAI_API_KEY` |
+   | Groq | `groq` | `GROQ_API_KEY` |
+   | OpenRouter | `openrouter` | `OPENROUTER_API_KEY` |
+   | Together | `together` | `TOGETHER_API_KEY` |
+   | DeepSeek | `deepseek` | `DEEPSEEK_API_KEY` |
+   | Fireworks | `fireworks` | `FIREWORKS_API_KEY` |
+   | LM Studio | `lmstudio` | *(none for localhost)* |
+   | vLLM | `vllm` | *(none for localhost)* |
+
+   For any other API exposing OpenAI's `/chat/completions` protocol, use the
+   generic provider and set its endpoint:
+   ```ini
+   LLM_PROVIDER=openai
+   OPENAI_API_KEY=your-key-here
+   OPENAI_MODEL=your-model-id
+   OPENAI_API_BASE=https://your-api.example/v1
+   ```
+   </details>
+
+4. **Run the application**
    ```bash
    streamlit run app.py
+   # Or with uv:
+   uv run streamlit run app.py
    ```
 
-6. **Open in browser**
+5. **Open in browser**
    Navigate to `http://localhost:8501`
 
-### Changing the Model
+### Switching Models
 
-Set the `LLM_MODEL` environment variable:
-```bash
-export LLM_MODEL="llama3.1:8b"  # or any Ollama model
-streamlit run app.py
-```
+Three ways, in increasing order of convenience:
+
+1. **Sidebar (no restart)** — pick a provider and model under **🧠 Model**. The
+   status line checks configuration (and verifies local Ollama reachability).
+   Switching gives the assistant a fresh memory.
+2. **`.env` file** — set `LLM_PROVIDER` plus that provider's model variable.
+3. **Environment variable** — wins over `.env`:
+   ```bash
+   # macOS/Linux
+   LLM_PROVIDER=gemini GEMINI_API_KEY=... streamlit run app.py
+   ```
+   ```powershell
+   # Windows PowerShell
+   $env:LLM_PROVIDER="gemini"; $env:GEMINI_API_KEY="..."; streamlit run app.py
+   ```
+
+`LLM_PROVIDER` accepts `ollama`, `gemini`, `openai`, `groq`, `openrouter`,
+`together`, `deepseek`, `fireworks`, `lmstudio`, and `vllm`; `google` and
+`lm-studio` are accepted aliases. Unknown values fail fast rather than silently
+switching providers.
+
+No key at all? Tick **Offline demo mode** in the sidebar to run the
+pattern-matching agent with no LLM calls.
 
 ## Architecture
 
@@ -110,6 +189,46 @@ User Message → Stage 1: Intent Classification → Stage 2: Response Generation
 - Loads intent-specific prompt modules
 - Exposes only tools relevant to the detected intent(s)
 - Generates focused response with reduced hallucination
+
+### Provider Abstraction
+
+`agent.py` never talks HTTP. It calls one method and receives one canonical
+shape, so the same two-stage tool loop runs unchanged on every backend:
+
+```
+ReservationAgent._call_llm(messages, tools)
+        │
+        ▼
+LLMProvider.chat(messages, tools) ──► {"choices": [{"message": {...}}]}
+        │
+        ├── OllamaProvider              POST /api/chat
+        ├── GeminiProvider              POST /v1beta/models/{model}:generateContent
+        └── OpenAICompatibleProvider    POST /v1/chat/completions
+```
+
+Messages are always written in OpenAI form (`system` / `user` / `assistant` /
+`tool`); each provider translates in both directions. Gemini needs the most
+work, because its wire format differs in four ways:
+
+| Concern | OpenAI / Ollama | Gemini |
+|---------|-----------------|--------|
+| System prompt | `{"role": "system"}` message | top-level `systemInstruction` |
+| Turns | `messages`, role `assistant` | `contents`, role `model` |
+| Tool call | `tool_calls[].function.arguments` (JSON **string**) | `parts[].functionCall.args` (**object**) |
+| Tool result | `{"role": "tool", "tool_call_id": ...}` — matched by **id** | `parts[].functionResponse` — matched by **name** |
+
+Two Gemini-specific traps are handled in `llm_providers.py`:
+
+- **Schema subset.** Gemini's `functionDeclarations` accept only an OpenAPI
+  subset, so `_to_gemini_schema()` uppercases type names and strips keys the API
+  rejects (such as the `default` on `check_availability.party_size`).
+- **Zero-argument tools.** Gemini rejects an `OBJECT` schema with no properties,
+  so `get_neighborhoods` and `get_cuisine_types` omit `parameters` entirely
+  rather than sending `{"properties": {}}`.
+
+For another OpenAI-compatible service, set `LLM_PROVIDER=openai` and
+`OPENAI_API_BASE`; a genuinely different protocol needs a small `LLMProvider`
+subclass, with no changes to the agent or tools.
 
 ### Intent-Based Tool Filtering
 
@@ -211,13 +330,20 @@ Agent: [Detects intents: SEARCH, RESERVE]
 
 ### LLM Configuration
 
-| Parameter | Value |
-|-----------|-------|
-| Provider | Ollama (local) |
-| Default Model | qwen2.5:7b |
-| Alternative | llama3.1:8b |
-| Temperature | 0.4 |
-| Endpoint | http://localhost:11434/api/chat |
+| Parameter | Value | Env var |
+|-----------|-------|---------|
+| Provider | `ollama`, `gemini`, or an OpenAI-compatible service | `LLM_PROVIDER` |
+| Default local model | qwen2.5:7b | `OLLAMA_MODEL` |
+| Default Gemini model | gemini-3.6-flash | `GEMINI_MODEL` |
+| OpenAI-compatible model | provider default or custom | `OPENAI_MODEL` / `GROQ_MODEL`, etc. |
+| Temperature | 0.3 | `LLM_TEMPERATURE` |
+| Top-p | 0.9 | `LLM_TOP_P` |
+| Context window (Ollama) | 2048 | `LLM_NUM_CTX` |
+| Max output tokens | provider default | `LLM_MAX_OUTPUT_TOKENS` |
+| Request timeout | 120s | `LLM_REQUEST_TIMEOUT` |
+| History limit | 20 messages | — |
+
+The agent requires a selected model that supports native tool calling.
 
 ### Anti-Hallucination Measures
 
@@ -231,7 +357,8 @@ Agent: [Detects intents: SEARCH, RESERVE]
 
 ### Mock Mode
 
-The system includes a `MockReservationAgent` for testing without Ollama:
+The system includes a `MockReservationAgent` for testing without any LLM backend
+(also available as **Offline demo mode** in the sidebar):
 
 ```python
 from agent import create_agent
@@ -247,6 +374,9 @@ print(response)
 ### Running Tests
 
 ```bash
+# Offline provider smoke tests (no API key or network required)
+python -m unittest -v test_llm_providers.py
+
 # Test interactively
 python -c "
 from agent import create_agent
@@ -258,16 +388,52 @@ print(agent.chat('Find Japanese restaurants in Downtown'))
 
 ## Configuration
 
-All configuration is in `config.py`:
+Defaults live in `config.py`; every value can be overridden by an environment
+variable or a `.env` file (see `.env.example`). Real environment variables take
+precedence over `.env`.
 
 ```python
-LLM_PROVIDER = "ollama"
-LLM_MODEL = "qwen2.5:7b"  # or set via LLM_MODEL env var
-API_ENDPOINT = "http://localhost:11434/api/chat"
+LLM_PROVIDER = "ollama"  # ollama | gemini | openai | groq | openrouter | ...
 
-DEBUG = True  # Set to False to hide debug output
-MAX_HISTORY_MESSAGES = 20  # Conversation history limit
+OLLAMA_MODEL = "qwen2.5:7b"        # OLLAMA_HOST defaults to localhost:11434
+GEMINI_MODEL = "gemini-3.6-flash"  # needs GEMINI_API_KEY
+GROQ_MODEL = "openai/gpt-oss-120b"  # needs GROQ_API_KEY
+# For any custom OpenAI-compatible endpoint: OPENAI_MODEL + OPENAI_API_BASE
+
+TEMPERATURE = 0.3
+TOP_P = 0.9
+MAX_OUTPUT_TOKENS = 0            # 0 = use the provider's own default
+REQUEST_TIMEOUT = 120
+
+DEBUG = False                    # Metadata only; prompts and responses are never logged
+MAX_HISTORY_MESSAGES = 20        # Conversation history limit
 ```
+
+Selecting a backend in code:
+
+```python
+from agent import create_agent
+
+agent = create_agent()                                        # uses LLM_PROVIDER
+agent = create_agent(provider="gemini")                       # default Gemini model
+agent = create_agent(provider="gemini", model="gemini-2.0-flash")
+agent = create_agent(provider="ollama", model="llama3.1:8b")
+agent = create_agent(provider="groq")                         # uses GROQ_API_KEY
+agent = create_agent(use_mock=True)                           # no LLM at all
+```
+
+### Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| `Could not reach Ollama at http://localhost:11434` | Start it with `ollama serve` |
+| `Model 'x' is not pulled` | `ollama pull x` |
+| `GEMINI_API_KEY is not set` | Add it to `.env`, then restart Streamlit |
+| `Gemini API error 400: API key not valid` | Key is wrong or lacks Generative Language API access |
+| `Gemini API error 404` | Model name not available to your key — try `gemini-2.0-flash` |
+| Sidebar shows a stale status | Click **Recheck connection** |
+
+Set `DEBUG=true` for request metadata only; prompts, tool arguments, and responses are not logged.
 
 ## Future Enhancements
 
@@ -285,7 +451,7 @@ MIT License - See LICENSE file for details.
 ## Acknowledgments
 
 - Built with [Streamlit](https://streamlit.io)
-- Powered by [Ollama](https://ollama.ai)
+- Runs on [Ollama](https://ollama.ai), the [Gemini API](https://ai.google.dev), or any OpenAI-compatible endpoint
 - Inspired by [Model Context Protocol](https://modelcontextprotocol.io)
 
 ---
