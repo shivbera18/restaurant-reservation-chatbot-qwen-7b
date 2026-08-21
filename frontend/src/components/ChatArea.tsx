@@ -39,7 +39,7 @@ interface ChatAreaProps {
 const QUICK_PROMPTS = [
   { label: '🍕 Italian in Downtown', prompt: 'Can you find me a romantic Italian restaurant in Downtown?' },
   { label: '🍣 Japanese for 2', prompt: 'I need a top-rated Japanese spot for 2 people tomorrow night.' },
-  { label: '🌶️ Thai on Aug 22 @ 9PM', prompt: 'Book a table for 4 at Thai Orchid Downtown on August 22, 2026 at 9:00 PM. Name: Shiv, Phone: 990-643-3115.' },
+  { label: '🌶️ Thai on Aug 22 @ 9PM', prompt: 'Book a table for 4 at Thai Orchid Downtown on August 22, 2026 at 9:00 PM.' },
   { label: '🍸 Rooftop with Cocktails', prompt: 'What restaurants have great outdoor seating or a full bar?' },
   { label: '📋 Lookup Booking', prompt: 'Can you look up my existing reservation details?' },
 ];
@@ -123,7 +123,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             <Ticket className="w-3.5 h-3.5" />
             <span>My Bookings</span>
             {activeReservationsCount > 0 && (
-              <span className="bg-black text-white px-1.5 py-0.2 text-[10px] font-mono font-black rounded-neo-sm">
+              <span className="bg-black text-white px-1.5 py-0.5 text-[10px] font-mono font-black rounded-neo-sm">
                 {activeReservationsCount}
               </span>
             )}
