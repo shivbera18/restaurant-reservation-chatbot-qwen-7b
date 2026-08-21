@@ -115,6 +115,8 @@ export function App() {
     }
   };
 
+  const [toast, setToast] = useState<{ text: string; kind: 'error' | 'success' } | null>(null);
+
   const handleCancelBooking = async (code: string) => {
     if (!user) {
       setAuthModalMode('login');
@@ -125,16 +127,26 @@ export function App() {
       await cancelReservation(code);
       await refreshAppData();
       const cancelConfirmMsg: ChatMessage = {
-        id: String(Date.now()),
+        id: crypto.randomUUID(),
         role: 'assistant',
         content: `✅ Reservation with confirmation code **${code}** has been successfully cancelled.`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, cancelConfirmMsg]);
+      setToast({ text: `Reservation ${code} cancelled.`, kind: 'success' });
     } catch (err) {
-      alert(`Failed to cancel: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setToast({
+        text: `Failed to cancel ${code}: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        kind: 'error',
+      });
     }
   };
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   const handleResetChat = async () => {
     setIsResetting(true);
@@ -253,6 +265,18 @@ export function App() {
         }}
         initialMode={authModalMode}
       />
+
+      {/* Toast Notifications */}
+      {toast && (
+        <div
+          role="status"
+          className={`fixed bottom-5 right-5 z-[100] border-3 border-black rounded-neo shadow-neo-lg px-4 py-3 font-black text-sm max-w-xs ${
+            toast.kind === 'error' ? 'bg-red-300 text-black' : 'bg-neo-green text-black'
+          }`}
+        >
+          {toast.text}
+        </div>
+      )}
     </div>
   );
 }
