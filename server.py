@@ -189,6 +189,13 @@ class SwitchProviderRequest(BaseModel):
 class CancelReservationRequest(BaseModel):
     confirmation_code: str
 
+
+class ModifyReservationRequest(BaseModel):
+    confirmation_code: str
+    new_date: Optional[str] = None
+    new_time: Optional[str] = None
+    new_party_size: Optional[int] = None
+    new_special_requests: Optional[str] = None
 # ---------------------------------------------------------------------------
 # Authentication Endpoints
 # ---------------------------------------------------------------------------
@@ -442,6 +449,51 @@ def cancel_reservation(
 
     cancelled = db.cancel_reservation(payload.confirmation_code.strip())
     return {"success": True, "reservation": _serialize_reservation(cancelled)}
+
+
+@app.post("/api/reservations/modify")
+def modify_reservation(
+    payload: ModifyReservationRequest,
+    authorization: Optional[str] = Header(default=None),
+):
+    """Modify a booking. Only authenticated users can edit their own reservations."""
+    user = _get_current_user(authorization)
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required: Please log in to modify your reservations.",
+        )
+
+    code = payload.confirmation_code.strip()
+    res = db.get_reservation_by_code(code)
+    if not res:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Reservation '{code}' not found.",
+        )
+
+    # Ownership verification
+    res_user_id = getattr(res, "user_id", None)
+    if res_user_id and res_user_id != user["id"]:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden: You do not have permission to modify this reservation.",
+        )
+
+    modified = db.modify_reservation(
+        confirmation_code=code,
+        new_date=payload.new_date,
+        new_time=payload.new_time,
+        new_party_size=payload.new_party_size,
+        new_special_requests=payload.new_special_requests,
+    )
+    if not modified:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not modify reservation. The requested date/time slot may not have capacity or is invalid.",
+        )
+
+    return {"success": True, "reservation": _serialize_reservation(modified)}
 @app.post("/api/reset")
 def reset_conversation(x_session_id: Optional[str] = Header(default="default")):
     """Reset the chat history and active agent memory for this session."""
