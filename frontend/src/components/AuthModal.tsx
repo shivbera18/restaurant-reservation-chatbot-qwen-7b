@@ -220,7 +220,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <div className="p-2 bg-[#FAF8F5] border border-black rounded-neo-sm text-[11px] font-mono text-black flex items-start gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-neo-green shrink-0 mt-0.5" />
             <span>
-              <strong>Neon Cloud Auth:</strong> Encrypted with Scrypt. Only you can view or cancel your reservations.
+              <strong>Secure sign-in:</strong> Your password is encrypted. Only you can view or cancel your reservations.
             </span>
           </div>
 
