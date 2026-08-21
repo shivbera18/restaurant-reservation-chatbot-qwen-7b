@@ -4,7 +4,8 @@ Contains 75 diverse restaurant locations and reservation management
 """
 import random
 import string
-from datetime import datetime, timedelta
+from collections import defaultdict
+from datetime import date, datetime, timedelta
 from typing import List, Optional, Dict
 from models import (
     Restaurant, CuisineType, PriceRange, Ambiance,
@@ -22,7 +23,8 @@ class RestaurantDatabase:
         self._seed_restaurants()
     
     def _seed_restaurants(self):
-        """Populate database with 75 diverse restaurant locations"""
+        """Populate database with 75 diverse restaurant locations."""
+        random.seed(42)
         
         # Define neighborhoods
         neighborhoods = [
@@ -359,7 +361,9 @@ class RestaurantDatabase:
                    and r.date == date_str 
                    and r.status == ReservationStatus.CONFIRMED]
         
-        reserved_times = {r.time: r.party_size for r in existing}
+        reserved_times = defaultdict(int)
+        for reservation in existing:
+            reserved_times[reservation.time] += reservation.party_size
         
         # Generate 30-minute slots
         for hour in range(open_hour, close_hour):
@@ -401,18 +405,34 @@ class RestaurantDatabase:
         special_requests: Optional[str] = None,
         occasion: Optional[str] = None
     ) -> Optional[Reservation]:
-        """Create a new reservation"""
+        """Create a reservation only for a valid future opening-hours slot."""
         restaurant = self.get_restaurant_by_id(restaurant_id)
-        if not restaurant:
+        if not restaurant or not customer_name.strip() or not customer_phone.strip():
             return None
-        
-        # Check availability
+
+        if not isinstance(party_size, int) or not 1 <= party_size <= restaurant.seating_capacity:
+            return None
+
+        try:
+            reservation_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            reservation_time = datetime.strptime(time_str, "%H:%M").time()
+        except (TypeError, ValueError):
+            return None
+
+        if reservation_date < date.today():
+            return None
+
+        open_time = datetime.strptime(restaurant.open_time, "%H:%M").time()
+        close_time = datetime.strptime(restaurant.close_time, "%H:%M").time()
+        if reservation_time < open_time or reservation_time >= close_time or reservation_time.minute not in (0, 30):
+            return None
+
         availability = self.get_availability(restaurant_id, date_str, party_size)
         if not availability:
             return None
-        
+
         time_available = any(
-            slot.time == time_str and slot.available_seats >= party_size 
+            slot.time == time_str and slot.available_seats >= party_size
             for slot in availability.time_slots
         )
         if not time_available:
