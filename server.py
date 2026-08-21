@@ -315,6 +315,8 @@ def chat(payload: ChatRequest, authorization: Optional[str] = Header(default=Non
     """Process a user message and return agent response with structured tool results.
     Open endpoint - works for both authenticated and guest users."""
     sid = payload.session_id or "default"
+    if not payload.message.strip():
+        raise HTTPException(status_code=422, detail="Message cannot be empty.")
     s = store.get_or_create(sid)
     current_user = _get_current_user(authorization)
     user_id = current_user["id"] if current_user else None
