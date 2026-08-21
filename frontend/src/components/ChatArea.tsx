@@ -12,6 +12,8 @@ import {
   LogIn,
   AlertTriangle,
   RotateCcw,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import type { ChatMessage, Restaurant, User } from '../types';
 import { RestaurantCard } from './RestaurantCard';
@@ -35,6 +37,8 @@ interface ChatAreaProps {
   activeReservationsCount: number;
   backendOffline?: boolean;
   onRetryConnection?: () => void;
+  theme?: 'light' | 'dark' | 'system';
+  onToggleTheme?: () => void;
 }
 
 const QUICK_PROMPTS = [
@@ -58,9 +62,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   onLogout,
   onOpenExplorer,
   onOpenReservations,
-  activeReservationsCount,
   backendOffline,
   onRetryConnection,
+  theme,
+  onToggleTheme,
 }) => {
   const [input, setInput] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -90,16 +95,16 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   return (
     <div className="flex-1 flex flex-col h-full max-w-5xl mx-auto w-full px-3 sm:px-6 py-3 overflow-hidden text-left">
       {/* Top Header Bar with Prominent Navigation & Sign In */}
-      <header className="bg-white border-3 border-black shadow-neo rounded-neo px-3.5 py-2 mb-3 flex items-center justify-between gap-2 shrink-0">
+      <header className="bg-neo-card border-3 border-black shadow-neo rounded-neo px-3.5 py-2 mb-3 flex items-center justify-between gap-2 shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center text-base font-black shadow-neo-sm">
             🍽️
           </div>
           <div>
-            <h1 className="font-black text-sm uppercase tracking-tight text-black leading-none">
+            <h1 className="font-black text-sm uppercase tracking-tight text-neo-main leading-none">
               GoodFoods<span className="text-neo-orange">.AI</span>
             </h1>
-            <span className="font-mono text-[10px] font-bold text-gray-700 block mt-0.5">
+            <span className="font-mono text-[10px] font-bold text-neo-muted block mt-0.5">
               Autonomous Concierge
             </span>
           </div>
@@ -130,6 +135,23 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               </span>
             )}
           </button>
+
+          {/* Theme Toggle Button */}
+          {onToggleTheme && (
+            <button
+              type="button"
+              onClick={onToggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              className="btn-neo bg-neo-card text-neo-main p-1.5 text-xs font-black uppercase flex items-center justify-center"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-3.5 h-3.5 text-neo-yellow" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-black" />
+              )}
+            </button>
+          )}
 
           {/* Prominent User Sign In / Profile Pill */}
           {user ? (

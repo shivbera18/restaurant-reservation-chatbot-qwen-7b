@@ -12,6 +12,8 @@ import {
   LogIn,
   LogOut,
   Settings,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import type { SystemConfig, User } from '../types';
 
@@ -28,6 +30,8 @@ interface SidebarProps {
   user: User | null;
   onOpenAuth: (mode?: 'login' | 'register') => void;
   onLogout: () => void;
+  theme?: 'light' | 'dark' | 'system';
+  onToggleTheme?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -43,6 +47,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   user,
   onOpenAuth,
   onLogout,
+  theme,
+  onToggleTheme,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -51,16 +57,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* ========================================================================= */}
       {/* Mobile Floating Top Bar (< md)                                            */}
       {/* ========================================================================= */}
-      <header className="md:hidden sticky top-2 z-30 mx-2 bg-white border-3 border-black px-3.5 py-2.5 shadow-neo rounded-neo-lg flex items-center justify-between">
+      <header className="md:hidden sticky top-2 z-30 mx-2 bg-neo-card border-3 border-black px-3.5 py-2.5 shadow-neo rounded-neo-lg flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-neo-yellow border-2 border-black shadow-neo-sm flex items-center justify-center text-base rounded-neo-sm">
             🍽️
           </div>
           <div>
-            <h1 className="font-black text-sm tracking-tight uppercase leading-none text-black">
+            <h1 className="font-black text-sm tracking-tight uppercase leading-none text-neo-main">
               GoodFoods<span className="text-neo-orange">.AI</span>
             </h1>
-            <span className="text-[10px] font-mono font-bold text-black">
+            <span className="text-[10px] font-mono font-bold text-neo-muted">
               v{config?.app_version || '1.1.0'}
             </span>
           </div>
@@ -86,6 +92,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>Sign In</span>
+            </button>
+          )}
+
+          {/* Theme Toggle (Mobile) */}
+          {onToggleTheme && (
+            <button
+              onClick={onToggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              className="w-8 h-8 bg-neo-card border-2 border-black shadow-neo-sm flex items-center justify-center rounded-neo-sm text-neo-main"
+            >
+              {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-neo-yellow" /> : <Moon className="w-3.5 h-3.5 text-black" />}
             </button>
           )}
           {/* Model Settings Shortcut (Mobile) */}
@@ -185,7 +202,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Inspired by quiz-repo floating Neobrutalist architecture                  */}
       {/* ========================================================================= */}
       <aside
-        className={`hidden md:flex flex-col fixed top-4 left-4 z-30 bg-white border-3 border-black shadow-neo-lg rounded-neo-lg p-3.5 justify-between select-none transition-all duration-300 ease-in-out ${
+        className={`hidden md:flex flex-col fixed top-4 left-4 z-30 bg-neo-card border-3 border-black shadow-neo-lg rounded-neo-lg p-3.5 justify-between select-none transition-all duration-300 ease-in-out ${
           isCollapsed ? 'w-20' : 'w-72 lg:w-80'
         }`}
         style={{ height: 'calc(100vh - 32px)' }}
@@ -199,10 +216,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   🍽️
                 </div>
                 <div className="truncate">
-                  <h1 className="font-black text-base tracking-tight uppercase leading-none text-black">
+                  <h1 className="font-black text-base tracking-tight uppercase leading-none text-neo-main">
                     GoodFoods<span className="text-neo-orange">.AI</span>
                   </h1>
-                  <span className="text-[10px] font-mono font-bold text-black block mt-0.5">
+                  <span className="text-[10px] font-mono font-bold text-neo-muted block mt-0.5">
                     Autonomous Concierge
                   </span>
                 </div>
@@ -406,6 +423,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span className="font-black uppercase tracking-tight truncate">AI Engine Settings</span>
             )}
           </button>
+
+          {/* Theme Toggle in Sidebar */}
+          {onToggleTheme && (
+            <button
+              onClick={onToggleTheme}
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              className={`btn-neo bg-neo-surface text-neo-main w-full flex items-center transition-all ${
+                isCollapsed
+                  ? 'justify-center p-2.5'
+                  : 'justify-start gap-2.5 p-2.5 text-xs'
+              }`}
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun className="w-4 h-4 text-neo-yellow shrink-0" />
+                  {!isCollapsed && <span className="font-black uppercase tracking-tight truncate">Light Theme</span>}
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4 text-black shrink-0" />
+                  {!isCollapsed && <span className="font-black uppercase tracking-tight truncate">Dark Theme</span>}
+                </>
+              )}
+            </button>
+          )}
         </div>
         <div className="space-y-3 pt-3 border-t-2 border-dashed border-black">
 
