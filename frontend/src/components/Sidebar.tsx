@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Cpu,
   RotateCcw,
   UtensilsCrossed,
   Ticket,
@@ -47,12 +46,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isOnline = config?.status.ready ?? false;
-  const activeProviderName = config?.use_mock
-    ? 'DEMO (OFFLINE)'
-    : (config?.provider_labels[config?.active_provider] || config?.active_provider || 'BACKEND');
-  const activeModelName = config?.use_mock ? 'Rule-based Agent' : config?.active_model;
-
   return (
     <>
       {/* ========================================================================= */}
@@ -95,16 +88,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span>Sign In</span>
             </button>
           )}
-          {/* Model Status Pill (Mobile) */}
+          {/* Model Settings Shortcut (Mobile) */}
           <button
             onClick={onOpenModelModal}
-            className="flex items-center gap-1.5 px-2.5 py-1 bg-neo-canvas border-2 border-black shadow-neo-sm text-[11px] font-mono font-black rounded-neo-sm text-black"
+            aria-label="AI engine settings"
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-neo-canvas border-2 border-black shadow-neo-sm text-[11px] font-mono font-black text-black rounded-neo-sm"
           >
-            <span
-              className={`w-2 h-2 rounded-full border border-black ${
-                isOnline ? 'bg-neo-green animate-pulse' : 'bg-red-500'
-              }`}
-            />
+            <Settings className="w-3.5 h-3.5" />
             <span className="truncate max-w-[80px]">{config?.active_provider?.toUpperCase()}</span>
           </button>
 
@@ -250,50 +240,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           )}
 
-          {/* AI Engine Status Card (Clickable to switch model) */}
-          <div
-            onClick={onOpenModelModal}
-            className={`bg-[#FAF8F5] border-2 border-black shadow-neo-sm rounded-neo cursor-pointer hover:-translate-y-0.5 hover:shadow-neo transition-all group ${
-              isCollapsed ? 'p-2 text-center' : 'p-3'
-            }`}
-            title="Click to switch LLM Provider or Model"
-          >
-            {!isCollapsed ? (
-              <>
-                <div className="flex items-center justify-between text-[11px] font-mono font-black text-black mb-1">
-                  <span className="flex items-center gap-1.5 text-black">
-                    <Cpu className="w-3.5 h-3.5 text-neo-purple" />
-                    <span>AI ENGINE</span>
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <span
-                      className={`w-2 h-2 rounded-full border border-black ${
-                        isOnline ? 'bg-neo-green animate-pulse' : 'bg-red-500'
-                      }`}
-                    />
-                    <span className="text-[10px] font-black text-black">{isOnline ? 'ONLINE' : 'OFFLINE'}</span>
-                  </div>
-                </div>
-                <div className="truncate">
-                  <span className="font-black text-xs uppercase text-black block truncate">
-                    {activeProviderName}
-                  </span>
-                  <span className="text-[11px] font-mono font-bold text-black truncate block">
-                    {activeModelName}
-                  </span>
-                </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center gap-1">
-                <Cpu className="w-4 h-4 text-neo-purple" />
-                <span
-                  className={`w-2 h-2 rounded-full border border-black ${
-                    isOnline ? 'bg-neo-green animate-pulse' : 'bg-red-500'
-                  }`}
-                />
-              </div>
-            )}
-          </div>
 
           {/* Primary Navigation Actions */}
           <div className="space-y-2">
