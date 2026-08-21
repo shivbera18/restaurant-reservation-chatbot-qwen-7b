@@ -17,11 +17,11 @@ export default {
           pink: "#F472B6",
           cream: "#FAF8F5",
           canvas: "#F4EFE6",
-          dark: "#121212",
-          // Dark mode surface colors
-          surface: "#1E1E1E",
-          "surface-alt": "#2A2A2A",
-          "surface-raised": "#333333",
+          dark: "#161616",
+          surface: "#202020",
+          "surface-alt": "#2B2B2B",
+          "surface-raised": "#383838",
+          border: "#E5E7EB",
         }
       },
       boxShadow: {

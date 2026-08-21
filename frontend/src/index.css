@@ -19,20 +19,6 @@
   --neo-scrollbar-hover: #FFD000;
 }
 
-.dark {
-  color-scheme: dark;
-  color: #F3F4F6;
-  background-color: #121212;
-  --neo-bg: #121212;
-  --neo-card: #1E1E1E;
-  --neo-text: #F3F4F6;
-  --neo-border: #525252;
-  --neo-canvas: #1A1A1A;
-  --neo-grid-dot: #333333;
-  --neo-scrollbar-track: #1E1E1E;
-  --neo-scrollbar-thumb: #FFE600;
-  --neo-scrollbar-hover: #FFD000;
-}
 
 body {
   margin: 0;
@@ -83,19 +69,4 @@ code, pre, .font-mono {
     @apply bg-white border-3 border-black shadow-neo;
   }
 
-  /* Dark mode overrides for base classes */
-  .dark .btn-neo {
-    border-color: var(--neo-border);
-    box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.18);
-  }
-
-  .dark .btn-neo:hover {
-    box-shadow: 6px 6px 0px 0px rgba(255, 255, 255, 0.25);
-  }
-
-  .dark .card-neo {
-    background-color: theme('colors.neo.surface');
-    border-color: var(--neo-border);
-    box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.18);
-  }
 }

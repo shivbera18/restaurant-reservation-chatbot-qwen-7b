@@ -4,8 +4,6 @@ import {
   RotateCcw,
   UtensilsCrossed,
   Ticket,
-  Moon,
-  Sun,
   Menu,
   X,
   Sparkles,
@@ -22,8 +20,6 @@ interface SidebarProps {
   onOpenReservations: () => void;
   onResetChat: () => void;
   isResetting?: boolean;
-  isDarkMode: boolean;
-  onToggleDarkMode: () => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
 }
@@ -36,8 +32,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenReservations,
   onResetChat,
   isResetting,
-  isDarkMode,
-  onToggleDarkMode,
   isCollapsed,
   onToggleCollapse,
 }) => {
@@ -54,38 +48,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* ========================================================================= */}
       {/* Mobile Floating Top Bar (< md)                                            */}
       {/* ========================================================================= */}
-      <header className="md:hidden sticky top-2 z-30 mx-2 bg-white dark:bg-neo-surface border-3 border-black dark:border-gray-600 px-3.5 py-2.5 shadow-neo dark:shadow-neo-dark rounded-neo-lg flex items-center justify-between">
+      <header className="md:hidden sticky top-2 z-30 mx-2 bg-white border-3 border-black px-3.5 py-2.5 shadow-neo rounded-neo-lg flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-neo-yellow border-2 border-black dark:border-gray-600 shadow-neo-sm flex items-center justify-center text-base rounded-neo-sm">
+          <div className="w-8 h-8 bg-neo-yellow border-2 border-black shadow-neo-sm flex items-center justify-center text-base rounded-neo-sm">
             🍽️
           </div>
           <div>
-            <h1 className="font-black text-sm tracking-tight uppercase leading-none text-black dark:text-gray-100">
+            <h1 className="font-black text-sm tracking-tight uppercase leading-none text-black">
               GoodFoods<span className="text-neo-orange">.AI</span>
             </h1>
-            <span className="text-[10px] font-mono font-bold text-black dark:text-gray-300">
+            <span className="text-[10px] font-mono font-bold text-black">
               v{config?.app_version || '1.1.0'}
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Dark Mode Toggle (Mobile) */}
-          <button
-            onClick={onToggleDarkMode}
-            aria-label="Toggle dark mode"
-            className="w-8 h-8 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 shadow-neo-sm flex items-center justify-center rounded-neo-sm text-black dark:text-gray-100 hover:bg-neo-yellow"
-          >
-            {isDarkMode ? <Sun className="w-4 h-4 text-neo-yellow" /> : <Moon className="w-4 h-4 text-black" />}
-          </button>
 
           {/* Model Status Pill (Mobile) */}
           <button
             onClick={onOpenModelModal}
-            className="flex items-center gap-1.5 px-2.5 py-1 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 shadow-neo-sm text-[11px] font-mono font-black rounded-neo-sm text-black dark:text-gray-100"
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-neo-canvas border-2 border-black shadow-neo-sm text-[11px] font-mono font-black rounded-neo-sm text-black"
           >
             <span
-              className={`w-2 h-2 rounded-full border border-black dark:border-gray-600 ${
+              className={`w-2 h-2 rounded-full border border-black ${
                 isOnline ? 'bg-neo-green animate-pulse' : 'bg-red-500'
               }`}
             />
@@ -96,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Open navigation menu"
-            className="w-8 h-8 bg-neo-yellow border-2 border-black dark:border-gray-600 shadow-neo-sm flex items-center justify-center rounded-neo-sm text-black"
+            className="w-8 h-8 bg-neo-yellow border-2 border-black shadow-neo-sm flex items-center justify-center rounded-neo-sm text-black"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -113,14 +99,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Mobile Drawer Dropdown Panel */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-3 top-16 z-50 bg-[#F4EFE6] dark:bg-neo-surface border-3 border-black dark:border-gray-600 p-4 shadow-neo-xl dark:shadow-neo-xl-dark rounded-neo-lg space-y-2.5">
-          <div className="flex items-center justify-between pb-2 border-b-2 border-dashed border-black dark:border-gray-600">
-            <span className="font-mono font-black text-xs uppercase tracking-wider text-black dark:text-gray-100">
+        <div className="md:hidden fixed inset-x-3 top-16 z-50 bg-[#F4EFE6] border-3 border-black p-4 shadow-neo-xl rounded-neo-lg space-y-2.5">
+          <div className="flex items-center justify-between pb-2 border-b-2 border-dashed border-black">
+            <span className="font-mono font-black text-xs uppercase tracking-wider text-black">
               Quick Navigation
             </span>
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-neo-sm text-black dark:text-gray-100"
+              className="p-1 hover:bg-black/10 rounded-neo-sm text-black"
             >
               <X className="w-4 h-4" />
             </button>
@@ -166,7 +152,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               setMobileMenuOpen(false);
             }}
             disabled={isResetting}
-            className="btn-neo bg-white dark:bg-neo-surface-alt text-black dark:text-gray-100 hover:bg-neo-orange hover:text-white w-full py-2.5 px-3 text-xs flex items-center gap-2 font-black uppercase"
+            className="btn-neo bg-white text-black hover:bg-neo-orange hover:text-white w-full py-2.5 px-3 text-xs flex items-center gap-2 font-black uppercase"
           >
             <RotateCcw className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
             <span>New Conversation</span>
@@ -179,31 +165,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Inspired by quiz-repo floating Neobrutalist architecture                  */}
       {/* ========================================================================= */}
       <aside
-        className={`hidden md:flex flex-col fixed top-4 left-4 z-30 bg-white dark:bg-neo-surface border-3 border-black dark:border-gray-600 shadow-neo-lg dark:shadow-neo-lg-dark rounded-neo-lg p-3.5 justify-between select-none transition-all duration-300 ease-in-out ${
+        className={`hidden md:flex flex-col fixed top-4 left-4 z-30 bg-white border-3 border-black shadow-neo-lg rounded-neo-lg p-3.5 justify-between select-none transition-all duration-300 ease-in-out ${
           isCollapsed ? 'w-20' : 'w-72 lg:w-80'
         }`}
         style={{ height: 'calc(100vh - 32px)' }}
       >
         <div className="space-y-3.5">
           {/* Header Bar with Logo & Collapse Toggle */}
-          <div className="flex items-center justify-between gap-2 pb-3 border-b-2 border-dashed border-black dark:border-gray-700">
+          <div className="flex items-center justify-between gap-2 pb-3 border-b-2 border-dashed border-black">
             {!isCollapsed ? (
               <div className="flex items-center gap-2.5 overflow-hidden">
-                <div className="w-9 h-9 bg-neo-yellow border-2 border-black dark:border-gray-600 shadow-neo-sm flex items-center justify-center text-lg rounded-neo-sm shrink-0">
+                <div className="w-9 h-9 bg-neo-yellow border-2 border-black shadow-neo-sm flex items-center justify-center text-lg rounded-neo-sm shrink-0">
                   🍽️
                 </div>
                 <div className="truncate">
-                  <h1 className="font-black text-base tracking-tight uppercase leading-none text-black dark:text-gray-100">
+                  <h1 className="font-black text-base tracking-tight uppercase leading-none text-black">
                     GoodFoods<span className="text-neo-orange">.AI</span>
                   </h1>
-                  <span className="text-[10px] font-mono font-bold text-black dark:text-gray-300 block mt-0.5">
+                  <span className="text-[10px] font-mono font-bold text-black block mt-0.5">
                     Autonomous Concierge
                   </span>
                 </div>
               </div>
             ) : (
               <div className="mx-auto">
-                <div className="w-9 h-9 bg-neo-yellow border-2 border-black dark:border-gray-600 shadow-neo-sm flex items-center justify-center text-lg rounded-neo-sm">
+                <div className="w-9 h-9 bg-neo-yellow border-2 border-black shadow-neo-sm flex items-center justify-center text-lg rounded-neo-sm">
                   🍽️
                 </div>
               </div>
@@ -214,11 +200,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={onToggleCollapse}
               aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              className={`w-8 h-8 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 shadow-neo-sm flex items-center justify-center rounded-neo-sm hover:bg-neo-yellow text-black dark:text-gray-100 transition-all ${
+              className={`w-8 h-8 bg-neo-canvas border-2 border-black shadow-neo-sm flex items-center justify-center rounded-neo-sm hover:bg-neo-yellow text-black transition-all ${
                 isCollapsed ? 'hidden' : 'shrink-0'
               }`}
             >
-              <ChevronLeft className="w-4 h-4 text-black dark:text-gray-200" />
+              <ChevronLeft className="w-4 h-4 text-black" />
             </button>
           </div>
 
@@ -228,41 +214,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={onToggleCollapse}
               aria-label="Expand sidebar"
               title="Expand sidebar"
-              className="w-full py-1 bg-neo-canvas dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 shadow-neo-sm flex items-center justify-center rounded-neo-sm hover:bg-neo-yellow text-black dark:text-gray-100"
+              className="w-full py-1 bg-neo-canvas border-2 border-black shadow-neo-sm flex items-center justify-center rounded-neo-sm hover:bg-neo-yellow text-black"
             >
-              <ChevronRight className="w-4 h-4 text-black dark:text-gray-200" />
+              <ChevronRight className="w-4 h-4 text-black" />
             </button>
           )}
 
           {/* AI Engine Status Card (Clickable to switch model) */}
           <div
             onClick={onOpenModelModal}
-            className={`bg-[#FAF8F5] dark:bg-neo-surface-alt border-2 border-black dark:border-gray-600 shadow-neo-sm dark:shadow-neo-dark rounded-neo cursor-pointer hover:-translate-y-0.5 hover:shadow-neo transition-all group ${
+            className={`bg-[#FAF8F5] border-2 border-black shadow-neo-sm rounded-neo cursor-pointer hover:-translate-y-0.5 hover:shadow-neo transition-all group ${
               isCollapsed ? 'p-2 text-center' : 'p-3'
             }`}
             title="Click to switch LLM Provider or Model"
           >
             {!isCollapsed ? (
               <>
-                <div className="flex items-center justify-between text-[11px] font-mono font-black text-black dark:text-gray-300 mb-1">
-                  <span className="flex items-center gap-1.5 text-black dark:text-gray-100">
+                <div className="flex items-center justify-between text-[11px] font-mono font-black text-black mb-1">
+                  <span className="flex items-center gap-1.5 text-black">
                     <Cpu className="w-3.5 h-3.5 text-neo-purple" />
                     <span>AI ENGINE</span>
                   </span>
                   <div className="flex items-center gap-1.5">
                     <span
-                      className={`w-2 h-2 rounded-full border border-black dark:border-gray-600 ${
+                      className={`w-2 h-2 rounded-full border border-black ${
                         isOnline ? 'bg-neo-green animate-pulse' : 'bg-red-500'
                       }`}
                     />
-                    <span className="text-[10px] font-black text-black dark:text-gray-300">{isOnline ? 'ONLINE' : 'OFFLINE'}</span>
+                    <span className="text-[10px] font-black text-black">{isOnline ? 'ONLINE' : 'OFFLINE'}</span>
                   </div>
                 </div>
                 <div className="truncate">
-                  <span className="font-black text-xs uppercase text-black dark:text-gray-100 block truncate">
+                  <span className="font-black text-xs uppercase text-black block truncate">
                     {activeProviderName}
                   </span>
-                  <span className="text-[11px] font-mono font-bold text-black dark:text-gray-300 truncate block">
+                  <span className="text-[11px] font-mono font-bold text-black truncate block">
                     {activeModelName}
                   </span>
                 </div>
@@ -271,7 +257,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="flex flex-col items-center gap-1">
                 <Cpu className="w-4 h-4 text-neo-purple" />
                 <span
-                  className={`w-2 h-2 rounded-full border border-black dark:border-gray-600 ${
+                  className={`w-2 h-2 rounded-full border border-black ${
                     isOnline ? 'bg-neo-green animate-pulse' : 'bg-red-500'
                   }`}
                 />
@@ -282,7 +268,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Primary Navigation Actions */}
           <div className="space-y-2">
             {!isCollapsed && (
-              <span className="text-[10px] font-mono font-black uppercase text-black dark:text-gray-300 pl-1 block">
+              <span className="text-[10px] font-mono font-black uppercase text-black pl-1 block">
                 Directory & Bookings
               </span>
             )}
@@ -348,7 +334,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={onResetChat}
               disabled={isResetting}
               title="Start a fresh conversation"
-              className={`btn-neo bg-white dark:bg-neo-surface-alt text-black dark:text-gray-100 hover:bg-neo-orange hover:text-white w-full flex items-center transition-all ${
+              className={`btn-neo bg-white text-black hover:bg-neo-orange hover:text-white w-full flex items-center transition-all ${
                 isCollapsed
                   ? 'justify-center p-2.5'
                   : 'justify-start gap-2.5 p-2.5 text-xs'
@@ -362,46 +348,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Sidebar Footer Controls & Info */}
-        <div className="space-y-3 pt-3 border-t-2 border-dashed border-black dark:border-gray-700">
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={onToggleDarkMode}
-            aria-label="Toggle dark mode"
-            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            className={`btn-neo bg-neo-canvas dark:bg-neo-surface-alt text-black dark:text-gray-100 w-full flex items-center transition-all ${
-              isCollapsed ? 'justify-center p-2' : 'justify-between p-2 text-xs'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              {isDarkMode ? (
-                <Sun className="w-4 h-4 text-neo-yellow shrink-0" />
-              ) : (
-                <Moon className="w-4 h-4 text-black shrink-0" />
-              )}
-              {!isCollapsed && (
-                <span className="font-bold text-[11px] text-black dark:text-gray-100">
-                  {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-                </span>
-              )}
-            </div>
-            {!isCollapsed && (
-              <span className="text-[10px] font-mono font-black text-black dark:text-gray-300 uppercase">
-                {isDarkMode ? 'DARK' : 'LIGHT'}
-              </span>
-            )}
-          </button>
+        <div className="space-y-3 pt-3 border-t-2 border-dashed border-black">
 
           {!isCollapsed && (
-            <div className="p-2.5 bg-[#FAF8F5] dark:bg-neo-surface-alt border border-black dark:border-gray-700 rounded-neo text-[10px] font-mono text-black dark:text-gray-300 space-y-0.5 text-left">
-              <div className="flex items-center justify-between font-bold text-black dark:text-gray-100">
+            <div className="p-2.5 bg-[#FAF8F5] border border-black rounded-neo text-[10px] font-mono text-black space-y-0.5 text-left">
+              <div className="flex items-center justify-between font-bold text-black">
                 <span className="flex items-center gap-1">
                   <Sparkles className="w-3 h-3 text-neo-orange" />
                   <span>GoodFoods Engine</span>
                 </span>
                 <span className="text-[9px] font-mono font-black">v1.1</span>
               </div>
-              <p className="text-[9px] font-medium leading-tight text-black dark:text-gray-300">
+              <p className="text-[9px] font-medium leading-tight text-black">
                 75 locations across 12 metro districts
               </p>
             </div>

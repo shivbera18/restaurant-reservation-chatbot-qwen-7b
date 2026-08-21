@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
 import { RestaurantExplorerModal } from './components/RestaurantExplorerModal';
@@ -22,26 +22,6 @@ export function App() {
   const [isResetting, setIsResetting] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // Dark Mode State
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    const saved = localStorage.getItem('goodfoods_theme');
-    if (saved) return saved === 'dark';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('goodfoods_theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('goodfoods_theme', 'light');
-    }
-  }, [isDarkMode]);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode((prev) => !prev);
-  };
 
   // Modals & Drawers
   const [isExplorerOpen, setIsExplorerOpen] = useState(false);
@@ -166,7 +146,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen neo-grid-bg text-[#121212] dark:text-gray-100 relative overflow-x-hidden">
+    <div className="min-h-screen neo-grid-bg text-black relative overflow-x-hidden">
       {/* Floating Hovering Sidebar Navigation */}
       <Sidebar
         config={config}
@@ -176,8 +156,6 @@ export function App() {
         onOpenReservations={() => setIsReservationsOpen(true)}
         onResetChat={handleResetChat}
         isResetting={isResetting}
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={toggleDarkMode}
         isCollapsed={isCollapsed}
         onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
       />
