@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #121212;
+  background-color: #F4EFE6;
+  --neo-bg: #F4EFE6;
+  --neo-card: #FFFFFF;
+  --neo-text: #121212;
+  --neo-border: #000000;
+  --neo-canvas: #F4EFE6;
+  --neo-grid-dot: #000000;
+  --neo-scrollbar-track: #E8E2D5;
+  --neo-scrollbar-thumb: #FFE600;
+  --neo-scrollbar-hover: #FFD000;
+}
+
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--neo-bg);
+  color: var(--neo-text);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+code, pre, .font-mono {
+  font-family: 'Space Mono', 'Courier New', monospace;
+}
+
+/* Subtle retro dot/grid canvas */
+.neo-grid-bg {
+  background-color: var(--neo-bg);
+  background-image: radial-gradient(var(--neo-grid-dot) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Custom crisp scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--neo-scrollbar-track);
+  border-left: 2px solid var(--neo-border);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--neo-scrollbar-thumb);
+  border: 2px solid var(--neo-border);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neo-scrollbar-hover);
+}
+
+@layer components {
+  /* Neobrutalist tactile button interaction with smooth modern curvature */
+  .btn-neo {
+    border-radius: 12px;
+    @apply transition-all duration-150 ease-out border-2 border-black font-bold shadow-neo hover:-translate-y-0.5 hover:shadow-neo-lg active:translate-x-0.5 active:translate-y-0.5 active:shadow-neo-sm;
+  }
+
+  .card-neo {
+    border-radius: 12px;
+    @apply bg-white border-3 border-black shadow-neo;
+  }
+
+}

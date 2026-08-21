@@ -3,14 +3,17 @@ Database layer for GoodFoods Reservation System
 Contains 75 diverse restaurant locations and reservation management
 """
 import random
+import secrets
 import string
-from datetime import datetime, timedelta
+from collections import defaultdict
+from datetime import date, datetime, timedelta
 from typing import List, Optional, Dict
 from models import (
     Restaurant, CuisineType, PriceRange, Ambiance,
     Reservation, ReservationStatus, TimeSlot, Availability,
     CustomerPreferences
 )
+from neon_db import neon_db
 
 
 class RestaurantDatabase:
@@ -20,9 +23,14 @@ class RestaurantDatabase:
         self.restaurants: Dict[str, Restaurant] = {}
         self.reservations: Dict[str, Reservation] = {}
         self._seed_restaurants()
+        if neon_db.enabled:
+            neon_db.migrate()
+            self._load_or_seed_restaurants()
+            self._load_reservations()
     
     def _seed_restaurants(self):
-        """Populate database with 75 diverse restaurant locations"""
+        """Populate database with 75 diverse restaurant locations."""
+        random.seed(42)
         
         # Define neighborhoods
         neighborhoods = [
@@ -177,6 +185,25 @@ class RestaurantDatabase:
                 restaurant_id += 1
         
         print(f"Initialized database with {len(self.restaurants)} restaurants")
+    def _load_or_seed_restaurants(self) -> None:
+        persisted = neon_db.load_restaurants()
+        if persisted:
+            self.restaurants = {row["id"]: Restaurant(**row) for row in persisted}
+            return
+        neon_db.upsert_restaurants([
+            restaurant.model_dump(mode="json") if hasattr(restaurant, "model_dump") else restaurant.dict()
+            for restaurant in self.restaurants.values()
+        ])
+
+    def _load_reservations(self) -> None:
+        for row in neon_db.load_reservations():
+            row["status"] = ReservationStatus(row["status"])
+            self.reservations[row["id"]] = Reservation(**row)
+
+    @staticmethod
+    def _reservation_data(reservation: Reservation) -> dict:
+        return reservation.model_dump() if hasattr(reservation, "model_dump") else reservation.dict()
+
     
     def get_all_restaurants(self) -> List[Restaurant]:
         """Get all restaurants"""
@@ -353,14 +380,16 @@ class RestaurantDatabase:
         open_hour = int(restaurant.open_time.split(":")[0])
         close_hour = int(restaurant.close_time.split(":")[0])
         
-        # Check existing reservations for this date
-        existing = [r for r in self.reservations.values() 
-                   if r.restaurant_id == restaurant_id 
-                   and r.date == date_str 
-                   and r.status == ReservationStatus.CONFIRMED]
-        
-        reserved_times = {r.time: r.party_size for r in existing}
-        
+        if neon_db.enabled:
+            reserved_times = neon_db.get_booked_seats_by_slot(restaurant_id, date_str)
+        else:
+            existing = [r for r in self.reservations.values() 
+                       if r.restaurant_id == restaurant_id 
+                       and r.date == date_str 
+                       and r.status == ReservationStatus.CONFIRMED]
+            reserved_times = defaultdict(int)
+            for reservation in existing:
+                reserved_times[reservation.time] += reservation.party_size
         # Generate 30-minute slots
         for hour in range(open_hour, close_hour):
             for minute in [0, 30]:
@@ -399,31 +428,61 @@ class RestaurantDatabase:
         time_str: str,
         customer_email: Optional[str] = None,
         special_requests: Optional[str] = None,
-        occasion: Optional[str] = None
+        occasion: Optional[str] = None,
+        user_id: Optional[str] = None
     ) -> Optional[Reservation]:
-        """Create a new reservation"""
+        """Create a reservation only for a valid future opening-hours slot."""
         restaurant = self.get_restaurant_by_id(restaurant_id)
-        if not restaurant:
+        if not restaurant or not customer_name.strip() or not customer_phone.strip():
             return None
-        
-        # Check availability
+
+        # T1: phone must contain 7-15 digits (allows +, spaces, dashes, parens, dots)
+        phone_digits = "".join(c for c in customer_phone if c.isdigit())
+        if not 7 <= len(phone_digits) <= 15:
+            return None
+
+        if not isinstance(party_size, int) or not 1 <= party_size <= restaurant.seating_capacity:
+            return None
+
+        try:
+            reservation_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            reservation_time = datetime.strptime(time_str, "%H:%M").time()
+        except (TypeError, ValueError):
+            return None
+
+        if reservation_date < date.today():
+            return None
+
+        open_time = datetime.strptime(restaurant.open_time, "%H:%M").time()
+        close_time = datetime.strptime(restaurant.close_time, "%H:%M").time()
+        if reservation_time < open_time or reservation_time >= close_time or reservation_time.minute not in (0, 30):
+            return None
+
         availability = self.get_availability(restaurant_id, date_str, party_size)
         if not availability:
             return None
-        
+
         time_available = any(
-            slot.time == time_str and slot.available_seats >= party_size 
+            slot.time == time_str and slot.available_seats >= party_size
             for slot in availability.time_slots
         )
         if not time_available:
             return None
         
-        # Generate confirmation code
-        conf_code = "GF" + "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
-        
+        # Generate cryptographically random, unique confirmation code and ID
+        while True:
+            conf_code = "GF" + "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+            if conf_code not in [r.confirmation_code for r in self.reservations.values()]:
+                if neon_db.enabled:
+                    existing = neon_db.get_reservation_by_code(conf_code)
+                    if existing:
+                        continue
+                break
+
+        res_id = f"RES_{secrets.token_hex(6)}"
         # Create reservation
         reservation = Reservation(
-            id=f"RES{len(self.reservations) + 1:05d}",
+            id=res_id,
             restaurant_id=restaurant_id,
             restaurant_name=restaurant.name,
             customer_name=customer_name,
@@ -435,19 +494,42 @@ class RestaurantDatabase:
             special_requests=special_requests,
             occasion=occasion,
             status=ReservationStatus.CONFIRMED,
-            confirmation_code=conf_code
+            confirmation_code=conf_code,
+            user_id=user_id
         )
         
         self.reservations[reservation.id] = reservation
+        if neon_db.enabled:
+            neon_db.save_reservation(self._reservation_data(reservation))
         return reservation
     
     def get_reservation_by_code(self, confirmation_code: str) -> Optional[Reservation]:
         """Look up a reservation by confirmation code"""
+        if neon_db.enabled:
+            row = neon_db.get_reservation_by_code(confirmation_code)
+            if row:
+                row["status"] = ReservationStatus(row["status"])
+                res = Reservation(**row)
+                self.reservations[res.id] = res
+                return res
+            return None
         for res in self.reservations.values():
             if res.confirmation_code.upper() == confirmation_code.upper():
                 return res
         return None
-    
+
+    def get_reservations_by_user(self, user_id: str) -> List[Reservation]:
+        """Look up all reservations belonging to a registered user"""
+        if neon_db.enabled:
+            rows = neon_db.load_reservations(user_id=user_id)
+            results = []
+            for row in rows:
+                row["status"] = ReservationStatus(row["status"])
+                res = Reservation(**row)
+                self.reservations[res.id] = res
+                results.append(res)
+            return results
+        return [r for r in self.reservations.values() if getattr(r, "user_id", None) == user_id]
     def get_reservation_by_phone(self, phone: str) -> List[Reservation]:
         """Look up reservations by phone number"""
         # Normalize phone number (remove non-digits)
@@ -498,16 +580,22 @@ class RestaurantDatabase:
             reservation.party_size = new_party_size
         if new_special_requests:
             reservation.special_requests = new_special_requests
+        if neon_db.enabled:
+            neon_db.update_reservation(self._reservation_data(reservation))
         
         return reservation
     
     def cancel_reservation(self, confirmation_code: str) -> Optional[Reservation]:
-        """Cancel a reservation"""
+        """Cancel a reservation. Returns None if not found or already cancelled."""
         reservation = self.get_reservation_by_code(confirmation_code)
         if not reservation:
             return None
-        
+        if reservation.status == ReservationStatus.CANCELLED:
+            return None
+
         reservation.status = ReservationStatus.CANCELLED
+        if neon_db.enabled:
+            neon_db.update_reservation(self._reservation_data(reservation))
         return reservation
     
     def get_neighborhoods(self) -> List[str]:

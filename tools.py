@@ -650,7 +650,8 @@ class ToolExecutor:
         time: str,
         customer_email: Optional[str] = None,
         special_requests: Optional[str] = None,
-        occasion: Optional[str] = None
+        occasion: Optional[str] = None,
+        user_id: Optional[str] = None
     ) -> ToolResult:
         reservation = db.create_reservation(
             restaurant_id=restaurant_id,
@@ -661,7 +662,8 @@ class ToolExecutor:
             date_str=date,
             time_str=time,
             special_requests=special_requests,
-            occasion=occasion
+            occasion=occasion,
+            user_id=user_id
         )
 
         if not reservation:
@@ -811,8 +813,8 @@ INTENT_TOOLS = {
     "SEARCH": ["search_restaurants", "get_recommendations", "get_restaurant_details", "get_neighborhoods", "get_cuisine_types"],
     "RESERVE": ["check_availability", "create_reservation", "get_restaurant_details", "search_restaurants", "get_recommendations"],
     "MANAGE": ["lookup_reservation", "modify_reservation", "cancel_reservation"],
-    "INFO": ["get_restaurant_details", "get_neighborhoods", "get_cuisine_types", "get_faq"],
-    "GENERAL": ["get_faq", "get_neighborhoods", "get_cuisine_types"],
+    "INFO": ["get_restaurant_details", "get_neighborhoods", "get_cuisine_types"],
+    "GENERAL": ["get_neighborhoods", "get_cuisine_types"],
 }
 
 

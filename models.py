@@ -140,7 +140,7 @@ class Reservation(BaseModel):
     status: ReservationStatus = ReservationStatus.CONFIRMED
     created_at: datetime = Field(default_factory=datetime.now)
     confirmation_code: str
-
+    user_id: Optional[str] = None
     def to_display_string(self) -> str:
         return f"""
 📋 **Reservation Confirmed**
@@ -156,6 +156,21 @@ class Reservation(BaseModel):
 {f"🎉 Occasion: {self.occasion}" if self.occasion else ""}
 ━━━━━━━━━━━━━━━━━━━━━━
 """.strip()
+
+
+class User(BaseModel):
+    id: str
+    email: str
+    name: str
+    phone: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.now)
+
+
+class UserProfile(BaseModel):
+    id: str
+    email: str
+    name: str
+    phone: Optional[str] = None
 
 
 class CustomerPreferences(BaseModel):
