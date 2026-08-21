@@ -92,9 +92,9 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
   const isConfirmed = reservation.status === 'confirmed' || reservation.status === 'modified';
 
   return (
-    <div className="relative bg-neo-card border-3 border-black rounded-neo-lg shadow-neo-lg my-3 max-w-md w-full mx-auto overflow-hidden transition-all">
+    <div className="relative bg-neo-card border border-neutral-200 dark:border-neutral-700 rounded-2xl shadow-lg my-3 max-w-md w-full mx-auto overflow-hidden transition-all">
       {/* Top Banner with Perforated Accent */}
-      <div className="bg-neo-yellow border-b-2 border-black p-3 flex items-center justify-between">
+      <div className="bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 border-b border-neutral-200 dark:border-neutral-700 p-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Ticket className="w-5 h-5 text-black" />
           <span className="font-black tracking-wider text-xs uppercase text-black">
@@ -102,7 +102,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
           </span>
         </div>
         <span
-          className={`font-mono font-black text-xs px-2 py-0.5 border border-black rounded-neo-sm ${
+          className={`font-mono font-black text-xs px-2 py-0.5 border border-neutral-200 dark:border-neutral-700 rounded-lg ${
             isConfirmed ? 'bg-neo-green text-black' : 'bg-red-400 text-white'
           }`}
         >
@@ -123,7 +123,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
         </div>
 
         {/* Date, Time, Party Size Grid */}
-        <div className="grid grid-cols-3 gap-2 bg-neo-surface border-2 border-black p-2.5 rounded-neo-sm text-center">
+        <div className="grid grid-cols-3 gap-2 bg-neo-surface border border-neutral-200 dark:border-neutral-700 p-2.5 rounded-lg text-center">
           <div>
             <div className="text-[9px] uppercase font-bold text-neo-muted flex items-center justify-center gap-1">
               <Calendar className="w-3 h-3 text-neo-orange" />
@@ -177,7 +177,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
 
         {/* Special Requests if any */}
         {reservation.special_requests && (
-          <div className="bg-neo-blue/10 border border-black p-2 text-xs rounded-neo-sm">
+          <div className="bg-neo-blue/10 border border-neutral-200 dark:border-neutral-700 p-2 text-xs rounded-lg">
             <span className="font-mono font-bold text-[10px] uppercase text-neo-main block">
               Special Requests:
             </span>
@@ -191,7 +191,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
             <span className="text-[9px] font-mono uppercase font-bold text-neo-muted block">
               Confirmation Code
             </span>
-            <span className="font-mono font-black text-base tracking-widest text-black bg-neo-yellow px-2 py-0.5 border border-black rounded-neo-sm inline-block">
+            <span className="font-mono font-black text-base tracking-widest text-black bg-neo-yellow px-2 py-0.5 border border-neutral-200 dark:border-neutral-700 rounded-lg inline-block">
               {reservation.confirmation_code}
             </span>
           </div>
@@ -231,9 +231,9 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
 
       {/* Modify / Cancel Actions Footer */}
       {isConfirmed && (
-        <div className="bg-neo-canvas border-t-2 border-black p-3 text-center space-y-2">
+        <div className="bg-neo-canvas border-t border-neutral-200 dark:border-neutral-700 p-3 text-center space-y-2">
           {isEditing ? (
-            <form onSubmit={handleSaveEdit} className="space-y-3 bg-neo-card p-3 border-2 border-black rounded-neo-sm text-left">
+            <form onSubmit={handleSaveEdit} className="space-y-3 bg-neo-card p-3 border border-neutral-200 dark:border-neutral-700 rounded-lg text-left">
               <div className="flex items-center justify-between border-b border-black pb-1">
                 <span className="text-[10px] font-black uppercase text-neo-main">Edit Reservation Details</span>
                 <button
@@ -246,7 +246,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
               </div>
 
               {modifyError && (
-                <div className="p-2 bg-red-100 border border-red-500 text-red-800 text-[11px] font-bold rounded-neo-sm">
+                <div className="p-2 bg-red-100 border border-red-500 text-red-800 text-[11px] font-bold rounded-lg">
                   {modifyError}
                 </div>
               )}
@@ -259,7 +259,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
                     value={editDate}
                     onChange={(e) => setEditDate(e.target.value)}
                     required
-                    className="w-full bg-neo-canvas border-2 border-black p-1 text-xs font-mono font-bold"
+                    className="w-full bg-neo-canvas border border-neutral-200 dark:border-neutral-700 p-1 text-xs font-mono font-bold"
                   />
                 </div>
                 <div>
@@ -267,7 +267,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
                   <select
                     value={editTime}
                     onChange={(e) => setEditTime(e.target.value)}
-                    className="w-full bg-neo-canvas border-2 border-black p-1 text-xs font-mono font-bold"
+                    className="w-full bg-neo-canvas border border-neutral-200 dark:border-neutral-700 p-1 text-xs font-mono font-bold"
                   >
                     {['11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00'].map((t) => (
                       <option key={t} value={t}>{t}</option>
@@ -282,7 +282,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
                   <select
                     value={editSize}
                     onChange={(e) => setEditSize(Number(e.target.value))}
-                    className="w-full bg-neo-surface text-neo-main border-2 border-black p-1 text-xs font-mono font-bold"
+                    className="w-full bg-neo-surface text-neo-main border border-neutral-200 dark:border-neutral-700 p-1 text-xs font-mono font-bold"
                   >
                     {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12].map((s) => (
                       <option key={s} value={s}>{s} {s === 1 ? 'Guest' : 'Guests'}</option>
@@ -296,7 +296,7 @@ export const ReservationTicket: React.FC<ReservationTicketProps> = ({
                     placeholder="Window seat, anniversary, etc."
                     value={editRequests}
                     onChange={(e) => setEditRequests(e.target.value)}
-                    className="w-full bg-neo-surface text-neo-main border-2 border-black p-1 text-xs font-bold placeholder:text-neo-muted"
+                    className="w-full bg-neo-surface text-neo-main border border-neutral-200 dark:border-neutral-700 p-1 text-xs font-bold placeholder:text-neo-muted"
                   />
                 </div>
               </div>

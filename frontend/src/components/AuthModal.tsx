@@ -76,13 +76,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="bg-neo-card border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-md my-auto overflow-hidden text-left"
+        className="bg-neo-card border border-neutral-200 dark:border-neutral-700 shadow-xl rounded-2xl w-full max-w-md my-auto overflow-hidden text-left"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-neo-yellow border-b-3 border-black p-4 flex items-center justify-between">
+        <div className="bg-neo-card border-b border-neutral-200 dark:border-neutral-700 p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-neo-card border-2 border-black flex items-center justify-center rounded-neo-sm text-lg font-bold shadow-neo-sm">
+            <div className="w-9 h-9 bg-neo-card border border-neutral-200 dark:border-neutral-700 flex items-center justify-center rounded-lg text-lg font-bold shadow-sm">
               🔐
             </div>
             <div>
@@ -98,14 +98,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="w-8 h-8 bg-neo-card hover:bg-neo-orange hover:text-white border-2 border-black flex items-center justify-center rounded-neo-sm text-neo-main transition-colors"
+            className="w-8 h-8 bg-neo-card hover:bg-neo-orange hover:text-white border border-neutral-200 dark:border-neutral-700 flex items-center justify-center rounded-lg text-neo-main transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Mode Switcher Tabs */}
-        <div className="grid grid-cols-2 border-b-2 border-black bg-neo-surface text-xs font-mono font-black">
+        <div className="grid grid-cols-2 border-b border-neutral-200 dark:border-neutral-700 bg-neo-surface text-xs font-mono font-black">
           <button
             type="button"
             onClick={() => {
@@ -114,7 +114,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }}
             className={`py-2.5 text-center uppercase tracking-wider transition-colors ${
               mode === 'login'
-                ? 'bg-neo-card text-neo-main border-b-2 border-black font-black'
+                ? 'bg-neo-card text-neo-main border-b border-neutral-200 dark:border-neutral-700 font-black'
                 : 'text-neo-muted hover:bg-neo-surface'
             }`}
           >
@@ -128,7 +128,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }}
             className={`py-2.5 text-center uppercase tracking-wider transition-colors ${
               mode === 'register'
-                ? 'bg-neo-card text-neo-main border-b-2 border-black font-black'
+                ? 'bg-neo-card text-neo-main border-b border-neutral-200 dark:border-neutral-700 font-black'
                 : 'text-neo-muted hover:bg-neo-surface'
             }`}
           >
@@ -139,7 +139,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-3.5 bg-neo-card text-left">
           {error && (
-            <div className="p-2.5 bg-red-100 border-2 border-red-600 text-red-900 text-xs font-bold rounded-neo-sm flex items-center gap-2">
+            <div className="p-2.5 bg-red-100 border-2 border-red-600 text-red-900 text-xs font-bold rounded-lg flex items-center gap-2">
               <span>⚠️ {error}</span>
             </div>
           )}
@@ -157,7 +157,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   placeholder="e.g. Shiva Kumar"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-neo-surface text-neo-main border-2 border-black rounded-neo-sm font-sans text-xs font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-card"
+                  className="w-full pl-9 pr-3 py-2 bg-neo-surface text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-sans text-xs font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-card"
                 />
               </div>
             </div>
@@ -175,7 +175,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 placeholder="name@domain.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-neo-surface text-neo-main border-2 border-black rounded-neo-sm font-mono text-xs font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-card"
+                className="w-full pl-9 pr-3 py-2 bg-neo-surface text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-mono text-xs font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-card"
               />
             </div>
           </div>
@@ -193,7 +193,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 placeholder="Min 6 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-neo-surface text-neo-main border-2 border-black rounded-neo-sm font-mono text-xs font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-card"
+                className="w-full pl-9 pr-3 py-2 bg-neo-surface text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-mono text-xs font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-card"
               />
             </div>
           </div>
@@ -210,7 +210,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   placeholder="e.g. +91 990-643-3115"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-neo-surface text-neo-main border-2 border-black rounded-neo-sm font-mono text-xs font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-card"
+                  className="w-full pl-9 pr-3 py-2 bg-neo-surface text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-mono text-xs font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-card"
                 />
               </div>
             </div>
@@ -221,7 +221,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="btn-neo bg-neo-yellow hover:bg-neo-orange hover:text-white text-black w-full py-2.5 text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-neo"
+            className="btn-neo bg-neo-yellow hover:bg-neo-orange hover:text-white text-black w-full py-2.5 text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm"
           >
             {loading ? (
               <>

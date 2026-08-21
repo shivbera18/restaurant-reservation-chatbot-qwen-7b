@@ -5,6 +5,7 @@ import { RestaurantExplorerModal } from './components/RestaurantExplorerModal';
 import { ReservationsDrawer } from './components/ReservationsDrawer';
 import { ModelPickerModal } from './components/ModelPickerModal';
 import { AuthModal } from './components/AuthModal';
+import { LandingPage } from './components/LandingPage';
 import type { ChatMessage, Restaurant, Reservation, SystemConfig, User } from './types';
 import { getStoredTheme, setStoredTheme, applyTheme, type ThemeMode } from './theme';
 import {
@@ -29,6 +30,19 @@ export function App() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [backendOffline, setBackendOffline] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>(() => getStoredTheme());
+  const [route, setRoute] = useState(() => window.location.pathname === '/app' ? '/app' : '/');
+
+  useEffect(() => {
+    const handlePopState = () => setRoute(window.location.pathname === '/app' ? '/app' : '/');
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const openApp = () => {
+    if (window.location.pathname !== '/app') window.history.pushState({}, '', '/app');
+    setRoute('/app');
+    window.scrollTo(0, 0);
+  };
 
   useEffect(() => {
     applyTheme(theme);
@@ -225,6 +239,10 @@ export function App() {
     handleSendMessage(`I'd like to check table availability for ${restaurant.name} in ${restaurant.neighborhood || 'Downtown'}.`);
   };
 
+
+  if (route === '/') {
+    return <LandingPage theme={theme} onToggleTheme={handleToggleTheme} onOpenApp={openApp} />;
+  }
   return (
     <div className="min-h-screen neo-grid-bg text-neo-main relative overflow-x-hidden">
       {/* Floating Hovering Sidebar Navigation */}
@@ -253,10 +271,9 @@ export function App() {
         }}
       />
 
-      {/* Main Chat Canvas with Adaptive Floating Sidebar Padding */}
       <main
-        className={`flex flex-col h-[calc(100vh-60px)] md:h-screen overflow-hidden transition-all duration-300 ease-in-out ${
-          isCollapsed ? 'md:pl-28' : 'md:pl-80 lg:pl-88'
+        className={`flex h-[calc(100vh-60px)] flex-col overflow-hidden bg-neo-canvas transition-[padding] duration-200 md:h-screen ${
+          isCollapsed ? 'md:pl-[72px]' : 'md:pl-64'
         }`}
       >
         <ChatArea

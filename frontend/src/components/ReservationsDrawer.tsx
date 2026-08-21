@@ -115,11 +115,11 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
       aria-modal="true"
       onClick={onClose}
     >
-      <div className="bg-neo-card border-3 border-black shadow-neo-xl rounded-neo-lg w-full max-w-2xl max-h-[90vh] flex flex-col my-auto overflow-hidden text-left" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-neo-card border border-neutral-200 dark:border-neutral-700 shadow-xl rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col my-auto overflow-hidden text-left" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="bg-neo-green border-b-3 border-black p-4 flex items-center justify-between">
+        <div className="bg-neo-card border-b border-neutral-200 dark:border-neutral-700 p-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-neo-card border-2 border-black flex items-center justify-center rounded-neo-sm font-bold text-base">
+            <div className="w-8 h-8 bg-neo-card border border-neutral-200 dark:border-neutral-700 flex items-center justify-center rounded-lg font-bold text-base">
               🎫
             </div>
             <div>
@@ -137,7 +137,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
               onClick={loadReservations}
               disabled={loading}
               aria-label="Refresh reservations"
-              className="w-8 h-8 bg-neo-card hover:bg-neo-yellow border-2 border-black flex items-center justify-center rounded-neo-sm text-neo-main transition-colors"
+              className="w-8 h-8 bg-neo-card hover:bg-neo-yellow border border-neutral-200 dark:border-neutral-700 flex items-center justify-center rounded-lg text-neo-main transition-colors"
               title="Refresh"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -145,7 +145,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
             <button
               onClick={onClose}
               aria-label="Close"
-              className="w-8 h-8 bg-neo-card hover:bg-neo-yellow border-2 border-black flex items-center justify-center rounded-neo-sm text-neo-main transition-colors"
+              className="w-8 h-8 bg-neo-card hover:bg-neo-yellow border border-neutral-200 dark:border-neutral-700 flex items-center justify-center rounded-lg text-neo-main transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -154,7 +154,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
 
         {/* Search filter bar if multiple bookings exist */}
         {reservations.length > 0 && (
-          <div className="p-3 bg-neo-card border-b-2 border-black">
+          <div className="p-3 bg-neo-card border-b border-neutral-200 dark:border-neutral-700">
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-neo-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -162,7 +162,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
                 placeholder="Search by code (e.g. GF-RES-...), venue, name, or phone..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 bg-neo-surface text-neo-main border-2 border-black rounded-neo-sm font-mono text-xs font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-card"
+                className="w-full pl-8 pr-3 py-1.5 bg-neo-surface text-neo-main border border-neutral-200 dark:border-neutral-700 rounded-lg font-mono text-xs font-bold placeholder:text-neo-muted focus:outline-none focus:bg-neo-card"
               />
             </div>
           </div>
@@ -170,9 +170,9 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
 
         {/* User Account Overview Banner if Logged In */}
         {user && (
-          <div className="p-3 bg-neo-card border-b-2 border-black flex items-center justify-between">
+          <div className="p-3 bg-neo-card border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center font-black text-xs text-black">
+              <div className="w-7 h-7 bg-neo-yellow border border-neutral-200 dark:border-neutral-700 rounded-lg flex items-center justify-center font-black text-xs text-black">
                 👤
               </div>
               <div>
@@ -185,10 +185,10 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="bg-neo-surface border border-black px-2 py-0.5 text-[11px] font-mono font-bold text-neo-main rounded-neo-sm">
+              <span className="bg-neo-surface border border-neutral-200 dark:border-neutral-700 px-2 py-0.5 text-[11px] font-mono font-bold text-neo-main rounded-lg">
                 {reservations.filter((r) => r.status === 'confirmed').length} Active
               </span>
-              <span className="bg-neo-yellow border border-black px-2 py-0.5 text-[11px] font-mono font-bold text-black rounded-neo-sm">
+              <span className="bg-neo-yellow border border-neutral-200 dark:border-neutral-700 px-2 py-0.5 text-[11px] font-mono font-bold text-black rounded-lg">
                 {reservations.length} Total
               </span>
             </div>
@@ -198,15 +198,15 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
         {/* Content */}
         <div className="flex-1 p-4 overflow-y-auto bg-neo-canvas space-y-4">
           {error && (
-            <div className="p-3 bg-red-100 border-2 border-red-500 text-red-800 text-xs font-bold flex items-center gap-2 rounded-neo-sm">
+            <div className="p-3 bg-red-100 border-2 border-red-500 text-red-800 text-xs font-bold flex items-center gap-2 rounded-lg">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
           {!user ? (
             <div className="py-12 text-center">
-              <div className="inline-block p-6 bg-neo-card border-3 border-black rounded-neo shadow-neo max-w-sm">
-                <div className="w-12 h-12 bg-neo-yellow border-2 border-black rounded-neo-sm flex items-center justify-center mx-auto mb-3 shadow-neo-sm">
+              <div className="inline-block p-6 bg-neo-card border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-sm max-w-sm">
+                <div className="w-12 h-12 bg-neo-yellow border border-neutral-200 dark:border-neutral-700 rounded-lg flex items-center justify-center mx-auto mb-3 shadow-sm">
                   <Lock className="w-6 h-6 text-black" />
                 </div>
                 <h3 className="font-black text-base uppercase text-neo-main">Sign In to View & Manage Bookings</h3>
@@ -216,7 +216,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
                 <button
                   type="button"
                   onClick={onOpenAuth}
-                  className="btn-neo bg-neo-yellow hover:bg-neo-orange hover:text-white text-black px-4 py-2 text-xs mt-4 font-black uppercase flex items-center justify-center gap-1.5 w-full shadow-neo"
+                  className="btn-neo bg-neo-yellow hover:bg-neo-orange hover:text-white text-black px-4 py-2 text-xs mt-4 font-black uppercase flex items-center justify-center gap-1.5 w-full shadow-sm"
                 >
                   <LogIn className="w-4 h-4" />
                   <span>Sign In / Create Account</span>
@@ -225,13 +225,13 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
             </div>
           ) : loading ? (
             <div className="py-16 text-center font-mono font-bold">
-              <div className="inline-block p-4 bg-neo-card border-2 border-black rounded-neo shadow-neo text-neo-main">
+              <div className="inline-block p-4 bg-neo-card border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-sm text-neo-main">
                 ⏳ Loading your reservations...
               </div>
             </div>
           ) : filteredReservations.length === 0 ? (
             <div className="py-16 text-center">
-              <div className="inline-block p-6 bg-neo-card border-3 border-black rounded-neo shadow-neo max-w-sm">
+              <div className="inline-block p-6 bg-neo-card border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-sm max-w-sm">
                 <Ticket className="w-10 h-10 mx-auto text-neo-main mb-2" />
                 <p className="font-black text-base uppercase text-neo-main">No Active Bookings</p>
                 <p className="text-xs text-neo-main mt-1 font-bold">
@@ -262,7 +262,7 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="bg-neo-card border-t-2 border-black p-3 flex items-center justify-between text-xs font-mono text-neo-main">
+        <div className="bg-neo-card border-t border-neutral-200 dark:border-neutral-700 p-3 flex items-center justify-between text-xs font-mono text-neo-main">
           <span>
             Showing {filteredReservations.length} of {reservations.length} bookings
           </span>
