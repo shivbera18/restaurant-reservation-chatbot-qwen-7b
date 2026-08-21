@@ -1,0 +1,3 @@
+advisors:
+  - name: Advisor 2
+    model: google-antigravity/gemini-3.7-flash:high
